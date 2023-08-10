@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <div id="app">
+        <h1>{{ message }}</h1>
+        <p>{{ now }}</p>
+    </div>
+
+    <div id="app-2">
+        <span v-bind:title="message">
+          Наведи на меня курсор на пару секунд,
+          чтобы увидеть динамически связанное значение title!
+        </span>
+      </div>
+
+      <div id="app-3">
+        <span v-if="seen">Сейчас меня видно</span>
+      </div>
+
+      <div id="app-4">
+        <ol>
+          <li v-for="todo in todos">
+            {{ todo.text }}
+          </li>
+        </ol>
+      </div>
+
+      <div id="app-5">
+        <p>{{ message }}</p>
+        <button v-on:click="reverseMessage">Перевернуть сообщение</button>
+      </div>
+
+      <div id="app-7">
+        <ol>
+            <todo-item
+            v-for="item in clist"
+            v-bind:todo="item"
+            v-bind:key="item.id">
+            </todo-item>
+        </ol>
+      </div>
+
+    <!--скрипты------------------------------------------>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.8/dist/vue.js"></script>
+    <script>
+        Vue.component('todo-item', {
+            props: ['todo'],
+            template: '<li>{{todo.text}}</li>'
+        })//компонент
+
+        const app = new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello Vue!',
+                now: new Date()
+            },
+            methods: {
+                updateDate() {
+                    this.now = new Date();
+                }
+            },
+            mounted() {
+                setInterval(() => {
+                    this.updateDate();
+                }, 1000);
+            }
+        })
+
+        var app2 = new Vue({
+            el: '#app-2',
+            data: {
+                message: 'Вы загрузили эту страницу: ' + new Date().toLocaleString()
+            }
+        })
+
+        var app3 = new Vue({
+            el: '#app-3',
+            data: {
+                seen: true
+            }
+        })
+
+        var app4 = new Vue({
+            el: '#app-4',
+            data: {
+                todos: [
+                { text: 'Изучить JavaScript' },
+                { text: 'Изучить Vue' },
+                { text: 'Создать что-нибудь классное' }
+                ]
+            }
+        })
+
+        var app5 = new Vue({
+            el: '#app-5',
+            data: {
+                message: 'Привет, Vue.js!'
+            },
+            methods: {
+                reverseMessage: function () {
+                this.message = this.message.split('').reverse().join('')
+                }
+            }
+        })
+        var app7 = new Vue({
+            el: '#app-7',
+            data: {
+                clist: [
+                    {id: 0, text: 'Что-то'},
+                    {id: 1, text: 'Еще'},
+                    {id: 2, text: 'И еще'},
+                ]
+            }
+        })
+    </script>
+</body>
+</html>

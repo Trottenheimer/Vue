@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Field</title>
+</head>
+<body>
+
+    <div id="app">
+        <div :style="{background: bgColor, width: width, height: height, marginTop: moveV + 'px', marginLeft: moveH + 'px'}">
+            
+        </div>
+    </div>
+    <!--скрипты------------------------------------------>
+
+    <script src="https://unpkg.com/vue@next"></script>
+    <script src="https://unpkg.com/lodash@4.17.20/lodash.min.js"></script>
+
+    
+    <script>
+        const app = Vue.createApp({
+            data(){
+                return{
+                    display: "flex",
+                    bgColor: "black",
+                    width: "80px",
+                    height: "80px",
+                    moveV: 0,
+                    moveH: 0
+                };
+            },
+            mounted() {
+                document.addEventListener("keydown", this.handleKeyPress);
+            },
+            beforeDestroy() {
+                document.removeEventListener("keydown", this.handleKeyPress);
+            },
+            methods: {
+                handleKeyPress(event){
+                    if (event.key === "ArrowUp"){
+                        this.moveV-=10
+                    }
+                    else if (event.key === "ArrowDown"){
+                        this.moveV+=10
+                    }
+                    else if (event.key === "ArrowLeft"){
+                        this.moveH-=10
+                    }
+                    else if (event.key === "ArrowRight"){
+                        this.moveH+=10
+                    }
+                }
+            },
+        }).mount("#app")
+    </script>
+    
+</body>
+</html>
