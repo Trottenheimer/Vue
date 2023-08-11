@@ -1,5 +1,5 @@
 <template>
-<div class="app">
+<div>
     <h1>Страница с постами</h1>
     <my-input
         v-model="searchQuery"
@@ -33,7 +33,12 @@
     <div v-else>
         <h1>Идет загрузка</h1>
     </div>
-    <post-pagination :test="totalPages"></post-pagination>
+    <post-pagination
+        :pages="page"
+        @change="fetchPosts"
+    >
+
+    </post-pagination>
 </div>
 </template>
 
@@ -53,13 +58,12 @@ export default {
             isPostsLoading: true,
             selectedSort: '',
             searchQuery: '',
-            page: 1,
+            page: {now: 1, total: 0},
             limit: 10,
-            totalPages: 0,
             sortOptions: [
                 {value: 'title', name: "по названию"},
                 {value: 'body', name: "по содержимому"}
-            ]
+            ],
         }
     },
     methods:{
@@ -73,17 +77,21 @@ export default {
         showDialog(){
             this.dialogVisible = true;
         },
-        async fetchPosts(){
+        async fetchPosts(pageNumber){
             try {
                 this.isPostsLoading = true;
+                if (pageNumber != undefined){
+                    this.page.now = pageNumber;
+                }
+                console.log(this.page.now)
                 const response = await axios.get('https://jsonplaceholder.typicode.com/posts', {
                     params: {
                         _limit: this.limit,
-                        _page: this.page,
+                        _page: this.page.now,
                     }
                 })//Всё работает нормально, просто вскоду плохо
-                this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit)
-                this.posts =response.data;
+                this.page.total = Math.ceil(response.headers['x-total-count'] / this.limit)
+                this.posts = response.data;
                 this.isPostsLoading = false;
                 
             } catch (error) {
@@ -121,8 +129,10 @@ export default {
     padding: 0;
     box-sizing: border-box;
 }
-.app{
+#app{
     padding: 20px;
+    width: 80%;
+    margin: auto;
 }
 .app__btns{
     margin: 15px 0px;
