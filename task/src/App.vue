@@ -23,6 +23,7 @@
 </div>
 </div>
 </div>
+
 </template>
 
 <script>
@@ -32,8 +33,7 @@ const URL_EMP = 'http://192.168.0.102:4000/emp_list';
 import axios from 'axios'
 import DataList from "@/components/DataList.vue"
 import DataEdit from "@/components/DataEdit.vue"
-import "bootstrap/dist/css/bootstrap.min.css"
-import "bootstrap"
+
 export default {
   name: 'App',
   components: {

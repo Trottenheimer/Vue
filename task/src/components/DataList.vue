@@ -1,8 +1,7 @@
 <template>
     <div v-if="dataSet.length > 0">
         <h1>Список</h1>
-        <!--<transition-group name="data-list">-->
-        <table border="1" class="table">
+        <!--<table border="1" class="table">
             <thead>
                 <tr class="data__container">
                     <th scope="col"
@@ -23,8 +22,17 @@
                     @click="this.$emit('showDialog', data)"
                 ></data-item>
             </tbody>
-        </table>
-        <!--</transition-group>// я делал этот кусочек 4 часа))0-->
+        </table>-->
+        <el-table :data="dataSet" border style="width: 100%">
+            <el-table-column
+                v-for="(value, key) in dataSet[0]"
+                :key="key"
+                :prop="key"
+                :label="key"
+            >
+            </el-table-column>
+        </el-table>
+        <data-item></data-item>
     </div>
     <div v-else style="color: red;">
         <h1>Ничего не найдено!</h1>
