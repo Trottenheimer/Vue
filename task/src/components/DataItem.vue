@@ -4,9 +4,9 @@
     <td
         v-for="(value, key) in data"
         :key="key"
-        class="data__item"
+        class="data__item"        
     >
-        {{ value }}
+        <span v-if="key !== 'del'">{{ value || '–' }}</span>
     </td>
 </tr>
 </template>
@@ -16,7 +16,6 @@ export default{
     props:{
         data: {
             type: Object,
-            required: true
         },
     },
     methods:{
@@ -46,4 +45,8 @@ export default{
     cursor: pointer;
 }
 */
+td:empty{
+    visibility: hidden;
+    display: none;
+}
 </style>

@@ -1,29 +1,33 @@
 <template>
-<div>
-  <div class="container">
-    <div>
-      <my-input v-model="searchQuery" placeholder="Поиск..."></my-input>
-      <my-button @click="showDialog">Создать пост</my-button>
-      <my-select v-model="selectedSort" :options="sortOptions"></my-select>
+<div class="container" style="min-width: 100%;">
+  <div class="container" id="data-action-bar" style="margin: 0 auto; align-items: center">
+    <my-input v-model="searchQuery" placeholder="Поиск..."></my-input>
+    <my-button @click="showDialog">Создать пост</my-button>
+    <my-select v-model="selectedSort" :options="sortOptions"></my-select>
+  </div>
+  <div class="container" id="data-list" style="min-width: 100%;">
+  <my-dialog v-model:show="dialogVisible">
+    <data-edit 
+      :dialogData="dialogData"
+      v-model:dialogVisible="dialogVisible" 
+      /><!--data отправляет данные нажатой записи в форму, visible получает эмит на закрытие диалога-->
+  </my-dialog>
+
+  <data-list
+    v-if="isLoaded"
+    :dataSet="dataSet"
+    @showDialog="showDialog"
+  />
+
+  <div v-else>
+    <div class="" style="margin: 50vh 50%; width: 500px; height: 500px">
+      <div class="spinner-border d-flex justify-content-center" role="status ">
+        <div class="visually-hidden">Загрузка...</div>
+        </div>
+      </div>
     </div>
   </div>
-  <my-dialog v-model:show="dialogVisible">
-    <data-edit v-model:dialogData="dialogData"/>
-  </my-dialog>
-<data-list
-  v-if="isLoaded"
-  :dataSet="dataSet"
-  @showDialog="showDialog"
-/>
-<div v-else>
-  <div class="" style="margin: 50vh 50%; width: 500px; height: 500px">
-  <div class="spinner-border d-flex justify-content-center" role="status ">
-    <div class="visually-hidden">Loading...</div>
-  </div>
 </div>
-</div>
-</div>
-
 </template>
 
 <script>
@@ -43,7 +47,6 @@ export default {
     return {
       dataSet: [ {} ],
       isLoaded: false,
-      dataKeys: [],
       url: URL_EMP,
       dialogVisible: false,
       dialogData: {},
@@ -52,7 +55,7 @@ export default {
                 {value: 'body', name: "по содержимому"}
       ],
       selectedSort: '',
-      searchQuery: '',
+      searchQuery: ''
     }
   },
   methods:{
@@ -62,8 +65,13 @@ export default {
 
         const response = await axios.get(this.url);
         this.dataSet = response.data;
-        this.dataKeys = Object.keys(this.dataSet[0]);
-
+        
+        /*this.dataSet = this.dataSet.map(item => {
+          const {db_user, ...dataItem} = item;
+          console.log(db_user);
+          return dataItem;
+        })*/
+        
         this.isLoaded = true;
       }
       catch (error) {
@@ -73,27 +81,29 @@ export default {
     showDialog(data){
       this.dialogVisible = true;
       this.dialogData = data;
-      console.log(this.dialogData);
     }
   },
   watch:{
     dialogVisible(val){
-      console.log(val);
+      console.log("dialog visible: " + val);
     }
   },
   computed: {
-        sortedPosts(){
-            return [...this.posts].sort((post1, post2) => post1[this.selectedSort]?.localeCompare(post2[this.selectedSort]))
-        },
-        sortedAndSearchedPosts(){
-            return this.sortedPosts.filter(post => post.title.toLowerCase().includes(this.searchQuery.toLocaleLowerCase()));
-        }
+    /*filteredData(){
+      return this.dataSet.map(item => {
+        const {db_user, ...filteredItem} = item;
+        return filteredItem;
+      });
+    },*/
+    sortedData(){
+        return [...this.posts].sort((post1, post2) => post1[this.selectedSort]?.localeCompare(post2[this.selectedSort]))
+    },
+    sortedAndSearchedData(){
+        return this.sortedPosts.filter(post => post.title.toLowerCase().includes(this.searchQuery.toLocaleLowerCase()));
+    }
   },
   mounted(){
     this.fetchData();
-  },
-  beforeUnmount(){
-    this.App.destroy()
   }
 }
 </script>

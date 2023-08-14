@@ -1,15 +1,16 @@
 <template>
     <div v-if="dataSet.length > 0">
-        <h1>Список</h1>
-        <!--<table border="1" class="table">
+        <div class="container" style="min-width: 90%; margin: 20px auto">
+        <table border="1" class="table table-hover table-bordered gx-5">
             <thead>
                 <tr class="data__container">
                     <th scope="col"
                         v-for="(value, key) in dataSet[0]"
-                        :key="value"
+                        :key="key"
                         class="data__item"
+                        :id="key"
                     >
-                        {{ key }}
+                        <span v-if="key !== 'del'">{{ key }}</span>
                     </th>
                 </tr>
             </thead>
@@ -18,23 +19,16 @@
                     v-for="data in dataSet"
                     :data="data"
                     :key="data.id"
-                    :class="{'table-secondary': data.del == 1}"
+                    :class="{'table-danger': data.del == 1}"
                     @click="this.$emit('showDialog', data)"
                 ></data-item>
             </tbody>
-        </table>-->
-        <el-table :data="dataSet" border style="width: 100%">
-            <el-table-column
-                v-for="(value, key) in dataSet[0]"
-                :key="key"
-                :prop="key"
-                :label="key"
-            >
-            </el-table-column>
-        </el-table>
+        </table>
+    </div>
         <data-item></data-item>
     </div>
-    <div v-else style="color: red;">
+
+    <div v-else class="text-danger">
         <h1>Ничего не найдено!</h1>
     </div>
 </template>
@@ -47,37 +41,30 @@ export default{
         DataItem,
     },
     name: 'data-list',
-    data(){
-        return{
-        }
-    },
     props:{
         dataSet:{
             type: Object,
             required: true
         }
     },
+    data(){
+        return{
+            del: ''
+        }
+    },
+    mounted(){
+    }
 }
 </script>
 
 
 <style scoped>
-/*
-.data-list {
-    display: flex;
-    margin-right: 10px;
-  }
-.data-list-enter-active,
-  .data-list-leave-active {
-    transition: all 0.3s ease;
-  }
-.data-list-enter-from,
-.data-list-leave-to {
-    opacity: 0;
-    transform: translateX(130px);
-  }
-.data-list-move {
-    transition: transform 0.5s ease;
-  }
-  */
+th:empty{
+    visibility: hidden;
+    display: none;
+}
+td:empty{
+    visibility: hidden;
+    display: none;
+}
 </style>
