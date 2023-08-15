@@ -4,47 +4,58 @@
     <td
         v-for="(value, key) in data"
         :key="key"
-        class="data__item"        
-    >
-        <span v-if="key !== 'del'">{{ value || '–' }}</span>
+        class="data__item"
+        :id="key"
+        >
+        <template v-if="key !== 'del' && key !== 'id' && key !== 'people_id' && key !== 'emp_id'">
+            
+            <template v-if="key === 'sex' && value === 1">Мужской</template>
+            <template v-else-if="key === 'sex' && value === 2">Женский</template>
+            <template v-else-if="key === 'allow'"><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" :checked="value"></template>
+            <template v-else-if="key === 'dept_id'">
+                {{
+                    
+                }}
+            </template>
+            <template v-else>{{ value || '–' }}</template>
+        </template>
     </td>
 </tr>
 </template>
 <script>
 export default{
     name: "data-item",
+    data(){
+        return{
+            copyDept: [{}],
+            test: 2,
+        }
+    },
     props:{
         data: {
             type: Object,
         },
+        dept: Object,
+        post: {
+            type: Object,
+        },
     },
     methods:{
+    },
+    computed:{
+        deptNameById(){
+            return this.copyDept.filter(obj =>{
+                return obj.id.includes(this.test);
+            })
+        }
+    },
+    mounted(){
+        console.log('ARRAY: ', this.dept);
+        //console.log(this.deptNameById());
     }
 }
 </script>
 <style>
-/*
-.data__container{
-    display: flex;
-    width: 98vw;
-}
-
-.data__item{
-    flex: 1;
-    border: 1px solid black;
-    padding: 0 4px;
-    max-width: 100vw;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: medium;
-}
-.data__container:hover{
-    background: green;
-    color: white;
-    cursor: pointer;
-}
-*/
 td:empty{
     visibility: hidden;
     display: none;

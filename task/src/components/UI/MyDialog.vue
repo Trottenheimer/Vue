@@ -1,7 +1,10 @@
 <template>
-<div class="dialog" v-if="show" @click.stop="hideDialog">
-    <div @click.stop
-        class="dialog__content"
+<div class="dialog"
+    v-if="show"
+    @click.stop="hideDialog"
+>
+    <div class="dialog__content"
+        @click.stop 
     >
         <slot></slot>
     </div>
@@ -39,6 +42,8 @@ export default{
     background: white;
     border-radius: 12px;
     min-height: 50px;
+    max-height: 90%;
+    overflow-y: auto;
     min-width: 600px;
     padding: 20px;
 }
