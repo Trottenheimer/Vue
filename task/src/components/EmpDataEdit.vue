@@ -12,37 +12,37 @@
         </div>
 
         <div v-if="currentPage == 1"><!--Отображение страницы основных данных-->
-            <div class="row align-items-start"
+            <div class="row" 
                 v-for="(val, key) in editedDialogData"
                 :key="key"
-                style="margin: 15px 0 0 0"
+                style="margin: 15px 0 0 0; align-items:center;"
             >
-                <div class="col-2" v-if="(key == 'id' || key == 'people_id')" v-show="showAdmin">
-                    <strong>{{key}}:</strong>
-                </div>
-                <div class="col-2" v-else>
+                <div class="col-2 align-middle"
+                    v-if="(
+                        key !== 'id' && key !== 'people_id' && key !== 'del'
+                        && key !== 'dept_id' && key !== 'post_id'
+                    )"
+                >
                     <strong>
-                        <template v-if="key !== 'del'">
-                            <template v-if="key === 'surname'">Фамилия</template>
-                            <template v-else-if="key === 'name'">Имя</template>
-                            <template v-else-if="key === 'patron'">Отчество</template>
-                            <template v-else-if="key === 'birth'">Дата рожения</template>
-                            <template v-else-if="key === 'sex'">Пол</template>
-                            <template v-else-if="key === 'post'">Должность</template>
-                            <template v-else-if="key === 'dept'">Отделение</template>
-                            <template v-else-if="key === 'inn'">ИНН</template>
-                            <template v-else-if="key === 'snils'">СНИЛС</template>
-                            <template v-else>{{ key || '–' }}</template>
-                        </template>
+                        <template v-if="key === 'surname'">Фамилия: </template>
+                        <template v-else-if="key === 'name'">Имя: </template>
+                        <template v-else-if="key === 'patron'">Отчество: </template>
+                        <template v-else-if="key === 'birth'">Дата рожения: </template>
+                        <template v-else-if="key === 'sex'">Пол: </template>
+                        <template v-else-if="key === 'post'">Должность: </template>
+                        <template v-else-if="key === 'dept'">Отделение: </template>
+                        <template v-else-if="key === 'inn'">ИНН: </template>
+                        <template v-else-if="key === 'snils'">СНИЛС: </template>
+                        <template v-else>{{ key || '–' }}</template>
                     </strong>
                 </div>
-                <div class="col-10">
-                    <div v-if="(key == 'id' || key == 'people_id')" v-show="showAdmin">
-                        <strong>{{val}}</strong>
-                    </div>
-                    <div v-else-if="key !== 'del'">
-                        <my-input v-model:modelValue="editedDialogData[key]" style="width: 100%;"/>
-                    </div>
+                <div class="col-10"
+                    v-if="(
+                        key !== 'id' && key !== 'people_id' && key !== 'del'
+                        && key !== 'dept_id' && key !== 'post_id'
+                        )"
+                    >
+                        <my-input class="form-control"  v-model:modelValue="editedDialogData[key]" style="width: 100%; align-items:center;"/>
                 </div>
             </div>
         </div>
@@ -76,7 +76,7 @@
         </h3>
 
         <div class="row" role="group" aria-label="Primer" style="margin-top: 20px; padding: 0 5%">
-            <button type="button" class="btn btn-primary col-3" @click="saveChanges">Сохранить</button>
+            <button type="button" class="btn btn-primary col-3" @click="updateData">Сохранить</button>
             <div class="col-6"></div>
             <button type="button" class="btn btn-secondary col-3" @click="this.$emit('update:dialogVisible', false)">Закрыть</button>
         </div>
@@ -90,7 +90,7 @@ import axios from 'axios'
 const serverURL = 'http://192.168.0.102:4000/';
 
 export default{
-    name: "data-edit",
+    name: "emp-data-edit",
     components:{
     },
     data(){
@@ -160,21 +160,30 @@ export default{
                 console.log('ошибка' + error)
             }
         },
-        async saveChanges(){
-            this.isLoaded = false;
-            console.log('Запрос на сервер: ', this.editedDialogData)
+        async updateData(){
+            try {
+                this.isLoaded = false;
 
+            const request = this.editedDialogData;
+            delete request.post;
+            delete request.dept;
+            console.log('Отправляемый JSON: ', request)
+            const response = await axios.post('http://192.168.0.102:4000/rpc/emp_upsert', {"p_emp_data": request})
+            console.log(response);
+            
             /* 
             const responsePost = await axios.get('http://192.168.0.102:4000/right_list?id=eq.2')
             console.log(responsePost.data);*/
-
-            let a = 1
-            if (a == 1){
+            if (response.status === 200){
                 this.updateSuccess = true;
             }
             this.showStatus = true
             this.$emit('refresh', null)
             this.isLoaded = true;
+            } catch (error) {
+                console.log(error);
+            }
+            
         }
     },
     mounted(){
@@ -186,6 +195,9 @@ export default{
 </script>
 <style>
 th:empty{
+    display: none;
+}
+.row:empty{
     display: none;
 }
 </style>

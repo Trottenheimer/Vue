@@ -7,14 +7,13 @@
         class="data__item"
         :id="key"
         >
-        <template v-if="key !== 'del' && key !== 'id' && key !== 'people_id' && key !== 'emp_id'">
+        <template v-if="key !== 'del' && key !== 'id' && key !== 'people_id' && key !== 'emp_id' && key !== 'dept_id' && key !== 'post_id'">
             
             <template v-if="key === 'sex' && value === 1">Мужской</template>
             <template v-else-if="key === 'sex' && value === 2">Женский</template>
             <template v-else-if="key === 'allow'"><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" :checked="value"></template>
             <template v-else-if="key === 'dept_id'">
-                {{
-                    
+                {{value
                 }}
             </template>
             <template v-else>{{ value || '–' }}</template>
@@ -27,32 +26,11 @@ export default{
     name: "data-item",
     data(){
         return{
-            copyDept: [{}],
-            test: 2,
         }
     },
     props:{
-        data: {
-            type: Object,
-        },
-        dept: Object,
-        post: {
-            type: Object,
-        },
+        data: {},
     },
-    methods:{
-    },
-    computed:{
-        deptNameById(){
-            return this.copyDept.filter(obj =>{
-                return obj.id.includes(this.test);
-            })
-        }
-    },
-    mounted(){
-        console.log('ARRAY: ', this.dept);
-        //console.log(this.deptNameById());
-    }
 }
 </script>
 <style>

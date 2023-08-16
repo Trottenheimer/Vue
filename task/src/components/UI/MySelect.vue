@@ -1,10 +1,10 @@
 <template>
-<select :v-model="modelValue" @change="changeOption">
-    <option selected disabled value="">Выберите из списка</option>
-    <option
+<select class="form-select" :v-model="selectedSort" @change="changeOption">
+    <option selected value="none">Сортировка</option>
+    <option class="dropdown-item"
         v-for="option in options"
-        :key="option.value"
-        :value="option.value"
+            :key="option.value"
+            :value="option.value"
     >
         {{option.name}}
     </option>
@@ -14,7 +14,7 @@
 export default {
     name: 'my-select',
     props:{
-        modelValue:{
+        selectedSort:{
             type: String
         },
         options:{
@@ -24,7 +24,7 @@ export default {
     },
     methods:{
         changeOption(event){
-            this.$emit('update:modelValue', event.target.value)
+            this.$emit('update:selectedSort', event.target.value)
         }
     }
 }

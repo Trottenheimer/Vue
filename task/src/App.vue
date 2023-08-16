@@ -1,29 +1,36 @@
 <template>
 <div class="container" style="min-width: 100%;">
-  <div class="container" id="data-action-bar" style="margin: 0 auto; align-items: center; display:none">
-    <my-input v-model="searchQuery" placeholder="Поиск..."></my-input>
-    <my-button @click="showDialog">Создать пост</my-button>
-    <my-select v-model="selectedSort" :options="sortOptions"></my-select>
+  <div class="container row" style="margin: 0 auto; align-items: center;">
+    <div class="input-group mb-5 mt-5">
+      <my-button class="btn btn-primary" @click="showDialogCreate">Создать пользователя</my-button>
+      <my-input v-model="searchQuery" class="form-control" placeholder="Поиск по фамилии..."></my-input>
+      <my-select v-model:selectedSort="selectedSort" :options="sortOptions"></my-select>
+    </div>
   </div>
   <div class="container" id="data-list" style="min-width: 100%;">
-    <my-dialog v-model:show="dialogVisible">
-      <data-edit 
+    <my-dialog v-model:show="dialogEditVisible">
+      <emp-data-edit 
         :dialogData="dialogData"
         v-model:dialogVisible="dialogVisible" 
-        @refresh="fetchData(URL_EMP)"
+        @refresh="fetchData(EMP_URL)"
+        /><!--data отправляет данные нажатой записи в форму, visible получает эмит на закрытие диалога-->
+    </my-dialog>
+    <my-dialog v-model:show="dialogCreateVisible">
+      <emp-data-create 
+        :dialogData="dialogDataCreate"
+        v-model:dialogVisible="dialogCreateVisible" 
+        @refresh="fetchData(EMP_URL)"
         /><!--data отправляет данные нажатой записи в форму, visible получает эмит на закрытие диалога-->
     </my-dialog>
 
-    <data-list
+    <emp-data-list
       v-if="isLoaded"
-      :empDataSet="empDataSet"
-      :deptDataSet="deptDataSet"
-      :postDataSet="postDataSet"
+      :empDataSet="sortedAndSearchedData"
       @showDialog="showDialog"
     />
 
   <div v-else>
-    <div class="" style="margin: 50vh 50%; width: 500px; height: 500px">
+    <div class="" style="margin: 50vh 50%; width: 500px; height: 500px; position: fixed">
       <div class="spinner-border d-flex justify-content-center" role="status ">
         <div class="visually-hidden">Загрузка...</div>
       </div>
@@ -42,13 +49,14 @@ const URL_POST = serverURL + 'post_list';
 
 
 import axios from 'axios'
-import DataList from "@/components/DataList.vue"
-import DataEdit from "@/components/DataEdit.vue"
+import EmpDataList from "@/components/EmpDataList.vue"
+import EmpDataEdit from "@/components/EmpDataEdit.vue"
+import EmpDataCreate from "@/components/EmpDataCreate.vue"
 
 export default {
   name: 'App',
   components: {
-    DataList, DataEdit,
+    EmpDataList, EmpDataEdit, EmpDataCreate,
   },
   data(){
     return {
@@ -56,14 +64,19 @@ export default {
       deptDataSet: [ {} ],
       postDataSet: [ {} ],
       isLoaded: false,
-      dialogVisible: false,
+      dialogEditVisible: false,
+      dialogCreateVisible: false,
       dialogData: {},
-      sortOptions: [
-                {value: 'title', name: "по названию"},
-                {value: 'body', name: "по содержимому"}
-      ],
+      dialogCreateData: {},
       selectedSort: '',
       searchQuery: '',
+      sortOptions: [
+                {value: "surname", name: "по фамилии"},
+                {value: "name", name: "по имени"},
+                {value: "birth", name: "по дате рождения"},
+                {value: "post", name: "по должности"},
+                {value: "dept", name: "по отделениям"},
+      ],
     }
   },
   methods:{
@@ -73,47 +86,79 @@ export default {
 
         const response = await axios.get(url);
         switch(url){
-          case URL_EMP:
+          case URL_EMP:{
             this.empDataSet = response.data;
+            console.log('EMP READY');
             break;
-            case URL_DEPT:
+          }
+          case URL_DEPT:{
             this.deptDataSet = response.data;
+            console.log('DEPT READY');
             break;
-            case URL_POST:
+          }
+          case URL_POST:{
             this.postDataSet = response.data;
+            console.log('POST READY');
             break;
+          }
         }//Определение урла и присвоение определенному массиву респонса, сбор данных с БД
-
-        this.isLoaded = true;
+      this.mergeEmpDataSet();//Функция мерджа используется тут, поскольку это последний запрос к серверу
+      this.isLoaded = true;
       }
       catch (error) {
-        console.log('ошибка запроса данных: ' + error)
+        console.log('ошибка запроса данных: ', error)
+      }
+    },
+    refreshData(){
+
+    },
+    async mergeEmpDataSet(){
+      try {
+        const empDataSet = Object.values(this.empDataSet);
+        const deptDataSet = Object.values(this.deptDataSet)
+        const postDataSet = Object.values(this.postDataSet);
+        empDataSet.forEach(empData => {
+          postDataSet.forEach(postData =>{
+            if (postData.id === empData.post_id){
+            empData.post = postData.name
+            }
+          });
+          deptDataSet.forEach(deptData =>{
+            if (deptData.id === empData.dept_id){
+            empData.dept = deptData.name
+            }
+          })
+        });
+        console.log('Dataset merged.');
+      }
+      catch (error) {
+        console.log(error);
       }
       
     },
     showDialog(data){
-      this.dialogVisible = true;
+      this.dialogEditVisible = true;
+      this.dialogData = data;
+    },
+    showDialogCreate(data){
+      this.dialogCreateVisible = true;
       this.dialogData = data;
     }
   },
   watch:{
-    dialogVisible(val){
+    dialogEditVisible(val){
       console.log("dialog visible: " + val);
     }
   },
   computed: {
-    /*filteredData(){
-      return this.empDataSet.map(item => {
-        const {db_user, ...filteredItem} = item;
-        return filteredItem;
-      });
-    },*/
     sortedData(){
-        return [...this.posts].sort((post1, post2) => post1[this.selectedSort]?.localeCompare(post2[this.selectedSort]))
+        return [...this.empDataSet]?.sort((item1, item2) => item1[this.selectedSort]?.localeCompare(item2[this.selectedSort]))
     },
-    sortedAndSearchedData(){
-        return this.sortedPosts.filter(post => post.title.toLowerCase().includes(this.searchQuery.toLocaleLowerCase()));
-    }
+    sortedAndSearchedData: function(){
+        return this.sortedData.filter((item) =>
+          item.surname?.toLowerCase().includes(this.searchQuery?.toLocaleLowerCase())
+        );
+    }//везде пришлось натыкать вопросительных знаков потому что вью любит ругаться на фигню
   },
   mounted(){
     this.fetchData(URL_EMP);//сбор данных о сотрудниках
