@@ -3,6 +3,6 @@
 </template>
 <script>
 export default{
-    name: 'data-create',
+    name: 'emp-data-create',
 }
 </script>

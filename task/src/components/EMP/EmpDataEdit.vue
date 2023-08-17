@@ -39,10 +39,50 @@
                 <div class="col-10"
                     v-if="(
                         key !== 'id' && key !== 'people_id' && key !== 'del'
-                        && key !== 'dept_id' && key !== 'post_id'
+                        && key !== 'dept_id' && key !== 'post_id' && key !== 'sex'
+                        && key !== 'dept' && key !== 'post'
                         )"
+                    >   
+                        <my-input class="form-control"  v-model="editedDialogData[key]" style="width: 100%; align-items:center;"/>
+                </div>
+                <div class="col-10" v-else-if="key === 'sex'">
+                    <my-select
+                        v-model:select="editedDialogData.sex"
+                        :options="sexOptions"
                     >
-                        <my-input class="form-control"  v-model:modelValue="editedDialogData[key]" style="width: 100%; align-items:center;"/>
+                        <template v-if="(
+                            editedDialogData.sex !== null 
+                            && editedDialogData.sex !== undefined
+                            )"
+                        >
+                            {{sexOptions[Number(editedDialogData[key]-1)].name}}
+                        </template>
+                        <template v-else>
+                            не указано
+                        </template>
+                    </my-select>
+                </div>
+                <div class="col-10" v-else-if="key === 'post'">
+                    <my-select v-model:select="editedDialogData.post_id"
+                    :options="postOptions"
+                    >
+                        <template v-if="editedDialogData.post_id">
+                            {{editedDialogData.post}}
+                        </template>
+                        <template v-else>
+                            не указано
+                        </template>
+                    </my-select>
+                </div>
+                <div class="col-10" v-else-if="key === 'dept'">
+                    <my-select v-model:select="editedDialogData.dept_id" 
+                        :options="deptOptions"
+                    >
+                        <template v-if="editedDialogData.dept_id">
+                            {{editedDialogData.dept}}
+                        </template>
+                        <template v-else></template>
+                    </my-select>
                 </div>
             </div>
         </div>
@@ -68,17 +108,15 @@
             />
         </div>
 
-        <h3 class="text-success"
-            :class="{'text-danger': !updateSuccess}"
-            v-show="showStatus"
-        >
-            {{updateSuccess ? 'Изменения сохранены.' : 'Ошибка!'}}
-        </h3>
-
         <div class="row" role="group" aria-label="Primer" style="margin-top: 20px; padding: 0 5%">
-            <button type="button" class="btn btn-primary col-3" @click="updateData">Сохранить</button>
+            <template v-if="!updateSuccess">
+                <button type="button" class="btn btn-primary col-3" @click="updateData">Сохранить</button>
+            </template>
+            <template v-else>
+                <button type="button" class="btn btn-success col-3" @click="updateData">Сохранено</button>
+            </template>
             <div class="col-6"></div>
-            <button type="button" class="btn btn-secondary col-3" @click="this.$emit('update:dialogVisible', false)">Закрыть</button>
+            <button type="button" class="btn btn-secondary col-3" @click="this.$emit('update:show', false)">Закрыть</button>
         </div>
     </div>
 </template>
@@ -88,11 +126,12 @@
 import axios from 'axios'
 
 const serverURL = 'http://192.168.0.102:4000/';
+const empGroupURL = serverURL + 'rpc/get_emp_groups?p_emp_id=';
+const directRightsURL = serverURL + 'rpc/get_emp_direct_right?p_emp_id=';
+const allRightsURL = serverURL + 'rpc/get_emp_all_rights?p_emp_id=';
 
 export default{
     name: "emp-data-edit",
-    components:{
-    },
     data(){
         return{
             currentPage: 1,
@@ -104,38 +143,49 @@ export default{
             deptList:[{}],
             postList:[{}],
             isLoaded: false,
-            empGroupURL: serverURL + 'rpc/get_emp_groups?p_emp_id=',
-            directRightsURL: serverURL + 'rpc/get_emp_direct_right?p_emp_id=',
-            allRightsURL: serverURL + 'rpc/get_emp_all_rights?p_emp_id=',
-            deptListURL: serverURL + 'dept_list',
-            postListURL: serverURL + 'post_list',
             tempURL: '',
             tempQuery: '',
             updateSuccess: false,
             showStatus: false,
             responsePost: {},
+            deptOptions: [
+            ],
+            postOptions: [
+            ],
+            sexOptions: [
+                {value: 1, name: "Мужской"},
+                {value: 2, name: "Женский"},
+            ],
         }
     },
     props:{
         dialogData: {
             type: Object,
             required: true
-        }
+        },
+        deptDataSet: {
+            type: Object,
+            required: true
+        },
+        postDataSet: {
+            type: Object,
+            required: true
+        },
     },
     watch:{
         currentPage(page){
             if (page == 2){
-                this.tempURL = this.empGroupURL
+                this.tempURL = empGroupURL
             }
             else if (page == 3){
-                this.tempURL = this.directRightsURL
+                this.tempURL = directRightsURL
             }
             else if (page == 4){
-                this.tempURL = this.allRightsURL
+                this.tempURL = allRightsURL
             }
             this.tempQuery = this.dialogData.id
             this.fetchData(this.tempURL, this.tempQuery)
-        }
+        },
     },
     methods:{
         async fetchData(url,query){
@@ -145,13 +195,13 @@ export default{
                 const response = await axios.get(url + query);
                 this.isLoaded = true;
                 switch(url){
-                    case this.empGroupURL:
+                    case empGroupURL:
                         this.groupList = response.data;
                         break;
-                    case this.directRightsURL:
+                    case directRightsURL:
                         this.directRightsList = response.data;
                         break;
-                    case this.allRightsURL:
+                    case allRightsURL:
                         this.allRightsList = response.data;
                         break;
                 }
@@ -162,24 +212,24 @@ export default{
         },
         async updateData(){
             try {
+                if(this.editedDialogData == Object.assign({}, this.dialogData)){
+                    console.log('nothing changed');
+                }
                 this.isLoaded = false;
 
-            const request = this.editedDialogData;
-            delete request.post;
-            delete request.dept;
-            console.log('Отправляемый JSON: ', request)
-            const response = await axios.post('http://192.168.0.102:4000/rpc/emp_upsert', {"p_emp_data": request})
-            console.log(response);
-            
-            /* 
-            const responsePost = await axios.get('http://192.168.0.102:4000/right_list?id=eq.2')
-            console.log(responsePost.data);*/
-            if (response.status === 200){
-                this.updateSuccess = true;
-            }
-            this.showStatus = true
-            this.$emit('refresh', null)
-            this.isLoaded = true;
+                const request = this.editedDialogData;
+                delete request.post;
+                delete request.dept;
+                request.sex = Number(request.sex);
+                console.log('Отправляемый JSON: ', request)
+                const response = await axios.post(serverURL+ 'rpc/emp_upsert', {"p_emp_data": request})
+                console.log(response);
+                if (response.status === 200){
+                    this.updateSuccess = true;
+                }
+                this.showStatus = true
+                this.$emit('refresh', serverURL + 'emp_list')
+                this.isLoaded = true;
             } catch (error) {
                 console.log(error);
             }
@@ -187,10 +237,14 @@ export default{
         }
     },
     mounted(){
-        this.editedDialogData = Object.assign({}, this.dialogData);
-        //Создаем нон-реактивную копию полученного объекта
-        //Запрашиваем данные о должностях и отделениях
-    }
+        this.editedDialogData = Object.assign({}, this.dialogData);//копия для редактирования в форме
+        this.postOptions = this.postDataSet.map(obj =>{
+            return {value: obj.id, name: obj.name};
+        })
+        this.deptOptions = this.deptDataSet.map(obj =>{
+            return {value: obj.id, name: obj.name};
+        })
+    },
 }
 </script>
 <style>

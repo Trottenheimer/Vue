@@ -1,6 +1,6 @@
 <template>
-<select class="form-select" :v-model="selectedSort" @change="changeOption">
-    <option selected value="none">Сортировка</option>
+<select class="form-select" :v-model="select" @change="changeOption">
+    <option class="dropdown-item" selected value="none" disabled hidden><slot></slot></option>
     <option class="dropdown-item"
         v-for="option in options"
             :key="option.value"
@@ -14,9 +14,7 @@
 export default {
     name: 'my-select',
     props:{
-        selectedSort:{
-            type: String
-        },
+        select: [Number, String],
         options:{
             type: Array,
             default: () => []
@@ -24,7 +22,8 @@ export default {
     },
     methods:{
         changeOption(event){
-            this.$emit('update:selectedSort', event.target.value)
+            this.$emit('update:select', event.target.value)
+            console.log(event.target.value);
         }
     }
 }

@@ -4,22 +4,25 @@
     <div class="input-group mb-5 mt-5">
       <my-button class="btn btn-primary" @click="showDialogCreate">Создать пользователя</my-button>
       <my-input v-model="searchQuery" class="form-control" placeholder="Поиск по фамилии..."></my-input>
-      <my-select v-model:selectedSort="selectedSort" :options="sortOptions"></my-select>
+      <my-select v-model:select="selectedSort" :options="sortOptions">Сортировка</my-select>
     </div>
   </div>
   <div class="container" id="data-list" style="min-width: 100%;">
     <my-dialog v-model:show="dialogEditVisible">
       <emp-data-edit 
-        :dialogData="dialogData"
-        v-model:dialogVisible="dialogVisible" 
-        @refresh="fetchData(EMP_URL)"
+        v-model:dialogData="dialogData"
+        :deptDataSet="deptDataSet"
+        :postDataSet="postDataSet"
+        :dialogVisible="dialogEditVisible" 
+        @refresh="fetchData"
         /><!--data отправляет данные нажатой записи в форму, visible получает эмит на закрытие диалога-->
     </my-dialog>
+
     <my-dialog v-model:show="dialogCreateVisible">
       <emp-data-create 
-        :dialogData="dialogDataCreate"
+        :dialogData="dialogCreateData"
         v-model:dialogVisible="dialogCreateVisible" 
-        @refresh="fetchData(EMP_URL)"
+        @refresh="fetchData(URL_EMP)"
         /><!--data отправляет данные нажатой записи в форму, visible получает эмит на закрытие диалога-->
     </my-dialog>
 
@@ -49,20 +52,14 @@ const URL_POST = serverURL + 'post_list';
 
 
 import axios from 'axios'
-import EmpDataList from "@/components/EmpDataList.vue"
-import EmpDataEdit from "@/components/EmpDataEdit.vue"
-import EmpDataCreate from "@/components/EmpDataCreate.vue"
 
 export default {
   name: 'App',
-  components: {
-    EmpDataList, EmpDataEdit, EmpDataCreate,
-  },
   data(){
     return {
-      empDataSet: [ {} ],
-      deptDataSet: [ {} ],
-      postDataSet: [ {} ],
+      empDataSet: [],
+      deptDataSet: [],
+      postDataSet: [],
       isLoaded: false,
       dialogEditVisible: false,
       dialogCreateVisible: false,
@@ -71,11 +68,12 @@ export default {
       selectedSort: '',
       searchQuery: '',
       sortOptions: [
-                {value: "surname", name: "по фамилии"},
-                {value: "name", name: "по имени"},
-                {value: "birth", name: "по дате рождения"},
-                {value: "post", name: "по должности"},
-                {value: "dept", name: "по отделениям"},
+        {value: "none", name: "по умолчанию"},
+        {value: "surname", name: "по фамилии"},
+        {value: "name", name: "по имени"},
+        {value: "birth", name: "по дате рождения"},
+        {value: "post", name: "по должности"},
+        {value: "dept", name: "по отделениям"},
       ],
     }
   },
@@ -88,25 +86,29 @@ export default {
         switch(url){
           case URL_EMP:{
             this.empDataSet = response.data;
-            console.log('EMP READY');
+            console.log('EMP TABLE READY');
             break;
           }
           case URL_DEPT:{
             this.deptDataSet = response.data;
-            console.log('DEPT READY');
+            console.log('DEPT TABLE READY');
             break;
           }
           case URL_POST:{
             this.postDataSet = response.data;
-            console.log('POST READY');
+            console.log('POST TABLE READY');
             break;
           }
         }//Определение урла и присвоение определенному массиву респонса, сбор данных с БД
-      this.mergeEmpDataSet();//Функция мерджа используется тут, поскольку это последний запрос к серверу
-      this.isLoaded = true;
+      if(Object.entries(this.postDataSet).length !== 0 && Object.entries(this.postDataSet).length !== 0 && Object.entries(this.postDataSet).length !== 0){
+        this.mergeEmpDataSet();//Функция мерджа используется тут, поскольку это последний запрос к серверу
+      }
+      else{
+        console.log('waiting for other tables...');
+      }
       }
       catch (error) {
-        console.log('ошибка запроса данных: ', error)
+        console.log('failed to load tables! ', error)
       }
     },
     refreshData(){
@@ -114,22 +116,24 @@ export default {
     },
     async mergeEmpDataSet(){
       try {
-        const empDataSet = Object.values(this.empDataSet);
-        const deptDataSet = Object.values(this.deptDataSet)
-        const postDataSet = Object.values(this.postDataSet);
-        empDataSet.forEach(empData => {
-          postDataSet.forEach(postData =>{
-            if (postData.id === empData.post_id){
-            empData.post = postData.name
-            }
+        this.empDataSet = Object.values(this.empDataSet);
+        this.deptDataSet = Object.values(this.deptDataSet)
+        this.postDataSet = Object.values(this.postDataSet);
+        this.empDataSet.forEach(empData => {
+          this.postDataSet.forEach(postData =>{
+            if (postData.id === empData.post_id)
+              empData.post = postData.name;
           });
-          deptDataSet.forEach(deptData =>{
-            if (deptData.id === empData.dept_id){
-            empData.dept = deptData.name
-            }
-          })
+          this.deptDataSet.forEach(deptData =>{
+            if (deptData.id === empData.dept_id)
+              empData.dept = deptData.name;
+          });
+          for (let val in empData){
+            if (empData[val] === null) empData[val] = 'Не указано';
+          }
         });
-        console.log('Dataset merged.');
+        this.isLoaded = true;
+        console.log('Dataset merged.', this.empDataSet);
       }
       catch (error) {
         console.log(error);
@@ -147,7 +151,13 @@ export default {
   },
   watch:{
     dialogEditVisible(val){
-      console.log("dialog visible: " + val);
+      console.log("edit dialog visible: " + val);
+    },
+    dialogCreateVisible(val){
+      console.log("create dialog visible: " + val);
+    },
+    empDataSet(){
+      console.log('empDataSet has changed.');
     }
   },
   computed: {
@@ -156,7 +166,8 @@ export default {
     },
     sortedAndSearchedData: function(){
         return this.sortedData.filter((item) =>
-          item.surname?.toLowerCase().includes(this.searchQuery?.toLocaleLowerCase())
+          item.surname?.toLowerCase()
+          .includes(this.searchQuery?.toLocaleLowerCase())
         );
     }//везде пришлось натыкать вопросительных знаков потому что вью любит ругаться на фигню
   },

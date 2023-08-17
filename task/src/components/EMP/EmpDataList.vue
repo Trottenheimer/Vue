@@ -8,7 +8,10 @@
                             v-for="(value, key) in empDataSet[0]"
                             :key="key"
                             :id="key"                         >
-                            <template v-if="key !== 'del' && key !== 'id' && key !== 'people_id' && key !== 'dept_id' && key !== 'post_id'">
+                            <template
+                                v-if="key !== 'del' && key !== 'id'
+                                && key !== 'people_id' && key !== 'dept_id'
+                                && key !== 'post_id'">
                                 <template v-if="key === 'surname'">Фамилия</template>
                                 <template v-else-if="key === 'name'">Имя</template>
                                 <template v-else-if="key === 'patron'">Отчество</template>
@@ -24,7 +27,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <data-item
+                    <emp-data-item
                         v-for="data in empDataSet"
                         :data="data"
                         :key="data.id"
@@ -43,20 +46,13 @@
 
 
 <script>
-import DataItem from "@/components/DataItem.vue"
 export default{
-    components:{
-        DataItem,
-    },
     name: 'emp-data-list',
     props:{
         empDataSet: {},
     },
-    data(){
-        return{
-        }
-    },
     mounted(){
+        console.log('МЕНЯ ЗАБРАЛИ ТУТ');
     }
 }
 </script>

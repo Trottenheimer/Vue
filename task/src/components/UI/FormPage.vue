@@ -15,11 +15,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <data-item v-for="item in data"
+                    <emp-data-item v-for="item in data"
                         :data="item"
                         :key="item.id"
                     >
-                    </data-item>
+                    </emp-data-item>
                 </tbody>
             </table>
         </div>
@@ -39,13 +39,9 @@
     </span>
 </template>
 <script>
-import DataItem from "@/components/DataItem.vue"
 
 export default{
     name: 'form-page',
-    components:{
-        DataItem,
-    },
     props:{
         isLoaded: Boolean,
         data: Object //хз почему, работает)
