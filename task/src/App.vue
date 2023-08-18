@@ -4,28 +4,37 @@
     <div class="input-group mb-5 mt-5">
       <my-button class="btn btn-primary" @click="showDialogCreate">Создать пользователя</my-button>
       <my-input v-model="searchQuery" class="form-control" placeholder="Поиск по фамилии..."></my-input>
-      <my-select v-model:select="selectedSort" :options="sortOptions">Сортировка</my-select>
+      <my-select-string class="form-control" v-model:select="selectedSort" :options="sortOptions">Сортировка</my-select-string>
     </div>
   </div>
-  <div class="container" id="data-list" style="min-width: 100%;">
+  <div class="container" style="min-width: 100%;">
+
+
+    <!--ОКНО СОЗДАНИЯ-->
+    <my-dialog v-model:show="dialogCreateVisible">
+      <emp-data-create 
+        :dataSet="dataSet[0]"
+        :deptDataSet="deptDataSet"
+        :postDataSet="postDataSet"
+        v-model:show="dialogCreateVisible" 
+        @refresh="fetchData"
+        />
+    </my-dialog>
+
+
+    <!--ОКНО РЕДАКТИРОВАНИЯ-->
     <my-dialog v-model:show="dialogEditVisible">
       <emp-data-edit 
         v-model:dialogData="dialogData"
         :deptDataSet="deptDataSet"
         :postDataSet="postDataSet"
-        :dialogVisible="dialogEditVisible" 
+        v-model:show="dialogEditVisible" 
         @refresh="fetchData"
-        /><!--data отправляет данные нажатой записи в форму, visible получает эмит на закрытие диалога-->
+        />
     </my-dialog>
+    
 
-    <my-dialog v-model:show="dialogCreateVisible">
-      <emp-data-create 
-        :dialogData="dialogCreateData"
-        v-model:dialogVisible="dialogCreateVisible" 
-        @refresh="fetchData(URL_EMP)"
-        /><!--data отправляет данные нажатой записи в форму, visible получает эмит на закрытие диалога-->
-    </my-dialog>
-
+    <!--ТАБЛИЦА EMP-->
     <emp-data-list
       v-if="isLoaded"
       :empDataSet="sortedAndSearchedData"
@@ -39,6 +48,7 @@
       </div>
     </div>
   </div>
+
 </div>
 </div>
 </template>
@@ -57,6 +67,7 @@ export default {
   name: 'App',
   data(){
     return {
+      dataSet: [],
       empDataSet: [],
       deptDataSet: [],
       postDataSet: [],
@@ -72,6 +83,7 @@ export default {
         {value: "surname", name: "по фамилии"},
         {value: "name", name: "по имени"},
         {value: "birth", name: "по дате рождения"},
+        {value: "sex", name: "по полу"},
         {value: "post", name: "по должности"},
         {value: "dept", name: "по отделениям"},
       ],
@@ -116,24 +128,21 @@ export default {
     },
     async mergeEmpDataSet(){
       try {
-        this.empDataSet = Object.values(this.empDataSet);
+        this.dataSet = Object.values(this.empDataSet);
         this.deptDataSet = Object.values(this.deptDataSet)
         this.postDataSet = Object.values(this.postDataSet);
-        this.empDataSet.forEach(empData => {
+        this.dataSet.forEach(data => {
           this.postDataSet.forEach(postData =>{
-            if (postData.id === empData.post_id)
-              empData.post = postData.name;
+            if (postData.id === data.post_id)
+            data.post = postData.name;
           });
           this.deptDataSet.forEach(deptData =>{
-            if (deptData.id === empData.dept_id)
-              empData.dept = deptData.name;
+            if (deptData.id === data.dept_id)
+            data.dept = deptData.name;
           });
-          for (let val in empData){
-            if (empData[val] === null) empData[val] = 'Не указано';
-          }
         });
         this.isLoaded = true;
-        console.log('Dataset merged.', this.empDataSet);
+        console.log('Dataset merged.');
       }
       catch (error) {
         console.log(error);
@@ -149,20 +158,9 @@ export default {
       this.dialogData = data;
     }
   },
-  watch:{
-    dialogEditVisible(val){
-      console.log("edit dialog visible: " + val);
-    },
-    dialogCreateVisible(val){
-      console.log("create dialog visible: " + val);
-    },
-    empDataSet(){
-      console.log('empDataSet has changed.');
-    }
-  },
   computed: {
     sortedData(){
-        return [...this.empDataSet]?.sort((item1, item2) => item1[this.selectedSort]?.localeCompare(item2[this.selectedSort]))
+        return [...this.dataSet]?.sort((item1, item2) => item1[this.selectedSort]?.localeCompare(item2[this.selectedSort]))
     },
     sortedAndSearchedData: function(){
         return this.sortedData.filter((item) =>

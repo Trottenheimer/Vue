@@ -12,7 +12,7 @@
 </template>
 <script>
 export default {
-    name: 'my-select',
+    name: 'my-select-string',
     props:{
         select: [Number, String],
         options:{
@@ -22,7 +22,7 @@ export default {
     },
     methods:{
         changeOption(event){
-            this.$emit('update:select', Number(event.target.value))
+            this.$emit('update:select', event.target.value)
         }
     }
 }

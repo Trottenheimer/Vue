@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container" id="data-edit">
         
         <div>
             <h1 @click="showAdmin = true">Редактирование пользователя</h1>
@@ -11,26 +11,25 @@
             </div>
         </div>
 
-        <div v-if="currentPage == 1"><!--Отображение страницы основных данных-->
-            <div class="row" 
+        <div id="page1" v-if="currentPage == 1"><!--Отображение страницы основных данных-->
+            <div class="row" id="data-bar" style="margin: 15px 0 0 0; align-items:center;"
                 v-for="(val, key) in editedDialogData"
                 :key="key"
-                style="margin: 15px 0 0 0; align-items:center;"
             >
                 <div class="col-2 align-middle"
                     v-if="(
                         key !== 'id' && key !== 'people_id' && key !== 'del'
-                        && key !== 'dept_id' && key !== 'post_id'
+                        && key !== 'dept' && key !== 'post'
                     )"
                 >
                     <strong>
                         <template v-if="key === 'surname'">Фамилия: </template>
                         <template v-else-if="key === 'name'">Имя: </template>
                         <template v-else-if="key === 'patron'">Отчество: </template>
-                        <template v-else-if="key === 'birth'">Дата рожения: </template>
+                        <template v-else-if="key === 'birth'">Дата рожения*: </template>
                         <template v-else-if="key === 'sex'">Пол: </template>
-                        <template v-else-if="key === 'post'">Должность: </template>
-                        <template v-else-if="key === 'dept'">Отделение: </template>
+                        <template v-else-if="key === 'post_id'">Должность: </template>
+                        <template v-else-if="key === 'dept_id'">Отделение: </template>
                         <template v-else-if="key === 'inn'">ИНН: </template>
                         <template v-else-if="key === 'snils'">СНИЛС: </template>
                         <template v-else>{{ key || '–' }}</template>
@@ -40,48 +39,46 @@
                     v-if="(
                         key !== 'id' && key !== 'people_id' && key !== 'del'
                         && key !== 'dept_id' && key !== 'post_id' && key !== 'sex'
-                        && key !== 'dept' && key !== 'post'
+                        && key !== 'dept' && key !== 'post' && key !== 'birth'
                         )"
                     >   
-                        <my-input class="form-control"  v-model="editedDialogData[key]" style="width: 100%; align-items:center;"/>
+                        <my-input class="form-control" style="width: 100%; align-items:center;"
+                            v-model="editedDialogData[key]"
+                        />
+                </div>
+                <div class="col-10" v-else-if="key === 'birth'">
+                    <template v-if="key === 'birth'">
+                        <my-input type="date" class="form-control" v-model="this.editedDialogData[key]"/>
+                    </template>
                 </div>
                 <div class="col-10" v-else-if="key === 'sex'">
                     <my-select
                         v-model:select="editedDialogData.sex"
-                        :options="sexOptions"
+                        :options="options.sex"
                     >
-                        <template v-if="(
-                            editedDialogData.sex !== null 
-                            && editedDialogData.sex !== undefined
-                            )"
-                        >
-                            {{sexOptions[Number(editedDialogData[key]-1)].name}}
-                        </template>
-                        <template v-else>
-                            не указано
-                        </template>
+                        <template v-if="(editedDialogData.sex === 1)">Мужской</template>
+                        <template v-else-if="(editedDialogData.sex === 2)">Женский</template>
+                        <template v-else><strong>Укажите пол</strong></template>
                     </my-select>
                 </div>
-                <div class="col-10" v-else-if="key === 'post'">
+                <div class="col-10" v-else-if="key === 'post_id'">
                     <my-select v-model:select="editedDialogData.post_id"
-                    :options="postOptions"
+                    :options="options.post"
                     >
                         <template v-if="editedDialogData.post_id">
                             {{editedDialogData.post}}
                         </template>
-                        <template v-else>
-                            не указано
-                        </template>
+                        <template v-else><strong>Укажите должность</strong></template>
                     </my-select>
                 </div>
-                <div class="col-10" v-else-if="key === 'dept'">
+                <div class="col-10" v-else-if="key === 'dept_id'">
                     <my-select v-model:select="editedDialogData.dept_id" 
-                        :options="deptOptions"
+                        :options="options.dept"
                     >
                         <template v-if="editedDialogData.dept_id">
                             {{editedDialogData.dept}}
                         </template>
-                        <template v-else></template>
+                        <template v-else><strong>Укажите отделение</strong></template>
                     </my-select>
                 </div>
             </div>
@@ -108,15 +105,22 @@
             />
         </div>
 
-        <div class="row" role="group" aria-label="Primer" style="margin-top: 20px; padding: 0 5%">
-            <template v-if="!updateSuccess">
-                <button type="button" class="btn btn-primary col-3" @click="updateData">Сохранить</button>
+        <div class="input-group mt-5" id="control-bar" role="group" aria-label="Primer" style="margin: 0 auto; padding: 0 5%;">
+            <template v-if="toDelete">
+                    <button type="button" class="btn btn-success col-8" @click="currentPage=1; toDelete = false">Восстановить</button>
+                    <button type="button" class="btn btn-secondary col" @click="this.$emit('update:show', false)">Закрыть</button>
             </template>
+
             <template v-else>
-                <button type="button" class="btn btn-success col-3" @click="updateData">Сохранено</button>
+                <template v-if="!updateSuccess">
+                    <button type="button" class="btn btn-primary col" @click="updateData">Сохранить</button>
+                </template>
+                <template v-else>
+                    <button type="button" class="btn btn-success col" @click="updateData">Сохранено</button>
+                </template>
+                <button type="button" class="btn btn-danger col" @click="prepareDelete(editedDialogData.id)">Удалить</button>
+                <button type="button" class="btn btn-secondary col" @click="this.$emit('update:show', false)">Закрыть</button>
             </template>
-            <div class="col-6"></div>
-            <button type="button" class="btn btn-secondary col-3" @click="this.$emit('update:show', false)">Закрыть</button>
         </div>
     </div>
 </template>
@@ -134,28 +138,30 @@ export default{
     name: "emp-data-edit",
     data(){
         return{
+            toDelete: false,
             currentPage: 1,
-            editedDialogData: {},
             showAdmin: false,
-            groupList: [ {} ],
-            directRightsList: [{}],
-            allRightsList:[{}],
-            deptList:[{}],
-            postList:[{}],
             isLoaded: false,
             tempURL: '',
             tempQuery: '',
             updateSuccess: false,
             showStatus: false,
+            groupList: [ {} ],
+            directRightsList: [{}],
+            allRightsList:[{}],
+            deptList:[{}],
+            postList:[{}],
             responsePost: {},
-            deptOptions: [
-            ],
-            postOptions: [
-            ],
-            sexOptions: [
+            editedDialogData: {},
+            options: {
+                sex: [
                 {value: 1, name: "Мужской"},
                 {value: 2, name: "Женский"},
-            ],
+                ],
+                dept: [],
+                post: [],
+            },
+            showDelete: false,
         }
     },
     props:{
@@ -185,7 +191,7 @@ export default{
             }
             this.tempQuery = this.dialogData.id
             this.fetchData(this.tempURL, this.tempQuery)
-        },
+        }
     },
     methods:{
         async fetchData(url,query){
@@ -220,9 +226,10 @@ export default{
                 const request = this.editedDialogData;
                 delete request.post;
                 delete request.dept;
-                request.sex = Number(request.sex);
+                delete request.del;
+                delete request.people_id;
                 console.log('Отправляемый JSON: ', request)
-                const response = await axios.post(serverURL+ 'rpc/emp_upsert', {"p_emp_data": request})
+                const response = await axios.post(serverURL + 'rpc/emp_upsert', {"p_emp_data": request})
                 console.log(response);
                 if (response.status === 200){
                     this.updateSuccess = true;
@@ -232,16 +239,28 @@ export default{
                 this.isLoaded = true;
             } catch (error) {
                 console.log(error);
+                alert('ошибка при сохранении!')
             }
-            
+        },
+        prepareDelete(id){
+            this.toDelete = confirm('Вы уверены что хотите удалить ' + this.editedDialogData.post + ' ' + this.editedDialogData.name + '?')
+            console.log(id);
+            this.currentPage = 0;
+        },
+        async deleteData(){
+            /*try {
+                await axios.post(serverURL + 'rpc/emp_delete', {"p_emp_id": id})
+                this.$emit('refresh', serverURL + 'emp_list')
+            }
+            catch (error) {console.log(error); alert('Ошибка при удалении!')}*/
         }
     },
     mounted(){
         this.editedDialogData = Object.assign({}, this.dialogData);//копия для редактирования в форме
-        this.postOptions = this.postDataSet.map(obj =>{
+        this.options.post = this.postDataSet.map(obj =>{
             return {value: obj.id, name: obj.name};
         })
-        this.deptOptions = this.deptDataSet.map(obj =>{
+        this.options.dept = this.deptDataSet.map(obj =>{
             return {value: obj.id, name: obj.name};
         })
     },
@@ -253,5 +272,9 @@ th:empty{
 }
 .row:empty{
     display: none;
+}
+#data-edit{
+    background-color: aliceblue;
+    border-radius: 15px;
 }
 </style>

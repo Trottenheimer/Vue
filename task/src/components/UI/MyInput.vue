@@ -3,7 +3,7 @@
     :value="modelValue"
     @input="updateInput"
     type="text"
->
+/>
 
 </template>
 

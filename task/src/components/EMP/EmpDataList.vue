@@ -10,15 +10,15 @@
                             :id="key"                         >
                             <template
                                 v-if="key !== 'del' && key !== 'id'
-                                && key !== 'people_id' && key !== 'dept_id'
-                                && key !== 'post_id'">
+                                && key !== 'people_id' && key !== 'dept'
+                                && key !== 'post'">
                                 <template v-if="key === 'surname'">Фамилия</template>
                                 <template v-else-if="key === 'name'">Имя</template>
                                 <template v-else-if="key === 'patron'">Отчество</template>
                                 <template v-else-if="key === 'birth'">Дата рожения</template>
                                 <template v-else-if="key === 'sex'">Пол</template>
-                                <template v-else-if="key === 'post'">Должность</template>
-                                <template v-else-if="key === 'dept'">Отделение</template>
+                                <template v-else-if="key === 'post_id'">Должность</template>
+                                <template v-else-if="key === 'dept_id'">Отделение</template>
                                 <template v-else-if="key === 'inn'">ИНН</template>
                                 <template v-else-if="key === 'snils'">СНИЛС</template>
                                 <template v-else>{{ key || '–' }}</template>
@@ -51,9 +51,6 @@ export default{
     props:{
         empDataSet: {},
     },
-    mounted(){
-        console.log('МЕНЯ ЗАБРАЛИ ТУТ');
-    }
 }
 </script>
 

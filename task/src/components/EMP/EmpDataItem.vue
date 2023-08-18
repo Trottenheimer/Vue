@@ -3,19 +3,20 @@
 <tr>
     <td
         v-for="(value, key) in data"
-        :key="key"
-        :id="key"
+            :key="key"
+            :id="key"
         >
         <template 
         v-if="key !== 'del' && key !== 'id' && key !== 'people_id'
-        && key !== 'emp_id' && key !== 'dept_id' && key !== 'post_id'"
+            && key !== 'emp_id' && key !== 'dept' && key !== 'post'"
         >
             <template v-if="key === 'sex' && value === 1">Мужской</template>
             <template v-else-if="key === 'sex' && value === 2">Женский</template>
             <template v-else-if="key === 'allow'"><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" :checked="value"></template>
-            <template v-else-if="key === 'dept_id'">{{value}}</template>
+            <template v-else-if="key === 'post_id'">{{data.post}}</template>
+            <template v-else-if="key === 'dept_id'">{{data.dept}}</template>
             <template v-else>{{ value || '–' }}</template>
-        </template>
+    </template>
     </td>
 </tr>
 </template>
@@ -29,6 +30,8 @@ export default{
     props:{
         data: {},
     },
+    mounted(){
+    }
 }
 </script>
 <style>
