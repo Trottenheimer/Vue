@@ -8,11 +8,17 @@
         >
         <template 
         v-if="key !== 'del' && key !== 'id' && key !== 'people_id'
-            && key !== 'emp_id' && key !== 'dept' && key !== 'post'"
+            && key !== 'emp_id' && key !== 'dept' && key !== 'post'
+            && key !== 'group_id'
+            "
         >
             <template v-if="key === 'sex' && value === 1">Мужской</template>
             <template v-else-if="key === 'sex' && value === 2">Женский</template>
-            <template v-else-if="key === 'allow'"><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" :checked="value"></template>
+            <template v-else-if="key === 'checked'">
+                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"
+                    :checked="value"
+                >
+            </template>
             <template v-else-if="key === 'post_id'">{{data.post}}</template>
             <template v-else-if="key === 'dept_id'">{{data.dept}}</template>
             <template v-else>{{ value || '–' }}</template>

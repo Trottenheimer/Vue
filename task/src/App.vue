@@ -13,10 +13,10 @@
     <!--ОКНО СОЗДАНИЯ-->
     <my-dialog v-model:show="dialogCreateVisible">
       <emp-data-create 
+        v-model:show="dialogCreateVisible"
         :dataSet="dataSet[0]"
         :deptDataSet="deptDataSet"
         :postDataSet="postDataSet"
-        v-model:show="dialogCreateVisible" 
         @refresh="fetchData"
         />
     </my-dialog>
@@ -24,11 +24,12 @@
 
     <!--ОКНО РЕДАКТИРОВАНИЯ-->
     <my-dialog v-model:show="dialogEditVisible">
-      <emp-data-edit 
+      <emp-data-edit
+        v-model:show="dialogEditVisible"
         v-model:dialogData="dialogData"
         :deptDataSet="deptDataSet"
         :postDataSet="postDataSet"
-        v-model:show="dialogEditVisible" 
+        :groupDataSet="groupDataSet"
         @refresh="fetchData"
         />
     </my-dialog>
@@ -58,6 +59,7 @@ const serverURL = 'http://192.168.0.102:4000/';
 const URL_EMP = serverURL + 'emp_list';
 const URL_DEPT = serverURL + 'dept_list';
 const URL_POST = serverURL + 'post_list';
+const URL_GROUPS = serverURL + 'group_list'
 
 
 
@@ -71,6 +73,7 @@ export default {
       empDataSet: [],
       deptDataSet: [],
       postDataSet: [],
+      groupDataSet: [],
       isLoaded: false,
       dialogEditVisible: false,
       dialogCreateVisible: false,
@@ -89,9 +92,15 @@ export default {
       ],
     }
   },
+  watch:{
+    dialogEditVisible(){
+      console.log(this.dialogEditVisible);
+    }
+  },
   methods:{
     async fetchData(url){
       try {
+        this.dataSet = [];
         this.isLoaded = false;
 
         const response = await axios.get(url);
@@ -111,6 +120,14 @@ export default {
             console.log('POST TABLE READY');
             break;
           }
+          case URL_GROUPS:{
+            this.groupDataSet = response.data;
+            for (let index = 0; index < this.groupDataSet.length; index++) {
+              this.groupDataSet[index].checked = false
+            }
+            console.log('GROUPS TABLE READY');
+            break;
+          }
         }//Определение урла и присвоение определенному массиву респонса, сбор данных с БД
       if(Object.entries(this.postDataSet).length !== 0 && Object.entries(this.postDataSet).length !== 0 && Object.entries(this.postDataSet).length !== 0){
         this.mergeEmpDataSet();//Функция мерджа используется тут, поскольку это последний запрос к серверу
@@ -123,9 +140,6 @@ export default {
         console.log('failed to load tables! ', error)
       }
     },
-    refreshData(){
-
-    },
     async mergeEmpDataSet(){
       try {
         this.dataSet = Object.values(this.empDataSet);
@@ -133,11 +147,11 @@ export default {
         this.postDataSet = Object.values(this.postDataSet);
         this.dataSet.forEach(data => {
           this.postDataSet.forEach(postData =>{
-            if (postData.id === data.post_id)
+            if (data.post_id === postData.id)
             data.post = postData.name;
           });
           this.deptDataSet.forEach(deptData =>{
-            if (deptData.id === data.dept_id)
+            if (data.dept_id === deptData.id)
             data.dept = deptData.name;
           });
         });
@@ -173,6 +187,7 @@ export default {
     this.fetchData(URL_EMP);//сбор данных о сотрудниках
     this.fetchData(URL_DEPT);//сбор данных об отделениях
     this.fetchData(URL_POST);//сбор данных о должностях
+    this.fetchData(URL_GROUPS);//сбор данных о группах
   }
 }
 </script>

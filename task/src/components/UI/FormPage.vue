@@ -9,7 +9,10 @@
                             :key="key"
                             :id="key"
                             >
-                            <template v-if="key === 'emp_id'"></template>
+                            <template v-if="key === 'emp_id' || key === 'group_id' || key === 'id'"></template>
+                            <template v-else-if="key === 'name'">Название</template>
+                            <template v-else-if="key === 'rem'">Описание</template>
+                            <template v-else-if="key === 'checked'">Входит в:</template>
                             <template v-else>{{ key }}</template>
                         </th>
                     </tr>
@@ -31,9 +34,9 @@
             </div>
           </div>
     </div>
-    <span 
+    <span class="text-secondary"
         v-else
-        class="text-secondary"
+        
         >
         <h1>Данные отсутствуют</h1>
     </span>

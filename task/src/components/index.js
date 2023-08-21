@@ -9,7 +9,8 @@ import FormPage from "@/components/UI/FormPage"
 import EmpDataList from "@/components/EMP/EmpDataList"
 import EmpDataItem from "@/components/EMP/EmpDataItem"
 import EmpDataEdit from "@/components/EMP/EmpDataEdit"
-//import EmpDataEditMain from "@/components/EMP/EmpDataEditMain"
+import EmpDataEditMain from "@/components/EMP/EmpEdit/EmpDataEditMain"
+import EmpDataEditGroups from "@/components/EMP/EmpEdit/EmpDataEditGroups"
 import EmpDataCreate from "@/components/EMP/EmpDataCreate"
 
 export default [
@@ -23,6 +24,7 @@ export default [
     EmpDataList,
     EmpDataItem,
     EmpDataEdit,
-    //EmpDataEditMain,
+    EmpDataEditMain,
+    EmpDataEditGroups,
     EmpDataCreate,
 ]

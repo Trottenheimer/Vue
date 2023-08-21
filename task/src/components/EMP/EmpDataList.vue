@@ -1,6 +1,6 @@
 <template>
     <div v-if="empDataSet.length > 0">
-        <div class="container" style="min-width: 100%; margin: 20px auto">
+        <div class="container" style="min-width: 100%; margin: 20px auto"><strong>Результатов: {{empDataSet.length}}</strong>
             <table class="table table-hover table-bordered gx-5">
                 <thead>
                     <tr>
