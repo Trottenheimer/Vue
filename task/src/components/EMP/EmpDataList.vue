@@ -10,8 +10,9 @@
                             :id="key"                         >
                             <template
                                 v-if="key !== 'del' && key !== 'id'
-                                && key !== 'people_id' && key !== 'dept'
-                                && key !== 'post'">
+                                    && key !== 'people_id' && key !== 'dept'
+                                    && key !== 'post'
+                                ">
                                 <template v-if="key === 'surname'">Фамилия</template>
                                 <template v-else-if="key === 'name'">Имя</template>
                                 <template v-else-if="key === 'patron'">Отчество</template>
