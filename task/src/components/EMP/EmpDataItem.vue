@@ -14,14 +14,9 @@
         >
             <template v-if="key === 'sex' && value === 1">Мужской</template>
             <template v-else-if="key === 'sex' && value === 2">Женский</template>
-            <template v-else-if="key === 'checked'">
-                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"
-                    :checked="value"
-                >
-            </template>
             <template v-else-if="key === 'post_id'">{{data.post}}</template>
             <template v-else-if="key === 'dept_id'">{{data.dept}}</template>
-            <template v-else>{{ value || '–' }}</template>
+            <template v-else>{{ value || '<нет данных>' }}</template>
     </template>
     </td>
 </tr>
@@ -36,7 +31,10 @@ export default{
     props:{
         data: {},
     },
-    mounted(){
+    methods:{
+        changeInput(){
+            
+        }
     }
 }
 </script>

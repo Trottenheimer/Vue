@@ -137,17 +137,15 @@ export default{
                 this.showStatus = true
                 this.$emit('refresh', serverURL + 'emp_list')
                 this.isLoaded = true;
-            } catch (error) {
-                console.log(error);
-                alert('ошибка при сохранении!')
             }
+            catch (error){console.log(error);}
         },
         async deleteData(id){
             try {
                 await axios.post(serverURL + 'rpc/emp_delete', {"p_emp_id": id})
                 this.showDelete = false;
                 this.readyToDelete = false;
-                this.$emit('refreshEmp', serverURL + 'emp_list');
+                this.$emit('refresh', serverURL + 'emp_list');
                 this.$emit('hideDialog', false)
             }
             catch (error) {console.log(error); alert('Ошибка при удалении!')}

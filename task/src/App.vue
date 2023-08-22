@@ -2,9 +2,12 @@
 <div class="container" style="min-width: 100%;">
   <div class="container row" style="margin: 0 auto; align-items: center;">
     <div class="input-group mb-5 mt-5">
-      <my-button class="btn btn-primary" @click="showDialogCreate">Создать пользователя</my-button>
-      <my-input v-model="searchQuery" class="form-control" placeholder="Поиск по фамилии..."></my-input>
-      <my-select-string class="form-control" v-model:select="selectedSort" :options="sortOptions">Сортировка</my-select-string>
+      <my-button class="btn btn-primary" style=""
+        @click="showDialogCreate">Создать пользователя</my-button>
+      <my-input class="form-control" placeholder="Поиск по фамилии..."
+        v-model="searchQuery" ></my-input>
+      <my-select-string class="form-control"
+        v-model:select="selectedSort" :options="sortOptions">Сортировка</my-select-string>
     </div>
   </div>
   <div class="container" style="min-width: 100%;">
@@ -30,6 +33,7 @@
         :deptDataSet="deptDataSet"
         :postDataSet="postDataSet"
         :groupDataSet="groupDataSet"
+        :rightDataSet="rightDataSet"
         @refresh="fetchData"
         />
     </my-dialog>
@@ -59,7 +63,8 @@ const serverURL = 'http://192.168.0.102:4000/';
 const URL_EMP = serverURL + 'emp_list';
 const URL_DEPT = serverURL + 'dept_list';
 const URL_POST = serverURL + 'post_list';
-const URL_GROUPS = serverURL + 'group_list'
+const URL_GROUPS = serverURL + 'group_list';
+const URL_RIGHTS = serverURL + 'right_list';
 
 
 
@@ -74,12 +79,13 @@ export default {
       deptDataSet: [],
       postDataSet: [],
       groupDataSet: [],
+      rightDataSet: [],
       isLoaded: false,
       dialogEditVisible: false,
       dialogCreateVisible: false,
       dialogData: {},
       dialogCreateData: {},
-      selectedSort: '',
+      selectedSort: 'surname',
       searchQuery: '',
       sortOptions: [
         {value: "none", name: "по умолчанию"},
@@ -94,7 +100,7 @@ export default {
   },
   watch:{
     dialogEditVisible(){
-      console.log(this.dialogEditVisible);
+      console.log('Edit window on', this.dialogEditVisible);
     }
   },
   methods:{
@@ -127,6 +133,10 @@ export default {
             }
             console.log('GROUPS TABLE READY');
             break;
+          }
+          case URL_RIGHTS:{
+            this.rightDataSet = response.data;
+            console.log('RIGHTS TABLE READY');
           }
         }//Определение урла и присвоение определенному массиву респонса, сбор данных с БД
       if(Object.entries(this.postDataSet).length !== 0 && Object.entries(this.postDataSet).length !== 0 && Object.entries(this.postDataSet).length !== 0){
@@ -188,6 +198,7 @@ export default {
     this.fetchData(URL_DEPT);//сбор данных об отделениях
     this.fetchData(URL_POST);//сбор данных о должностях
     this.fetchData(URL_GROUPS);//сбор данных о группах
+    this.fetchData(URL_RIGHTS);//сбор данных о правах
   }
 }
 </script>

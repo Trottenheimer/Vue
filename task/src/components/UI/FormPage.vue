@@ -9,20 +9,33 @@
                             :key="key"
                             :id="key"
                             >
-                            <template v-if="key === 'emp_id' || key === 'group_id' || key === 'id'"></template>
-                            <template v-else-if="key === 'name'">Название</template>
-                            <template v-else-if="key === 'rem'">Описание</template>
-                            <template v-else-if="key === 'checked'">Входит в:</template>
-                            <template v-else>{{ key }}</template>
+                            <template v-if="
+                                key !== 'emp_id' && key !== 'group_id' && key !== 'id'
+                                && key !== 'right_id' && key !== 'grp'&& key !== 'allow'
+                                && key !== 'type'
+                            ">
+                                <span v-if="key === 'name'" @click="this.$emit('update:select', key)">Название</span>
+                                <span v-else-if="key === 'rem'" @click="this.$emit('update:select', key)">Описание</span>
+                                <span v-else-if="key === 'checked'" @click="this.$emit('update:select', key)">Состояние</span>
+                                <span v-else @click="this.$emit('update:select', key)">{{ key }}</span>
+                                <!--<div v-show="select==='checked'">тут</div>-->
+                            </template>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <emp-data-item v-for="item in data"
-                        :data="item"
-                        :key="item.id"
+                    <tr
+                        v-for="(value, key) in data" :key="key" @input="changeInput"
                     >
-                    </emp-data-item>
+                        <td>{{ value.name }}</td>
+                        <td>{{value.rem || '<нет данных>'}}</td>
+                        <template v-if="value.checked !== undefined">
+                            <td>
+                                <input type="checkbox" class="form-check-input"
+                                    v-model="value.checked" @change="changeInput">
+                            </td>
+                        </template>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -34,12 +47,7 @@
             </div>
           </div>
     </div>
-    <span class="text-secondary"
-        v-else
-        
-        >
-        <h1>Данные отсутствуют</h1>
-    </span>
+    <span class="text-secondary" v-else><h1>Данные отсутствуют</h1></span>
 </template>
 <script>
 
@@ -47,12 +55,21 @@ export default{
     name: 'form-page',
     props:{
         isLoaded: Boolean,
-        data: Object //хз почему, работает)
+        data: Object, //хз почему, работает)
+        select: String
+    },
+    methods:{
+        changeInput(){
+            this.$emit('update:data', this.data)
+        }
     },
 }
 </script>
 <style>
 th:empty{
     display: none;
+}
+span:hover{
+    cursor: pointer;
 }
 </style>
