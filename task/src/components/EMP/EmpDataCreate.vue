@@ -1,61 +1,75 @@
 <template>
-    <div class="container p-4" id="data-edit">
+    <div class="container" id="data-edit">
         <h2>Создать пользователя</h2>
+
         <div class="" style="align-items:center;"
             v-for="(value, key) in dataKeys"
                 :key="key"
-            >
-            <div class="row mt-2">
-                <div class="col-3 mt-3">
-                    <template v-if="key === 'surname'"><strong>Фамилия: </strong></template>
-                    <template v-else-if="key === 'name'"><strong>Имя: </strong></template>
-                    <template v-else-if="key === 'patron'"><strong>Отчество: </strong></template>
-                    <template v-else-if="key === 'birth'"><strong>Дата рожения*: </strong></template>
-                    <template v-else-if="key === 'sex'"><strong>Пол: </strong></template>
-                    <template v-else-if="key === 'post_id'"><strong>Должность: </strong></template>
-                    <template v-else-if="key === 'dept_id'"><strong>Отделение: </strong></template>
-                    <template v-else-if="key === 'inn'"><strong>ИНН: </strong></template>
-                    <template v-else-if="key === 'snils'"><strong>СНИЛС: </strong></template>
-                    <template v-else><strong>{{ key || '–' }}</strong></template>
-                </div>
-                <div class="col-9 mt-3">
-                    <template v-if="key !== 'sex' && key !== 'post_id' && key !== 'dept_id' && key !== 'birth'">
-                        <my-input class="form-control" v-model="this.data[key]"></my-input>
-                    </template>
-                    <template v-else>
-                        <template v-if="key === 'birth'">
-                            <my-input type="date" class="form-control" v-model="this.data[key]"/>
-                        </template>
-                        <template v-if="key === 'sex'">
-                            <my-select
-                                v-model:select="data.sex"
-                                :options="options.sex"
-                            >
-                            </my-select>
-                        </template>
-                        <template v-if="key === 'post_id'">
-                            <my-select
-                                v-model:select="data.post_id"
-                                :options="options.post"
-                            >
-                            </my-select>
-                        </template>
-                        <template v-if="key === 'dept_id'">
-                            <my-select
-                                v-model:select="data.dept_id"
-                                :options="options.dept"
-                            >
-                            </my-select>
-                        </template>
-                    </template>
-                </div>
+        >
+            <div class="standart_input">
+                <template v-if="key !== 'sex' && key !== 'post_id' && key !== 'dept_id' && key !== 'birth'">
+                    <span v-if="key === 'surname'">Фамилия</span>
+                    <span v-else-if="key === 'name'">Имя</span>
+                    <span v-else-if="key === 'patron'">Отчество</span>
+                    <span v-else-if="key === 'inn'">ИНН</span>
+                    <span v-else-if="key === 'snils'">СНИЛС</span>
+                    <el-input class="form-control" v-model="this.data[key]"></el-input>
+                </template>
             </div>
         </div>
-        <div class="d-flex justify-content-center mt-4">
-            <button class="btn btn-lg btn-primary col-md-auto" @click="createData">Создать</button>
-            <div class="col-7"></div>
-            <button class="btn btn-lg btn-secondary col-md-auto">Закрыть</button>
+        <div class="special_input">
+            <el-row>
+                <el-col :span="12">
+                    <span>Дата рождения</span>
+                    <el-date-picker type="date" v-model="this.data.birth"
+                        format="YYYY/MM/DD" placeholder="Укажите дату рождения"
+                        value-format="YYYY-MM-DD"
+                    />
+                </el-col>
+                <el-col :span="12">
+                    <span>Пол</span>
+                    <el-select v-model="data.sex" placeholder="Укажите пол">
+                        <el-option
+                            v-for="sex in options.sex"
+                            :key="sex.value"
+                            :label="sex.name"
+                            :value="sex.value"
+                        >
+                        </el-option>
+                    </el-select>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="12">
+                    <span>Должность</span>
+                    <el-select v-model="data.post_id" placeholder="Укажите должность">
+                        <el-option
+                            v-for="post in options.post"
+                            :key="post.value"
+                            :label="post.name"
+                            :value="post.value"
+                        >
+                        </el-option>
+                    </el-select>
+                </el-col>
+                <el-col :span="12">
+                    <span>Отделение</span>
+                    <el-select v-model="data.dept_id" placeholder="Укажите отделение">
+                        <el-option
+                            v-for="dept in options.dept"
+                            :key="dept.value"
+                            :label="dept.name"
+                            :value="dept.value"
+                        >
+                        </el-option>
+                    </el-select>
+                </el-col>
+            </el-row>
         </div>
+        <el-row style="float: left; margin-top: 20px">
+            <el-button type="primary" @click="createData">Создать</el-button>
+            <el-button type="primary">Закрыть</el-button>
+        </el-row>
     </div>
 </template>
 <script>
@@ -125,3 +139,15 @@ export default{
     }
 }
 </script>
+<style scoped>
+span{
+    margin-top: 20px;
+    margin-bottom: 4px;
+}
+.special_input{
+    margin-top: 20px;
+}
+.container{
+    background: aliceblue
+}
+</style>

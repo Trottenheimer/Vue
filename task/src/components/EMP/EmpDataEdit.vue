@@ -2,11 +2,11 @@
     <div class="container" id="data-edit">
         <div>
             <h3 @click="showAdmin = true">Редактирование пользователя</h3>
-            <div class="btn-group" role="group" arial-label="Switch" style="width: 100%;">
-                <button type="button" class="btn btn-primary" :class="{'active': currentPage == 1}" @click="currentPage=1">Основные данные</button>
-                <button type="button" class="btn btn-primary" :class="{'active': currentPage == 2}" @click="currentPage=2">Группы</button>
-                <button type="button" class="btn btn-primary" :class="{'active': currentPage == 3}" @click="currentPage=3">Прямые права</button>
-                <button type="button" class="btn btn-primary" :class="{'active': currentPage == 4}" @click="currentPage=4">Все права</button>
+            <div class="el-button-group" role="group" arial-label="Switch" style="width: 100%;">
+                <el-button type="primary" class="btn btn-primary" :class="{'active': currentPage == 1}" @click="currentPage=1">Основные данные</el-button>
+                <el-button type="primary" class="btn btn-primary" :class="{'active': currentPage == 2}" @click="currentPage=2">Группы</el-button>
+                <el-button type="primary" class="btn btn-primary" :class="{'active': currentPage == 3}" @click="currentPage=3">Прямые права</el-button>
+                <el-button type="primary" class="btn btn-primary" :class="{'active': currentPage == 4}" @click="currentPage=4">Все права</el-button>
             </div>
         </div>
 
@@ -21,58 +21,39 @@
             />
         </div>
 
-        <div v-else-if="currentPage == 2"><!--Отображение страницы группы-->
-            <!--<my-select-string class="form-control" v-model:select="selectedSort" :options="options.groups">Сортировка</my-select-string>-->
-            <template v-if="selectedSort == 'checked'">
-                <form-page
-                    v-model:data="sortedGroupsReversed"
-                    v-model:select="selectedSort"
-                    :isLoaded="isLoaded"
-                />
-            </template>
-            <template v-else>
-                <form-page
-                    v-model:data="sortedGroups"
-                    v-model:select="selectedSort"
-                    :isLoaded="isLoaded"
-                />
-            </template>
-            <div class="input-group">
-                <button type="button" class="btn btn-primary col" @click="updateGroups">Сохранить</button>
-                <button type="button" class="btn btn-secondary col" @click="updateGroups">Закрыть</button>
-            </div>
+        <div v-else-if="currentPage == 2"><!--Отображение страницы групп-->
+            <emp-data-edit-groups
+                :emp_id="dialogData.id"
+                :groupDataSet="groupDataSet"
+                @hideDialog="hideDialog"
+                @refresh="refresh"
+            >
+            </emp-data-edit-groups>
         </div>
 
         <div v-else-if="currentPage == 3"><!--Отображение страницы прямых прав-->
-            <div>
-                <my-input class="form-control" placeholder="Поиск по названию..."
-                    v-model="searchQuery" ></my-input>
-                <template v-if="selectedSort == 'checked'" >
-                    <form-page style="max-height: 600px; overflow-y: scroll;"
-                        v-model:data="sortedAndSearchedRightsReversed"
-                        v-model:select="selectedSort"
-                        :isLoaded="isLoaded"
-                    />
-                </template>
-                <template v-else >
-                    <form-page style="max-height: 600px; overflow-y: scroll;"
-                        v-model:data="sortedAndSearchedRights"
-                        v-model:select="selectedSort"
-                        :isLoaded="isLoaded"
-                    />
-                </template>
-                <div class="input-group">
-                    <button type="button" class="btn btn-primary col" @click="updateRights">Сохранить</button>
-                    <button type="button" class="btn btn-secondary col" @click="updateGroups">Закрыть</button>
-                </div>
+            <el-input placeholder="Поиск по названию..."
+                    v-model="searchQuery" ></el-input>
+            <el-table :data="sortedAndSearchedRightsReversed" height="650" style="width: 1000px;">
+                <el-table-column prop="name" label="Название"></el-table-column>
+                <el-table-column prop="rem" label="Описание"></el-table-column>
+                <el-table-column label="Владеет">
+                    <template #default="scope">
+                        <el-checkbox v-model="scope.row.checked"></el-checkbox>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div style="margin-top: 10px">
+                <el-button type="primary" class="btn btn-primary col" @click="updateRights">Сохранить</el-button>
+                <el-button type="info" class="btn btn-secondary col" @click="hideDialog">Закрыть</el-button>
             </div>
         </div>
 
         <div v-else-if="currentPage == 4"><!--Отображение страницы всех прав-->
-            <form-page
-            :data="allRightsList"
-            :isLoaded="isLoaded"
-            />
+            <el-table :data="allRightsList" border stripe style="width: 100%">
+                <el-table-column prop="name" label="Название"></el-table-column>
+                <el-table-column prop="rem" label="Описание"></el-table-column>
+            </el-table>
         </div>
 
         
@@ -89,8 +70,6 @@ const empGroupURL = serverURL + 'rpc/get_emp_groups?p_emp_id=';
 const directRightsURL = serverURL + 'rpc/get_emp_direct_right?p_emp_id=';
 const allRightsURL = serverURL + 'rpc/get_emp_all_rights?p_emp_id=';
 const groupsURL = serverURL + 'group_list';
-const addGroupURL = serverURL + 'rpc/emp_add_group';
-const deleteGroupURL = serverURL + 'rpc/emp_delete_group';
 const addRightURL = serverURL + 'rpc/emp_add_right';
 const deleteRightURL = serverURL + 'rpc/emp_delete_right';
 
@@ -103,10 +82,10 @@ export default{
             tempURL: '',
             tempQuery: '',
             searchQuery: '',
-            selectedSort: 'checked',
+            selectedSort: '',
             editedRightDataset: [],
             editedGroupDataSet: [],
-            groupList: [ {} ],
+            groupList: Array,
             directRightsList: [{}],
             allRightsList:[{}],
             editedDialogData: {},
@@ -154,7 +133,6 @@ export default{
                 }
                 else if (page == 2){
                     this.tempURL = empGroupURL
-                    this.fetchData
                 }
                 else if (page == 3){
                     this.tempURL = directRightsURL
@@ -177,7 +155,7 @@ export default{
                 switch(url){
                     case empGroupURL:{
                         this.groupList = response.data;
-                        this.refreshGroups();
+                        console.log(this.groupList);
                         break;
                     }
                     case groupsURL: {
@@ -186,38 +164,16 @@ export default{
                     }
                     case directRightsURL: {
                         this.directRightsList = response.data;
-                        console.log('direct', this.directRightsList);
                         break;
                     }
                     case allRightsURL: this.allRightsList = response.data;
                         break;
                 }
-                this.refreshGroups();
                 this.refreshRights();
             }
             catch (error) {
                 console.log('ошибка' + error)
             }
-        },
-        async updateGroups(){
-            try {
-                const requestAdd = this.editedGroupDataSet.filter(obj =>{
-                    return obj.checked === true
-                })
-                const requestDelete = this.editedGroupDataSet.filter(obj =>{
-                    return obj.checked === false
-                })
-                requestAdd.forEach(item => {
-                    const respone = axios.post(addGroupURL, {p_emp_id:this.dialogData.id, p_group_id: item.id})
-                    console.log(respone);
-                })
-                requestDelete.forEach(item => {
-                    const respone = axios.post(deleteGroupURL, {p_emp_id:this.dialogData.id, p_group_id: item.id})
-                    console.log(respone);
-                })
-                this.refresh(serverURL + 'emp_list');
-            }
-            catch (error) {console.log(error);}
         },
         async updateRights(){
             try {
@@ -228,12 +184,10 @@ export default{
                     return obj.checked === false
                 })
                 requestAdd.forEach(item => {
-                    const respone = axios.post(addRightURL, {p_emp_id:this.dialogData.id, p_right_id: item.id})
-                    console.log(respone);
+                    axios.post(addRightURL, {p_emp_id:this.dialogData.id, p_right_id: item.id})
                 })
                 requestDelete.forEach(item => {
-                    const respone = axios.post(deleteRightURL, {p_emp_id:this.dialogData.id, p_right_id: item.id})
-                    console.log(respone);
+                    axios.post(deleteRightURL, {p_emp_id:this.dialogData.id, p_right_id: item.id})
                 })
                 this.refresh(serverURL + 'emp_list');
             }
@@ -244,22 +198,6 @@ export default{
         },
         hideDialog(val){
             this.$emit('update:show', val)
-        },
-        refreshGroups(){
-            let activeGroups = Object.assign({}, this.groupList)
-            this.editedGroupDataSet.forEach(el =>{
-                el.checked = false;
-                delete el["grp"];
-            });
-            console.log(this.editedRightDataset);
-                //Обнуление массива для смены пользователя или обновления
-            for (let i=0; i < this.groupList.length; i++){
-                for (let k = 0; k < this.editedGroupDataSet.length; k++){
-                    if(activeGroups[i].name  === this.editedGroupDataSet[k].name){
-                        this.editedGroupDataSet[k].checked = true
-                    }
-                }
-            }
         },
         refreshRights(){
             let activeRights = Object.assign({}, this.directRightsList);
@@ -275,23 +213,16 @@ export default{
         }
     },
     computed:{
-        sortedGroups(){
-            return [...this.editedGroupDataSet]?.sort((item1, item2) => String(item1[this.selectedSort])?.localeCompare(String(item2[this.selectedSort])))
-        },
-        sortedGroupsReversed(){
-            return [...this.editedGroupDataSet]?.sort((item1, item2) => String(item1[this.selectedSort])?.localeCompare(String(item2[this.selectedSort]))).reverse()
-        },
         sortedDirectRights(){
             return [...this.editedRightDataset]?.sort((item1, item2) => String(item1[this.selectedSort])?.localeCompare(String(item2[this.selectedSort])))
         },
         sortedDirectRightsReversed(){
             return [...this.editedRightDataset]?.sort((item1, item2) => String(item1[this.selectedSort])?.localeCompare(String(item2[this.selectedSort]))).reverse()
         },
-        sortedAndSearchedRights: function(data){
-            return data.filter((item) =>
+        sortedAndSearchedRights: function(){
+            return this.editedRightDataset.filter((item) =>
                 item.name?.toLowerCase()
-                .includes(this.searchQuery?.toLocaleLowerCase())
-            );
+                .includes(this.searchQuery?.toLocaleLowerCase()));
         },
         sortedAndSearchedRightsReversed: function(){
             return this.editedRightDataset.filter((item) =>
@@ -304,8 +235,7 @@ export default{
         this.editedGroupDataSet = this.groupDataSet;
         this.editedRightDataset = this.rightDataSet;
             //копии для редактирования
-        console.log(this.editedRightDataset);
-        
+        this.currentPage = 1;
     },
 }
 </script>

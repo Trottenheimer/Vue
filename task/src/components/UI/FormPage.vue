@@ -1,7 +1,7 @@
 <template>
     <div class="row-align-items-start" v-if="data.length > 0">
         <div v-if="isLoaded">
-            <table class="table table-hover table-bordered gx-5">
+            <table class="table table-hover table-bordered gx-5" border="1px">
                 <thead>
                     <tr>
                         <th scope="col"

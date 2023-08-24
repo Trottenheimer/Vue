@@ -12,6 +12,8 @@ import EmpDataEdit from "@/components/EMP/EmpDataEdit"
 import EmpDataEditMain from "@/components/EMP/EmpEdit/EmpDataEditMain"
 import EmpDataEditGroups from "@/components/EMP/EmpEdit/EmpDataEditGroups"
 import EmpDataCreate from "@/components/EMP/EmpDataCreate"
+////////               GROUPS                  ////////
+import GroupDataList from "@/components/GROUPS/GroupDataList"
 
 export default [
     MyButton,
@@ -27,4 +29,6 @@ export default [
     EmpDataEditMain,
     EmpDataEditGroups,
     EmpDataCreate,
+
+    GroupDataList,
 ]

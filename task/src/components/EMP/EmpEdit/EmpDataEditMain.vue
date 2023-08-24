@@ -1,83 +1,84 @@
 <template>
-    <div class="row" id="data-bar" style="margin: 15px 0 0 0; align-items:center;"
-    v-for="(val, key) in editedDialogData"
-    :key="key"
->
-    <div class="col-2 align-middle"
-        v-if="(
-            key !== 'id' && key !== 'people_id' && key !== 'del'
-            && key !== 'dept' && key !== 'post'
-        )"
+<div class="container">
+    <div id="data-window" style="margin: 15px 0 0 0; align-items:center;"
+        v-for="(val, key) in editedDialogData"
+        :key="key"
     >
-        <strong>
-            <template v-if="key === 'surname'">Фамилия: </template>
-            <template v-else-if="key === 'name'">Имя: </template>
-            <template v-else-if="key === 'patron'">Отчество: </template>
-            <template v-else-if="key === 'birth'">Дата рожения*: </template>
-            <template v-else-if="key === 'sex'">Пол: </template>
-            <template v-else-if="key === 'post_id'">Должность: </template>
-            <template v-else-if="key === 'dept_id'">Отделение: </template>
-            <template v-else-if="key === 'inn'">ИНН: </template>
-            <template v-else-if="key === 'snils'">СНИЛС: </template>
-            <template v-else>{{ key || '–' }}</template>
-        </strong>
-    </div>
-    <div class="col-10"
-        v-if="(
+        <div class="" v-if="(
             key !== 'id' && key !== 'people_id' && key !== 'del'
             && key !== 'dept_id' && key !== 'post_id' && key !== 'sex'
-            && key !== 'dept' && key !== 'post' && key !== 'birth'
-            )"
-        >   
-            <my-input class="form-control" style="width: 100%; align-items:center;"
-                v-model="editedDialogData[key]"
-            />
-    </div>
-    <div class="col-10" v-else-if="key === 'birth'">
-        <template v-if="key === 'birth'">
-            <my-input type="date" class="form-control" v-model="this.editedDialogData[key]"/>
-        </template>
-    </div>
-    <div class="col-10" v-else-if="key === 'sex'">
-        <my-select
-            v-model:select="editedDialogData.sex"
-            :options="options.sex"
-        >
-            <template v-if="(editedDialogData.sex === 1)">Мужской</template>
-            <template v-else-if="(editedDialogData.sex === 2)">Женский</template>
-            <template v-else><strong>Укажите пол</strong></template>
-        </my-select>
-    </div>
-    <div class="col-10" v-else-if="key === 'post_id'">
-        <my-select v-model:select="editedDialogData.post_id"
-        :options="options.post"
-        >
-            <template v-if="editedDialogData.post_id">
-                {{editedDialogData.post}}
-            </template>
-            <template v-else><strong>Укажите должность</strong></template>
-        </my-select>
-    </div>
-    <div class="col-10" v-else-if="key === 'dept_id'">
-        <my-select v-model:select="editedDialogData.dept_id" 
-            :options="options.dept"
-        >
-            <template v-if="editedDialogData.dept_id">
-                {{editedDialogData.dept}}
-            </template>
-            <template v-else><strong>Укажите отделение</strong></template>
-        </my-select>
+            && key !== 'dept' && key !== 'post' && key !== 'birth')"
+            >
+            <el-form-item>
+                <template v-if="key==='surname'"><span>Фамилия</span></template>
+                <template v-else-if="key==='name'"><span>Имя</span></template>
+                <template v-else-if="key==='patron'"><span>Отчество</span></template>
+                <template v-else-if="key==='inn'"><span>ИНН</span></template>
+                <template v-else-if="key==='snils'"><span>СНИЛС</span></template>
+                <el-input v-model="editedDialogData[key]" />
+            </el-form-item>
+        </div>
     </div>
 </div>
-<div class="input-group mt-5" id="control-bar" role="group" aria-label="Primer" style="margin: 0 auto; padding: 0 5%;">
+<el-row>
+    <el-col :span="12">
+        <span>Дата рождения</span>
+        <el-date-picker type="date" v-model="this.editedDialogData.birth"
+            format="YYYY/MM/DD" placeholder="Укажите дату рождения"
+            value-format="YYYY-MM-DD"
+        />
+    </el-col>
+    <el-col :span="12">
+        <span>Пол</span>
+        <el-select placeholder="Укажите пол..."
+            v-model="editedDialogData.sex"
+        >
+        <el-option
+            v-for="sex in options.sex"
+            :key="sex.value"
+            :label="sex.name"
+            :value="sex.value"
+        />
+        </el-select>
+    </el-col>
+</el-row>
+<el-row>
+    <el-col :span="12">
+        <span>Должность</span>
+        <el-select placeholder="Укажите должность..."
+            v-model="editedDialogData.post_id"
+        >
+            <el-option
+                v-for="post in options.post"
+                :key="post.value"
+                :label="post.name"
+                :value="post.value"
+            />
+        </el-select>
+    </el-col>
+    <el-col :span="12">
+        <span>Отделение</span>
+        <el-select placeholder="Укажите отделение..."
+            v-model="editedDialogData.dept_id"
+        >
+            <el-option
+                v-for="dept in options.dept"
+                :key="dept.value"
+                :label="dept.name"
+                :value="dept.value"
+            />
+        </el-select>
+    </el-col>
+</el-row>
+<div class="el-button-group mt-5" id="control-bar" role="group" aria-label="Primer" style="margin: 0 auto; padding: 0 5%;">
     <template v-if="!updateSuccess">
-        <button type="button" class="btn btn-primary col" @click="updateData">Сохранить</button>
+        <el-button type="primary" class="btn btn-primary col" @click="updateData">Сохранить</el-button>
     </template>
     <template v-else>
-        <button type="button" class="btn btn-success col" @click="updateData">Сохранено</button>
+        <el-button type="success" class="btn btn-success col" @click="updateData">Сохранено</el-button>
     </template>
-    <button type="button" class="btn btn-danger col" @click="deleteData(editedDialogData.id)">Удалить</button>
-    <button type="button" class="btn btn-secondary col" @click="hideDialog">Закрыть</button>
+    <el-button type="danger" class="btn btn-danger col" @click="deleteData(editedDialogData.id)">Удалить</el-button>
+    <el-button type="info" class="btn btn-secondary col" @click="this.$emit('hideDialog', false)">Закрыть</el-button>
 </div>
 </template>
 
@@ -92,10 +93,6 @@ export default{
             toDelete: false,
             updateSuccess: false,
             editedDialogData: {},
-            sexOptions: [
-                {value: 1, name: "Мужской"},
-                {value: 2, name: "Женский"},
-            ],
             options: this.getOptions,
         }
     },
@@ -163,3 +160,24 @@ export default{
     }
 }
 </script>
+<style>
+*{
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-weight: bold;
+}
+.container{
+    padding: 10px;
+}
+.el-row{
+    margin-bottom: 20px;
+    justify-content: space-between;
+}
+.el-select{
+    width: 100%;
+}
+span{
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+}
+</style>

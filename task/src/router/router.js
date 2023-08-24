@@ -1,5 +1,5 @@
 import MainPage from "@/pages/MainPage"
-import MainPageCompositionApi from "@/pages/MainPageCompositionApi"
+import GroupsPage from "@/pages/GroupsPage"
 import { createRouter, createWebHistory } from "vue-router"
 
 const routes = [
@@ -8,8 +8,8 @@ const routes = [
         component: MainPage
     },
     {
-        path: '/composition',
-        component: MainPageCompositionApi
+        path: '/groups',
+        component: GroupsPage
     }
 ]
 
