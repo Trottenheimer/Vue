@@ -11,8 +11,8 @@
       <el-aside>
         <div style="margin: 20px;">
           <el-radio-group v-model="isCollapse" style="margin-bottom: 20px">
-            <el-radio-button :label="false">expand</el-radio-button>
-            <el-radio-button :label="true">collapse</el-radio-button>
+            <el-radio-button :label="false">Открыть</el-radio-button>
+            <el-radio-button :label="true">Закрыть</el-radio-button>
           </el-radio-group>
           <el-menu style="height: 94vh"
             default-active="2"
@@ -49,7 +49,7 @@
     name: 'App',
     data(){
       return{
-        isCollapse: false,
+        isCollapse: true,
       }
     }
   }

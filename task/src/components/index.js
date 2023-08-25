@@ -2,7 +2,6 @@ import MyButton from "@/components/UI/MyButton";
 import MyInput from "@/components/UI/MyInput"
 import MyDialog from "@/components/UI/MyDialog"
 import MySelect from "@/components/UI/MySelect"
-import MySelectString from "@/components/UI/MySelectString"
 import FormPage from "@/components/UI/FormPage"
 
 ////////                EMP                    ////////
@@ -13,14 +12,12 @@ import EmpDataEditMain from "@/components/EMP/EmpEdit/EmpDataEditMain"
 import EmpDataEditGroups from "@/components/EMP/EmpEdit/EmpDataEditGroups"
 import EmpDataCreate from "@/components/EMP/EmpDataCreate"
 ////////               GROUPS                  ////////
-import GroupDataList from "@/components/GROUPS/GroupDataList"
-
+import GroupsList from "@/components/GROUPS/GroupsList"
 export default [
     MyButton,
     MyInput,
     MyDialog,
     MySelect,
-    MySelectString,
     FormPage,
 
     EmpDataList,
@@ -30,5 +27,5 @@ export default [
     EmpDataEditGroups,
     EmpDataCreate,
 
-    GroupDataList,
+    GroupsList,
 ]
