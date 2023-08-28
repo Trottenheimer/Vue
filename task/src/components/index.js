@@ -13,6 +13,7 @@ import EmpDataEditGroups from "@/components/EMP/EmpEdit/EmpDataEditGroups"
 import EmpDataCreate from "@/components/EMP/EmpDataCreate"
 ////////               GROUPS                  ////////
 import GroupsList from "@/components/GROUPS/GroupsList"
+import GroupsDialog from "@/components/GROUPS/GroupsDialog"
 export default [
     MyButton,
     MyInput,
@@ -28,4 +29,5 @@ export default [
     EmpDataCreate,
 
     GroupsList,
+    GroupsDialog,
 ]

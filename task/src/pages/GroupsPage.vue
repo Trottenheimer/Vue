@@ -1,12 +1,12 @@
 <template>
-<group-data-list v-loading="isLoaded" v-model:groupList="groupList"
-@refresh="refresh"
->
-</group-data-list>
+<groups-data-list v-model:groupList="groupListComputed" v-loading="isLoaded"
+    @refresh="refresh"
+/>
 </template>
 
 <script>
 import { ref } from 'vue';
+import { ElLoading } from 'element-plus'
 export default{
     name: 'groups-page',
     setup(){
@@ -16,12 +16,23 @@ export default{
     },
     methods:{
         refresh(){
-            this.isLoaded = false;
-            this.$fetchData(this.$URL_GROUP_LIST, '').then(data => {
-                this.groupList = data
-                console.log(this.groupList);
-                this.isLoaded = true;
+            const loading = ElLoading.service({
+                lock: true,
+                text: 'Loading',
+                background: 'rgba(0, 0, 0, 0.7)',
             })
+            this.$getData(this.$URL_GROUP_LIST, '').then(data => {
+                this.groupList = data
+                console.log('refreshed group list');
+                this.isLoaded = true;
+                loading.close();
+                
+            })
+        },
+    },
+    computed:{
+        groupListComputed(){
+            return this.groupList
         }
     },
     mounted(){

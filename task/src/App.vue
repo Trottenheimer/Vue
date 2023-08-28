@@ -14,7 +14,7 @@
             <el-radio-button :label="false">Открыть</el-radio-button>
             <el-radio-button :label="true">Закрыть</el-radio-button>
           </el-radio-group>
-          <el-menu style="height: 94vh"
+          <el-menu style="height: 100%"
             default-active="2"
             class="el-menu-vertical-demo"
             :collapse="isCollapse"
@@ -24,13 +24,13 @@
             <el-sub-menu index="1">
               <template #title>
                 <el-icon :size="large">
-                  <List />
+                    <List />
                 </el-icon>
-                <span>Таблицы</span>
+                <span>Пользователи</span>
               </template>
               <el-menu-item index="1-1"><el-link :underline="false" href="/">ВРАЧИ</el-link></el-menu-item>
-              <el-menu-item index="1-2"><el-link :underline="false" href="/groups">ГРУППЫ</el-link></el-menu-item>
-              <el-menu-item index="1-3"><el-link :underline="false" href="/rights">ПРАВА</el-link></el-menu-item>
+              <el-menu-item index="1-1"><el-link :underline="false" href="/groups">ГРУППЫ</el-link></el-menu-item>
+              <el-menu-item index="1-1"><el-link :underline="false" href="/rights">ПРАВА</el-link></el-menu-item>
             </el-sub-menu>
           </el-menu>
         </div>

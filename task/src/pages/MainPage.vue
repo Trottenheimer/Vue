@@ -69,6 +69,7 @@
   
   
   import axios from 'axios'
+  import { ElLoading } from 'element-plus';
   
   export default {
     name: 'App',
@@ -108,6 +109,11 @@
     },
     methods:{
       async fetchData(url){
+          const loading = ElLoading.service({
+                  lock: true,
+                  text: 'Загрузка',
+                  background: 'rgba(0, 0, 0, 0.7)',
+              })
         try {
           this.dataSet = [];
           this.isLoaded = false;
@@ -148,6 +154,7 @@
         else{
           console.log('waiting for other tables...');
         }
+        loading.close();
         }
         catch (error) {
           console.log('failed to load tables! ', error)
