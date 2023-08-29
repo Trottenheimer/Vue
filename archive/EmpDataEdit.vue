@@ -64,17 +64,21 @@
 <script>
 import axios from 'axios'
 
-const serverURL = 'http://192.168.0.102:4000/';
-const empList = serverURL + 'emp_list?id=eq.';
-const empGroupURL = serverURL + 'rpc/get_emp_groups?p_emp_id=';
-const directRightsURL = serverURL + 'rpc/get_emp_direct_right?p_emp_id=';
-const allRightsURL = serverURL + 'rpc/get_emp_all_rights?p_emp_id=';
-const groupsURL = serverURL + 'group_list';
-const addRightURL = serverURL + 'rpc/emp_add_right';
-const deleteRightURL = serverURL + 'rpc/emp_delete_right';
+
 
 export default{
     name: "emp-data-edit",
+    setup(){
+        const serverURL = this.$URL_SERVER;
+        const empList = serverURL + 'emp_list?id=eq.';
+        const empGroupURL = serverURL + 'rpc/get_emp_groups?p_emp_id=';
+        const directRightsURL = serverURL + 'rpc/get_emp_direct_right?p_emp_id=';
+        const allRightsURL = serverURL + 'rpc/get_emp_all_rights?p_emp_id=';
+        const groupsURL = serverURL + 'group_list';
+        const addRightURL = serverURL + 'rpc/emp_add_right';
+        const deleteRightURL = serverURL + 'rpc/emp_delete_right';
+        return{serverURL, empList, empGroupURL, directRightsURL, allRightsURL, groupsURL, addRightURL, deleteRightURL}
+    },
     data(){
         return{
             currentPage: 1,
@@ -129,16 +133,16 @@ export default{
         currentPage(page){
             if (page !== 0){
                 if (page == 1){
-                    this.tempURL = empList
+                    this.tempURL = this.empList
                 }
                 else if (page == 2){
-                    this.tempURL = empGroupURL
+                    this.tempURL = this.empGroupURL
                 }
                 else if (page == 3){
-                    this.tempURL = directRightsURL
+                    this.tempURL = this.directRightsURL
                 }
                 else if (page == 4){
-                    this.tempURL = allRightsURL
+                    this.tempURL = this.allRightsURL
                 }
                 this.tempQuery = this.dialogData.id
                 this.fetchData(this.tempURL, this.tempQuery)
@@ -153,20 +157,20 @@ export default{
                 const response = await axios.get(url + query);
                 this.isLoaded = true;
                 switch(url){
-                    case empGroupURL:{
+                    case this.empGroupURL:{
                         this.groupList = response.data;
                         console.log(this.groupList);
                         break;
                     }
-                    case groupsURL: {
+                    case this.groupsURL: {
                         this.empGroupList = response.data;
                         break;
                     }
-                    case directRightsURL: {
+                    case this.directRightsURL: {
                         this.directRightsList = response.data;
                         break;
                     }
-                    case allRightsURL: this.allRightsList = response.data;
+                    case this.allRightsURL: this.allRightsList = response.data;
                         break;
                 }
                 this.refreshRights();
@@ -184,12 +188,12 @@ export default{
                     return obj.checked === false
                 })
                 requestAdd.forEach(item => {
-                    axios.post(addRightURL, {p_emp_id:this.dialogData.id, p_right_id: item.id})
+                    axios.post(this.addRightURL, {p_emp_id:this.dialogData.id, p_right_id: item.id})
                 })
                 requestDelete.forEach(item => {
-                    axios.post(deleteRightURL, {p_emp_id:this.dialogData.id, p_right_id: item.id})
+                    axios.post(this.deleteRightURL, {p_emp_id:this.dialogData.id, p_right_id: item.id})
                 })
-                this.refresh(serverURL + 'emp_list');
+                this.refresh(this.serverURL + 'emp_list');
             }
             catch (error) {console.log(error);}
         },

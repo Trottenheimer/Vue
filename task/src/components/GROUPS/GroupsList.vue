@@ -3,6 +3,7 @@
 <div v-if="groupList.length > 0">
     <el-header>
         <div>
+            <h1>Страница групп</h1>
             <el-button type="primary" @click="dialogVisible=true; createMode=true">Создать группу</el-button>
         </div>
     </el-header>
@@ -28,13 +29,84 @@
 
 <!--ДИАЛОГ-->
 
-<groups-dialog v-model:dialogVisible="dialogVisible"
-    v-if="groupItem"
-    :groupItemProp="groupItem"
-    @refresh="refresh()"
->
+<div>
+    <el-dialog width="80%" draggable style="margin-top: 60px;"
+        v-model="dialogVisible"
+        @closed="onClose"
+    >
+        <template #header="{}">
+            {{ dialogName() }} <br><br>
+            <el-button-group>
+                <el-button type="primary" :disabled="currentPage === 1" @click="currentPage = 1">Основные данные</el-button>
+                <el-button type="primary" :disabled="currentPage === 2" @click="currentPage = 2">Права</el-button>
+                <el-button type="primary" :disabled="currentPage === 3" @click="currentPage = 3">Пользователи</el-button>
+            </el-button-group>
+        </template>
 
-</groups-dialog>
+        <div v-if="currentPage === 1"><!--СТРАНИЦА 1-->
+            <el-form :model="groupItem">
+                <el-form-item>
+                    <span>Название</span>
+                    <el-input v-model="groupItem.name"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <span>Описание</span>
+                    <el-input v-model="groupItem.rem"></el-input>
+                </el-form-item>
+            </el-form>
+        </div>
+        <div v-else-if="currentPage === 2"><!--СТРАНИЦА 2-->
+            <el-input v-model="searchRights" placeholder="Поиск по названию..."></el-input>
+            <el-table border stripe style="width: 100%;" height="700"
+                :data="filteredRightList" v-loading="loading"
+                :default-sort="{ prop: 'checked', order: 'descending' }"
+            >
+                <el-table-column prop="name" label="Название" sortable></el-table-column>
+                <el-table-column prop="rem" label="Описание"></el-table-column>
+                <el-table-column prop="checked" label="Состояние" sortable>
+                    <template #default="scope">
+                        <el-checkbox v-model="scope.row.checked"></el-checkbox>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div v-else-if="currentPage === 3"><!--СТРАНИЦА 3-->
+            <el-input v-model="searchEmp" placeholder="Поиск..."></el-input>
+            <el-table border stripe style="width: 100%;" height="700"
+                :data="filteredEmpList" v-loading="loading"
+                :default-sort="{ prop: 'checked', order: 'descending' }"
+            >
+                <el-table-column prop="surname" label="Фамилия"></el-table-column>
+                <el-table-column prop="name" label="Имя"></el-table-column>
+                <el-table-column prop="patron" label="Отчество"></el-table-column>
+                <el-table-column prop="dept" label="Отделение"></el-table-column>
+                <el-table-column prop="post" label="Должность"></el-table-column>
+                <el-table-column prop="checked" label="Состояние" sortable>
+                    <template #default="scope">
+                        <el-checkbox v-model="scope.row.checked"></el-checkbox>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <template #footer>
+            <span class="dialog-footer">
+                <template v-if="createMode">
+                    <el-button type="primary" @click=" handleDialog();"
+                    >Создать</el-button>
+                </template>
+                <template v-else-if="editMode && !rightEditMode">
+                    <el-button type="primary" @click="editMode = true; handleDialog();"
+                    >Сохранить</el-button>
+                    <el-button type="danger" @click="deleteMode = true; handleDialog();">Удалить</el-button>
+                </template>
+                <template v-else-if="editMode">
+                    <el-button type="primary" @click="handleDialog();">Сохранить права</el-button>
+                </template>
+                <el-button type="info" @click="dialogVisible = false;">Закрыть</el-button>
+            </span>
+        </template>
+    </el-dialog>
+</div>
 </template>
 
 <script>
@@ -195,7 +267,7 @@ export default{
     }
 }
 </script>
-<style>
+<style scoped>
 .el-loading-mask{
     z-index: 9;
 }

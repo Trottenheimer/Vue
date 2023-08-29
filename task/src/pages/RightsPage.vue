@@ -1,29 +1,41 @@
 <template>
-    rights page
+    <rights-list
+    :rightList="rightListComputed"
+    @refresh="refresh"
+    />
 </template>
     
     <script>
+    import RightsList from "@/components/RIGHTS/RightsList.vue"
+
     import { ref } from 'vue';
+    import { ElLoading } from 'element-plus'
     export default{
-        name: 'groups-page',
+        name: 'rights-page',
+        components:{
+            RightsList,
+        },
         setup(){
-            const groupList = ref([])
-            let isLoaded = ref(false)
-            return{groupList, isLoaded}
+            const rightList = ref([]);
+            const isLoaded = ref(false);
+            return{rightList, isLoaded};
         },
         methods:{
             refresh(){
-                this.isLoaded = false;
-                this.$getData(this.$URL_GROUP_LIST, '').then(data => {
-                    this.groupList = data
-                    console.log('refreshed group list');
-                    this.isLoaded = true;
+                const loading = ElLoading.service({
+                    lock: true,
+                    text: 'Загрузка',
+                    background: 'rgba(0, 0, 0, 0.7)',
+                })
+                this.$getData(this.$URL_RIGHT_LIST, '').then(data => {
+                    this.rightList = data
+                    loading.close()
                 })
             },
         },
         computed:{
-            groupListComputed(){
-                return this.groupList
+            rightListComputed(){
+                return this.rightList
             }
         },
         mounted(){

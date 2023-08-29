@@ -16,6 +16,7 @@ export async function postData(url, query, data){
         return response;    
     } catch (error) {
         console.log('ошибка при создании: ', error);
+        return error
     }
 }
 export async function updateData(url, query, data){

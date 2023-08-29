@@ -18,7 +18,7 @@ export default{
         refresh(){
             const loading = ElLoading.service({
                 lock: true,
-                text: 'Loading',
+                text: 'Загрузка',
                 background: 'rgba(0, 0, 0, 0.7)',
             })
             this.$getData(this.$URL_GROUP_LIST, '').then(data => {
@@ -41,5 +41,10 @@ export default{
 }
 </script>
 
-<style>
+<style scoped>
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 </style>
