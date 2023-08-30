@@ -1,16 +1,31 @@
 <template>
 <el-header>
-    Страница пользователей<br>
-    <el-button type="primary"
-        @click=" item = {}; dialogType = 0; dialogVisible = true"
-    >Добавить</el-button>
+    <h1>Модуль пользователей</h1><br>
+    <el-row>
+        <el-col :span="3">
+            <el-button type="primary" @click=" item = {}; dialogType = 0; dialogVisible = true" style="width: 100%;"
+            >
+                Добавить
+            </el-button>
+        </el-col>
+        <el-col :span="9">
+            <el-input placeholder="поиск по ФИО..."
+                v-model="searchText" @input="parseSearch"
+            >
+                <template #append>
+                    <el-icon><Search/></el-icon>
+                </template>
+            </el-input>
+        </el-col>
+    </el-row>
 </el-header>
 <el-main>
     <div v-if="empList.length > 0">
         <el-text>Найдено: {{empList.length}}</el-text>
         <el-table border stripe height="800"
-        :data="empList" :default-sort="{prop: 'surname', order: 'ascending'}"
+        :data="empListComputed" :default-sort="{prop: 'surname', order: 'ascending'}"
         highlight-current-row
+        :row-class-name="isDel"
         @row-click="handleRowClick"
         >
             <el-table-column prop="surname" label="Фамилия" sortable></el-table-column>
@@ -23,6 +38,7 @@
                     <template v-else>Женщина</template>
                 </template>
             </el-table-column>
+            <el-table-column prop="del" label="Удален" sortable></el-table-column>
             <el-table-column prop="post" label="Должность" sortable></el-table-column>
             <el-table-column prop="dept" label="Отделение" sortable></el-table-column>
             <el-table-column prop="inn" label="ИНН" sortable></el-table-column>
@@ -52,9 +68,11 @@ export default{
     },
     setup(){
         const item = ref({});
-        const dialogVisible = ref(false)
-        const dialogType = ref(0)
-        return{item, dialogVisible, dialogType}
+        const dialogVisible = ref(false);
+        const dialogType = ref(0);
+        const search =ref({surname: '', name: '', patron: ''})
+        const searchText = ref('');
+        return{item, dialogVisible, dialogType, search, searchText};
     },
     props:{
         empList: [],
@@ -70,6 +88,30 @@ export default{
         },
         refresh(){
             this.$emit('refresh')
+        },
+        parseSearch(){
+            const query = this.searchText.split(' ');
+            this.search.surname = query[0];
+            this.search.name = query[1];
+            this.search.patron = query[2];
+            console.log(this.search);
+        }
+    },
+    computed:{
+        empListComputed(){
+            console.log(this.search);
+            return this.empList.filter(emp => {
+                if (this.search.name !== undefined)
+                    return emp.surname.toLowerCase().includes(this.search.surname?.toLowerCase())
+                if (this.search.name !== undefined)
+                    return (
+                        emp.surname.toLowerCase().includes(this.search.surname.toLowerCase())
+                            && this.search.surname && emp.name.toLowerCase().includes(this.search.name.toLowerCase())
+                            //&& emp.patron.toLowerCase().includes(this.search.patron?.toLowerCase())
+                    )
+                else
+                    return emp
+            })
         }
     }
 }
@@ -78,5 +120,8 @@ export default{
 *{
     font-weight: bold;
     font-size: 16px;
+}
+.row-danger{
+    --el-table-tr-bg-color: var(--el-color-danger-light-9);
 }
 </style>

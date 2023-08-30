@@ -1,10 +1,10 @@
 <template>
-    <emp-list
-        :empList="empListComputed"
-        :postList="postList"
-        :deptList="deptList"
-        @refresh="refreshData()"
-    />
+<emp-list
+    :empList="empListComputed"
+    :postList="postList"
+    :deptList="deptList"
+    @refresh="refreshData()"
+/>
 </template>
 <script>
 import EmpList from "@/components/EMP/EmpList"

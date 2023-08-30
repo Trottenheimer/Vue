@@ -83,9 +83,9 @@
         </template>
         <template v-else-if="dialogType === 1">
             <el-button type="primary" @click="handleDialogEdit()">Сохранить</el-button>
-            <el-button type="danger" @click="handleDialogDelete(); delMode = true">Удалить</el-button>
+            <el-button type="danger" @click="handleDialogDelete()">Удалить</el-button>
         </template>
-        <el-button type="info" @click="closeDialog">Закрыть</el-button>
+        <el-button type="info" @click="this.$emit('close')">Закрыть</el-button>
     </div>
 </template>
 <script>
@@ -104,33 +104,40 @@ export default{
         getOptions: {},
     },
     methods:{
-        handleDialogCreate(){
+        handleDialogCreate(){//ДОБАВЛЕНИЕ
             this.$postData(this.$URL_EMP_UPSERT, '', {"p_emp_data": this.emp}).then(response => {
                 if (response && response.status === 200)
-                    ElNotification({title:'Добавление', message: 'Пользователь успешно добавлен!', type:'success'})
+                    ElNotification({title:'Редактирование пользователей', message: 'Пользователь успешно добавлен!', type:'success'})
                 else
-                    ElNotification({title:'Добавление', message: 'Что-то пошло не так!', type:'error'})
+                    ElNotification({title:'Редактирование пользователей', message: 'Что-то пошло не так!', type:'error'})
+                this.$emit('refresh');
             });
-            this.refresh()
         },
-        handleDialogEdit(){
-            console.log(this.emp);
-            this.refresh()
+        handleDialogEdit(){//РЕДАКТИРОВАНИЕ
+            const request = Object.assign({}, this.emp);
+            delete request.dept;
+            delete request.post;
+            delete request.dept;
+            delete request.people_id;
+            this.$postData(this.$URL_EMP_UPSERT, '', {p_emp_data: request}).then( response => {
+                if (response && response.status === 200)
+                    ElNotification({title:'Редактирование пользователей', message: 'Пользователь успешно обновлен!', type:'success'})
+                else
+                    ElNotification({title:'Редактирование пользователей', message: 'Что-то пошло не так!', type:'error'})    
+                this.$emit('refresh');
+            });
         },
-        handleDialogDelete(){
+        handleDialogDelete(){//УДАЛЕНИЕ
             this.$postData(this.$URL_EMP_DELETE, '', {"p_emp_id": this.emp.id}).then(response => {
                 console.log(response);
                 if (response && response.status === 204)
-                    ElNotification({title:'Удаление', message: 'Пользователь успешно удален!', type:'success'})
+                    ElNotification({title:'Редактирование пользователей', message: 'Пользователь успешно удален!', type:'success'})
                 else
-                    ElNotification({title:'Удаление', message: 'Что-то пошло не так!', type:'error'})
+                    ElNotification({title:'Редактирование пользователей', message: 'Что-то пошло не так!', type:'error'})    
+                this.$emit('close');
+                this.$emit('refresh');
             });
-            this.$emit('close');
-            this.refresh()
         },
-        refresh(){
-            this.$emit('refresh')
-        }
     }
 }
 </script>

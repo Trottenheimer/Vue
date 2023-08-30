@@ -22,31 +22,41 @@
           >
             <el-menu-item index="1">
               <template #title>
-                <el-link href="/">
+                <el-link href="/" :underline="false">
                   <el-icon><House/></el-icon>
                   <span>Главная</span>
                 </el-link>
               </template>
             </el-menu-item>
-            <el-sub-menu index="2">
+            <el-menu-item index="2">
               <template #title>
-                <el-icon :size="large">
-                    <List />
-                </el-icon>
-                <span>Таблицы</span>
+                <el-link href="/emp" :underline="false">
+                  <el-icon><User/></el-icon>
+                  <span>Пользователи</span>
+                </el-link>
               </template>
-              <el-menu-item index="2-1"><el-link :underline="false" href="/emp">
-                <el-icon><User/></el-icon>Пользователи</el-link></el-menu-item>
-              <el-menu-item index="2-1"><el-link :underline="false" href="/groups">
-                <el-icon><Grid /></el-icon>Группы</el-link></el-menu-item>
-              <el-menu-item index="2-1"><el-link :underline="false" href="/rights">
-                <el-icon><Select /></el-icon>Права</el-link></el-menu-item>
-            </el-sub-menu>
+            </el-menu-item>
+            <el-menu-item index="3">
+              <template #title>
+                <el-link href="/groups" :underline="false">
+                  <el-icon><Grid /></el-icon>
+                  <span>Группы</span>
+                </el-link>
+              </template>
+            </el-menu-item>
+            <el-menu-item index="4">
+              <template #title>
+                <el-link href="/rights" :underline="false">
+                  <el-icon><Select /></el-icon>
+                  <span>Права</span>
+                </el-link>
+              </template>
+            </el-menu-item>
           </el-menu>
         </div>
       </el-aside>
       <el-main>
-        <router-view></router-view>
+        <router-view/>
       </el-main>
     </el-container>
     
@@ -70,6 +80,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   }
   .el-menu-vertical-demo:not(.el-menu--collapse) {
     width: 200px;
