@@ -1,9 +1,4 @@
-
-////////               GROUPS                  ////////
-import GroupsList from "@/components/GROUPS/GroupsList"
-import GroupsDialog from "@/components/GROUPS/GroupsDialog"
+import DialogData from "@/components/COMMON/DialogData"
 export default [
-
-    GroupsList,
-    GroupsDialog,
+    DialogData
 ]

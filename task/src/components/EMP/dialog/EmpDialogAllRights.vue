@@ -28,7 +28,6 @@ export default{
         fetchData(){
             this.$getData(this.$URL_EMP_RIGHTS, this.emp.id).then(data => {
                 this.rights = data;
-                console.log(this.rights);
             })
         }
     },

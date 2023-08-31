@@ -4,24 +4,46 @@
     @closed="closeDialog"
 >
     <template #header>
-        <h2>{{dialogName()}} {{group ? group.surname : 'группы'}}</h2><br>
+        <h2>{{dialogName()}} группы «{{group ? group.name : ''}}»</h2><br>
         <el-button-group>
             <el-button type="primary" :disabled="currentPage === 1" @click="currentPage = 1">Основные данные</el-button>
-            <el-button type="primary" :disabled="currentPage === 2" @click="currentPage = 2">Права</el-button>
-            <el-button type="primary" :disabled="currentPage === 3" @click="currentPage = 3">Пользователи</el-button>
+            <template v-if="dialogType == 1">
+                <el-button type="primary" :disabled="currentPage === 2" @click="currentPage = 2">Права</el-button>
+                <el-button type="primary" :disabled="currentPage === 3" @click="currentPage = 3">Пользователи</el-button>
+            </template>
         </el-button-group>
     </template>
-    <div>sadasd</div>
+
+    <groups-dialog-main v-if="currentPage === 1" :key="currentKey"
+        :dialogType="dialogType"
+        :item="group"
+        @refresh="refresh"
+        @close="closeDialog()"
+    />
+    <groups-dialog-rights v-if="currentPage === 2" :key="currentKey"
+        :group="group"
+        @refresh="refresh"
+        @close="closeDialog()"
+    />
+    <groups-dialog-emps v-if="currentPage === 3" :key="currentKey"
+        :group="group"
+        @refresh="refresh"
+        @close="closeDialog()"
+    />
 </el-dialog>
 </template>
 
 <script>
+import GroupsDialogMain from "@/components/GROUPS/dialog/GroupsDialogMain"
+import GroupsDialogRights from "@/components/GROUPS/dialog/GroupsDialogRights"
 import { ref } from 'vue'
 export default{
     name: "groups-dialog",
+    components:{GroupsDialogMain, GroupsDialogRights},
     setup(){
         const currentPage = ref(1);
-        return {currentPage}
+        const currentKey = ref(0);
+        return {currentPage, currentKey}
     },
     data(){
         return{
@@ -29,7 +51,7 @@ export default{
         }
     },
     props:{
-        dialogViisble: Boolean,
+        dialogVisible: Boolean,
         dialogType: Number,
         item: {}
     },
@@ -41,7 +63,8 @@ export default{
             return this.dialogType ? 'Редактирование' : 'Добавление'
         },
         refresh(){
-            this.$emit('refresh')
+            this.currentKey += 1;
+            this.$emit('refresh');
         }
     }
 }

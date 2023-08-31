@@ -21,6 +21,8 @@ export default{
     URL_GROUP_DEL_R: SERVER + 'rpc/group_delete_right',
 
     URL_RIGHT_LIST: SERVER + 'right_list',
+
     URL_POST_LIST: SERVER + 'post_list',
+
     URL_DEPT_LIST: SERVER + 'dept_list',
 }

@@ -1,13 +1,13 @@
 <template>
 <groups-list
     :groupList="groupListComputed"
-    @refresh="refreshData()"
+    @refresh="refreshData"
 />
 </template>
 <script>
 import GroupsList from "@/components/GROUPS/GroupsList.vue"
 import { ref } from "vue";
-import { ElLoading} from "element-plus";
+import { ElLoading } from "element-plus";
 
 export default{
     name: "emp-page",

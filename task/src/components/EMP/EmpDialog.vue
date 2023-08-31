@@ -4,43 +4,45 @@
     @closed="closeDialog"
 >
     <template #header>
-        <h2>{{dialogName()}} {{emp ? emp.surname : 'пользователя'}}</h2><br>
+        <h2>{{dialogName()}} пользователя «{{emp ? emp.surname : ''}}»</h2><br>
         <el-button-group>
             <el-button type="primary" :disabled="currentPage === 1" @click="currentPage = 1">Основные данные</el-button>
-            <el-button type="primary" :disabled="currentPage === 2" @click="currentPage = 2">Группы</el-button>
-            <el-button type="primary" :disabled="currentPage === 3" @click="currentPage = 3">Прямые права</el-button>
-            <el-button type="primary" :disabled="currentPage === 4" @click="currentPage = 4">Все права</el-button>
+            <template v-if="dialogType == 1">
+                <el-button type="primary" :disabled="currentPage === 2" @click="currentPage = 2">Группы</el-button>
+                <el-button type="primary" :disabled="currentPage === 3" @click="currentPage = 3">Прямые права</el-button>
+                <el-button type="primary" :disabled="currentPage === 4" @click="currentPage = 4">Все права</el-button>
+            </template>
         </el-button-group>
     </template>
 
-    <emp-dialog-main v-if="currentPage === 1"
+    <emp-dialog-main v-if="currentPage === 1" :key="componentKey"
         :dialogType="dialogType"
         :getOptions="options"
         :item="emp"
         @refresh="refresh"
         @close="closeDialog()"
     />
-    <emp-dialog-groups v-if="currentPage === 2"
+    <emp-dialog-groups v-if="currentPage === 2" :key="componentKey"
         :emp="emp"
         @refresh="refresh"
         @close="closeDialog()"
     />
-    <emp-dialog-rights v-if="currentPage === 3"
+    <emp-dialog-rights v-if="currentPage === 3" :key="componentKey"
         :emp="emp"
         @refresh="refresh"
         @close="closeDialog()"
     />
-    <emp-dialog-all-rights v-if="currentPage === 4"
+    <emp-dialog-all-rights v-if="currentPage === 4" :key="componentKey"
         :emp="emp"
         @close="closeDialog()"
     />
 </el-dialog>
 </template>
 <script>
-import EmpDialogMain from "@/components/EMP/EmpDialogMain"
-import EmpDialogGroups from "@/components/EMP/EmpDialogGroups"
-import EmpDialogRights from "@/components/EMP/EmpDialogRights"
-import EmpDialogAllRights from "@/components/EMP/EmpDialogAllRights"
+import EmpDialogMain from "@/components/EMP/dialog/EmpDialogMain"
+import EmpDialogGroups from "@/components/EMP/dialog/EmpDialogGroups"
+import EmpDialogRights from "@/components/EMP/dialog/EmpDialogRights"
+import EmpDialogAllRights from "@/components/EMP/dialog/EmpDialogAllRights"
 import {ref} from 'vue'
 
 export default{
@@ -48,6 +50,7 @@ export default{
     components:{EmpDialogMain, EmpDialogGroups, EmpDialogRights, EmpDialogAllRights},
     setup(){
         const currentPage = ref(1);
+        const componentKey = 0;
         const options = ref({
             sex: [
                 {value: 1, name: "Мужской"},
@@ -56,7 +59,7 @@ export default{
             post: [],
             dept: [],
         })
-        return {currentPage, options};
+        return {currentPage, componentKey, options};
     },
     data(){
         return{
@@ -79,6 +82,10 @@ export default{
         },
         refresh(){
             this.$emit('refresh')
+            this.componentKey += 1;
+        },
+        rerender(){
+            this.componentKey += 1;
         }
     },
     mounted(){

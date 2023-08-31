@@ -101,16 +101,7 @@ export default{
         empListComputed(){
             console.log(this.search);
             return this.empList.filter(emp => {
-                if (this.search.name !== undefined)
-                    return emp.surname.toLowerCase().includes(this.search.surname?.toLowerCase())
-                if (this.search.name !== undefined)
-                    return (
-                        emp.surname.toLowerCase().includes(this.search.surname.toLowerCase())
-                            && this.search.surname && emp.name.toLowerCase().includes(this.search.name.toLowerCase())
-                            //&& emp.patron.toLowerCase().includes(this.search.patron?.toLowerCase())
-                    )
-                else
-                    return emp
+                return emp.surname.toLowerCase().includes(this.search.surname?.toLowerCase())
             })
         }
     }

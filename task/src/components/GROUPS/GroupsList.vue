@@ -3,10 +3,9 @@
     <h1>Модуль групп</h1><br>
     <el-row>
         <el-col :span="3">
-            <el-button type="primary" @click=" item = {}; dialogType = 0; dialogVisible = true" style="width: 100%;"
-            >
-                Добавить
-            </el-button>
+            <el-button type="primary"
+                @click=" item = {}; dialogType = 0; dialogVisible = true" style="width: 100%;"
+            >Добавить</el-button>
         </el-col>
         <el-col :span="9">
             <el-input placeholder="поиск по названию..."
@@ -23,8 +22,9 @@
     <el-table border stripe highlight-current-row
         :data="groupList"
         @row-click="handleRowClick"
+        :default-sort="{prop: 'name', order: 'ascending'}"
     >
-        <el-table-column prop="name" label="Название"></el-table-column>
+        <el-table-column prop="name" label="Название" sortable></el-table-column>
         <el-table-column prop="rem" label="Описание"></el-table-column>
     </el-table>
 </el-main>
@@ -32,6 +32,7 @@
     v-model:dialogVisible="dialogVisible"
     :dialogType="dialogType"
     :item="groupItem"
+    @refresh="this.$emit('refresh')"
 />
 </template>
 <script>
@@ -46,11 +47,6 @@ export default{
         const groupItem = ref({});
         return{dialogVisible, dialogType, groupItem}
     },
-    watch:{
-        dialogVisible(){
-            console.log(this.dialogVisible);
-        }
-    },
     props:{
         groupList: []
     },
@@ -58,6 +54,7 @@ export default{
         handleRowClick(row){
             this.groupItem = Object.assign({}, row)
             console.log(this.groupItem)
+            this.dialogType = 1;
             this.dialogVisible = true;
         }
     }
