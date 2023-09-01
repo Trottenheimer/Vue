@@ -128,15 +128,20 @@ export default{
             });
         },
         handleDialogDelete(){//УДАЛЕНИЕ
-            this.$postData(this.$URL_EMP_DELETE, '', {"p_emp_id": this.emp.id}).then(response => {
-                console.log(response);
-                if (response && response.status === 204)
-                    ElNotification({title:'Редактирование пользователей', message: 'Пользователь успешно удален!', type:'success'})
-                else
-                    ElNotification({title:'Редактирование пользователей', message: 'Что-то пошло не так!', type:'error'})    
-                this.$emit('close');
-                this.$emit('refresh');
-            });
+            if (this.emp.id === 1) {//Надеюсь, это сработает и админ не удалится
+                console.log('Попытка удалить админа');
+                alert('Тебе не удалить админа!');
+            }
+            else
+                this.$postData(this.$URL_EMP_DELETE, '', {"p_emp_id": this.emp.id}).then(response => {
+                    console.log(response);
+                    if (response && response.status === 204)
+                        ElNotification({title:'Редактирование пользователей', message: 'Пользователь успешно удален!', type:'success'})
+                    else
+                        ElNotification({title:'Редактирование пользователей', message: 'Что-то пошло не так!', type:'error'})
+                    this.$emit('close');
+                    this.$emit('refresh');
+                });
         },
     }
 }

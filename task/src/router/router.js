@@ -2,6 +2,7 @@ import MainPage from "@/pages/MainPage"
 import GroupsPage from "@/pages/GroupsPage"
 import RightsPage from "@/pages/RightsPage"
 import EmpPage from "@/pages/EmpPage"
+import TestPage from "@/pages/TestPage"
 import { createRouter, createWebHistory } from "vue-router"
 
 const routes = [
@@ -20,6 +21,10 @@ const routes = [
     {
         path: '/rights',
         component: RightsPage
+    },
+    {
+        path: '/test',
+        component: TestPage
     }
 ]
 

@@ -4,53 +4,43 @@
     @closed="closeDialog"
 >
 <template #header>
-    <h2>{{dialogName()}} {{right.name}}</h2><br>
+    <h2>{{dialogName()}} права «{{item.name}}»</h2><br>
     <el-button-group>
         <el-button type="primary" :disabled="currentPage === 1" @click="currentPage = 1">Основные данные</el-button>
-        <el-button type="primary" :disabled="currentPage === 2" @click="currentPage = 2">Группы</el-button>
-        <el-button type="primary" :disabled="currentPage === 3" @click="currentPage = 3">Пользователи</el-button>
+        <template v-if="dialogType !== 0">
+            <el-button type="primary" :disabled="currentPage === 2" @click="currentPage = 2">Группы</el-button>
+            <el-button type="primary" :disabled="currentPage === 3" @click="currentPage = 3">Пользователи</el-button>
+        </template>
     </el-button-group>
 </template>
 
-<template v-if="currentPage === 1">
-    <el-form :model="right">
-        <el-form-item>
-            <span>Название</span>
-            <el-input v-model="right.name"></el-input>
-        </el-form-item>
-        <el-form-item>
-            <span>Описание</span>
-            <el-input v-model="right.rem"></el-input>
-        </el-form-item>
-    </el-form>
-</template>
-
-<template #footer>
-    <template v-if="dialogType === 0">
-        <el-button type="primary" @click="handleDialogCreate()">Создать</el-button>
-    </template>
-    <template v-else-if="dialogType === 1">
-        <el-button type="primary" @click="handleDialogEdit()">Сохранить</el-button>
-        <el-button type="danger" @click="handleDialogDelete(); delMode = true">Удалить</el-button>
-    </template>
-    <el-button type="info" @click="closeDialog">Закрыть</el-button>
-</template>
+<rights-dialog-main v-if="currentPage === 1"
+    :key="currentKey"
+    :item="item"
+    :dialogType="dialogType"
+    @close="closeDialog"
+    @refresh="refresh"
+/>
+<rights-dialog-groups v-if="currentPage === 2"
+    :key="currentKey"
+    :right="item"
+    @close="closeDialog"
+    @refresh="refresh"
+/>
+<el-text v-if="currentPage === 3">Временно не работает</el-text>
 </el-dialog>
 </template>
 <script>
-import { ElNotification } from 'element-plus';
+import RightsDialogMain from "@/components/RIGHTS/dialog/RightsDialogMain"
+import RightsDialogGroups from "@/components/RIGHTS/dialog/RightsDialogGroups"
 import { ref } from 'vue';
 export default{
     name: "rights-dialog",
+    components: {RightsDialogMain, RightsDialogGroups},
     setup(){
         const currentPage = ref(1);
-        const delMode = ref(false)
-        return {currentPage, delMode}
-    },
-    data(){
-        return{
-            right: (this.dialogType? this.item : {})
-        }
+        const currentKey = ref(0);
+        return {currentPage, currentKey}
     },
     props:{
         item:{
@@ -65,57 +55,11 @@ export default{
             this.$emit('update:dialogVisible', false)
         },
         dialogName(){
-            return this.dialogType ? 'Редактирование' : 'Создание'
+            return this.dialogType ? 'Создание' : 'Редактирование'
         },
         refresh(){
-            this.$emit('refresh')
-        },
-        handleDialogCreate(){
-            let request = Object.assign({}, this.right);
-            delete request.id;
-            this.$postData(this.$URL_RIGHT_LIST, '', request).then(response => {
-                if(response && response.status === 201)
-                    ElNotification({title: 'Создание', message: 'Запись успешно создана.', type: 'success'})
-                else
-                    ElNotification({title: 'Создание', message: 'Что-то пошло не так!', type: 'error'})
-                this.refresh();
-            });
-        },
-        handleDialogEdit(){
-            switch(this.currentPage){
-                case 1:{
-                    let request = Object.assign({}, this.right);
-                    delete request.id;
-                    this.$updateData(this.$URL_RIGHT_LIST + '?id=eq.', this.right.id , request).then(response => {
-                        if (response && response.status === 204)
-                            ElNotification({title: 'Редактирование', message: 'Запись успешно обновлена.', type: 'success'})
-                        else
-                            ElNotification({title: 'Редактирование', message: 'Что-то пошло не так!', type: 'error'})
-                        this.refresh();
-                    });
-                    break;
-                }
-                case 2:{
-                    console.log('редакт 2 стр');
-                    break;
-                }
-                case 3:{
-                    console.log('редакт 3 стр');
-                    break;
-                }
-            }
-        },
-        handleDialogDelete(){
-            this.$deleteData(this.$URL_RIGHT_LIST + '?id=eq.', this.right.id).then(response => {
-                console.log(response);
-                if (response && response.status === 204)
-                    ElNotification({title: 'Удаление', message: 'Запись успешно удалена!', type: 'success'});
-                else
-                    ElNotification({title: 'Удаление', message: 'Что-то пошло не так!', type: 'error'})
-                this.refresh();
-                this.closeDialog();
-            });
-            
+            this.$emit('refresh');
+            this.currentKey += 1;
         },
     },
 }

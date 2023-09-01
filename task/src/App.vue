@@ -7,7 +7,7 @@
     <title>IBIS</title>
   </head>
   <body>
-    <el-header style="padding: 10px; background: aliceblue; display: none;">
+    <el-header style="padding: 10px; background: #409EFF; display: none;">
       <el-icon></el-icon><h2>Тестовое приложение</h2>
     </el-header>
     <el-container>
@@ -23,7 +23,7 @@
             <el-menu-item index="1">
               <template #title>
                 <el-link href="/" :underline="false">
-                  <el-icon><House/></el-icon>
+                  <el-icon><HomeFilled/></el-icon>
                   <span>Главная</span>
                 </el-link>
               </template>
@@ -31,7 +31,7 @@
             <el-menu-item index="2">
               <template #title>
                 <el-link href="/emp" :underline="false">
-                  <el-icon><User/></el-icon>
+                  <el-icon><UserFilled/></el-icon>
                   <span>Пользователи</span>
                 </el-link>
               </template>
@@ -59,39 +59,38 @@
         <router-view/>
       </el-main>
     </el-container>
-    
   </body>
-  </html>
-  </template>
-  
-  <script>
-  export default {
-    name: 'App',
-    data(){
-      return{
-        isCollapse: false,
-      }
+</html>
+</template>
+
+<script>
+export default {
+  name: 'App',
+  data(){
+    return{
+      isCollapse: false,
     }
   }
-  </script>
+}
+</script>
   
-  <style>
-  *{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  }
-  .el-menu-vertical-demo:not(.el-menu--collapse) {
-    width: 200px;
-    min-height: 400px;
-  }
-  .el-menu span{
-    font-size: 20px;
-    font-weight: bold;
-  }
-  .el-link{
-    font-size: 16px;
-    font-weight: bold;
-  }
-  </style>
+<style>
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 200px;
+  min-height: 400px;
+}
+.el-menu span{
+  font-size: 20px;
+  font-weight: bold;
+}
+.el-link{
+  font-size: 16px;
+  font-weight: bold;
+}
+</style>

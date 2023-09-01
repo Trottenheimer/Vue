@@ -19,6 +19,7 @@
     </el-row>
 </el-header>
 <el-main>
+    <el-text>Найдено: {{groupList.length}}</el-text>
     <el-table border stripe highlight-current-row
         :data="groupList"
         @row-click="handleRowClick"

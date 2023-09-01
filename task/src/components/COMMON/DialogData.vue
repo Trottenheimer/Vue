@@ -9,20 +9,34 @@
         </el-col>
         <el-col :span="4"></el-col>
         <el-col :span="16">
-            <el-input v-model="searchQuery" placeholder="Поиск по названию..."></el-input>
+            <el-input v-model="searchQuery" placeholder="Поиск по фамилии..." clearable></el-input>
         </el-col>
     </el-row>
-    
-
-    <el-table height="700" border stripe
-        :data="dataEditComputed" ref="multipleTableRef"
-        :default-sort="{prop: 'name', order: 'ascending'}"
-        @selection-change="handleSelectionChange"
-    >
-        <el-table-column type="selection" width="55" />
-        <el-table-column prop="name" label="Название" sortable></el-table-column>
-        <el-table-column prop="rem" label="rem"></el-table-column>
-    </el-table>
+    <template v-if="dialogType == 'G_E'">
+        <el-table height="700" border stripe
+            :data="dataEditComputedEmp" ref="multipleTableRef"
+            :default-sort="{prop: 'surname', order: 'ascending'}"
+            @selection-change="handleSelectionChange"
+        >
+            <el-table-column type="selection" width="40" />
+            <el-table-column prop="surname" label="Фамилия" sortable></el-table-column>
+            <el-table-column prop="name" label="Имя" sortable></el-table-column>
+            <el-table-column prop="patron" label="Отчество" sortable></el-table-column>
+            <el-table-column prop="post" label="Должность" sortable></el-table-column>
+            <el-table-column prop="dept" label="Отделение" sortable></el-table-column>
+        </el-table>
+    </template>
+    <template v-else>
+        <el-table height="700" border stripe
+            :data="dataEditComputed" ref="multipleTableRef"
+            :default-sort="{prop: 'name', order: 'ascending'}"
+            @selection-change="handleSelectionChange"
+        >
+            <el-table-column type="selection" width="55" />
+            <el-table-column prop="name" label="Название" sortable></el-table-column>
+            <el-table-column prop="rem" label="rem"></el-table-column>
+        </el-table>
+    </template>
 </el-dialog>
 </template>
 <script>
@@ -54,18 +68,33 @@ export default{
         prepareData(){
             switch(this.dialogType){
                 case 'E_R':{
-                    this.title = 'Выбор прав';
+                    this.title = 'Выбор прав для пользователя';
                     this.tempURL = this.$URL_EMP_ADD_R;
                     break;
                 }
                 case 'E_G':{
-                    this.title = 'Выбор групп';
+                    this.title = 'Выбор групп для пользователя';
                     this.tempURL = this.$URL_EMP_ADD_G
                     break;
                 }
                 case 'G_R':{
-                    this.title = 'Выбор прав';
+                    this.title = 'Выбор прав для группы';
                     this.tempURL = this.$URL_GROUP_ADD_R
+                    break;
+                }
+                case 'G_E':{
+                    this.title = 'Выбор пользователей для группы';
+                    this.tempURL = this.$URL_EMP_ADD_G
+                    break;
+                }
+                case 'R_G':{
+                    this.title = 'Выбор групп для прав';
+                    this.tempURL = this.$URL_GROUP_ADD_G
+                    break;
+                }
+                case 'R_E':{
+                    this.title = 'Выбор пользователей для прав';
+                    this.tempURL = this.$URL_EMP_ADD_R
                     break;
                 }
             }
@@ -74,31 +103,59 @@ export default{
             this.selectedRows = val;
         },
         handleAddition(){
-            if (this.dialogType == 'E_R'){//Добавляет право пользователю
-                this.selectedRows.forEach(row => {
-                    this.$postData(this.tempURL, '', {p_emp_id: this.id, p_right_id: row.id}).then()
-                });
-                ElNotification({title: 'Редактирование пользователей', message: 'Права успешно добавлены', type: 'success'})
+            switch(this.dialogType){
+                case 'E_R'://Добавляет право пользователю
+                    this.selectedRows.forEach(row => {
+                        this.$postData(this.tempURL, '', {p_emp_id: this.id, p_right_id: row.id}).then(() => {
+                            this.$emit('refresh');
+                            ElNotification({title: 'Редактирование пользователей', message: 'Права успешно добавлены', type: 'success'});
+                    })});
+                    break;
+                case 'E_G'://Добавляет группу пользователю
+                    this.selectedRows.forEach(row => {
+                        this.$postData(this.tempURL, '', {p_emp_id: this.id, p_group_id: row.id}).then(()=> {
+                            this.$emit('refresh');
+                            ElNotification({title: 'Редактирование пользователей', message: 'Группы успешно добавлены', type: 'success'});
+                    })});
+                    break;
+                case 'G_R'://Добавляет право группе
+                    this.selectedRows.forEach(row => {
+                        this.$postData(this.$URL_GROUP_ADD_R, '', {p_group_id: this.id, p_right_id: row.id}).then(() => {
+                            this.$emit('refresh');
+                            ElNotification({title: 'Редактирование пользователей', message: 'Группы успешно добавлены', type: 'success'});
+                    })});
+                    break;
+                case 'G_E'://Добавляет пользователя группе
+                    this.selectedRows.forEach(row => {
+                        this.$postData(this.$URL_EMP_ADD_G, '', {p_group_id: this.id, p_emp_id: row.id}).then(() => {
+                            this.$emit('refresh');
+                            ElNotification({title: 'Редактирование пользователей', message: 'Пользователи успешно добавлены', type: 'success'});
+                    })});
+                    break;
+                case 'R_G'://Добавляет группам право
+                    this.selectedRows.forEach(row => {
+                        this.$postData(this.$URL_GROUP_ADD_R, '', {p_group_id: row.id, p_right_id: this.id}).then(() => {
+                            this.$emit('refresh');
+                            ElNotification({title: 'Редактирование прав', message: 'Группы успешно добавлены', type: 'success'});
+                    })});
+                    break;
+                case 'R_E':
+                    this.selectedRows.forEach(row => {
+                        this.$postData(this.tempURL, '', {p_emp_id: row.id, p_right_id: this.id}).then(() => {
+                            this.$emit('refresh');
+                            ElNotification({title: 'Редактирование прав', message: 'Пользователи успешно добавлены', type: 'success'});
+                    })});
+                    break;
             }
-            else if(this.dialogType == 'E_G'){//Добавляет группу пользователю
-                this.selectedRows.forEach(row => {
-                    this.$postData(this.tempURL, '', {p_emp_id: this.id, p_group_id: row.id}).then()
-                });
-                ElNotification({title: 'Редактирование пользователей', message: 'Группы успешно добавлены', type: 'success'})
-            }
-            else if(this.dialogType == 'G_R'){//Добавляет право группе
-                this.selectedRows.forEach(row => {
-                    this.$postData(this.$URL_GROUP_ADD_R, '', {p_group_id: this.id, p_right_id: row.id}).then()
-                });
-                ElNotification({title: 'Редактирование пользователей', message: 'Группы успешно добавлены', type: 'success'})
-            }
-            this.$emit('refresh')
             this.closeDialog();
         },
     },
     computed:{
         dataEditComputed(){
-            return this.dataEdit.filter(data => data.name.includes(this.searchQuery))
+            return this.dataEdit.filter(data => data.name.toLowerCase().includes(this.searchQuery.toLowerCase()))
+        },
+        dataEditComputedEmp(){
+            return this.dataEdit.filter(data => data.surname.toLowerCase().includes(this.searchQuery.toLowerCase()))
         }
     },
     mounted(){

@@ -11,7 +11,6 @@
     <el-table v-loading="loading" border stripe style="width: 100%" height="700"
         :data="empRights" :default-sort="{prop: 'name', order: 'descending'}"
         highlight-current-row
-        @row-click="handleRowClick" 
         @selection-change="handleSelectionChange"
     >
         <el-table-column type="selection" width="40"></el-table-column>
@@ -26,7 +25,6 @@
 </div>
 <dialog-data v-if="dialogVisible"
     v-model="dialogVisible"
-    v-model:loading="loading"
     :data="rightList"
     :dialogType="'E_R'"
     :id="emp.id"
@@ -42,11 +40,10 @@ export default{
         const rightList = ref([]);
         const rightListCompare = ref([]);
         const empRights = ref([]);
-        const loading = ref(false);
         const dialogVisible = ref(false);
         const currentRow = ref();
         const selectedRows= ref([]);
-        return {rightList, rightListCompare, empRights, loading, dialogVisible, currentRow, selectedRows};
+        return {rightList, rightListCompare, empRights, dialogVisible, currentRow, selectedRows};
     },
     props:{
         emp:{
@@ -55,11 +52,8 @@ export default{
         }
     },
     methods:{
-        handleRowClick(row){
-            this.currentRow = Object.assign({}, row);
-        },
         handleSelectionChange(val){
-            this.selectedRows = val;
+            val.length !== 0 ? this.selectedRows = val : this.selectedRows = [];
         },
         addRight(){
             this.dialogVisible = true
@@ -67,12 +61,11 @@ export default{
         removeRight(){
             if(this.selectedRows.length !== 0){
                 this.selectedRows.forEach(row => {
-                    this.$postData(this.$URL_EMP_DEL_R, '', {p_emp_id: this.emp.id, p_right_id: row.right_id});
+                    this.$postData(this.$URL_EMP_DEL_R, '', {p_emp_id: this.emp.id, p_right_id: row.right_id}).then(this.$emit('refresh'));
                 });
             }
-            else if(this.currentRow)
-                this.$postData(this.$URL_EMP_DEL_R, '', {p_emp_id: this.emp.id, p_right_id: this.currentRow.right_id});
-            this.$emit('refresh')
+            /*else if(this.currentRow)
+                this.$postData(this.$URL_EMP_DEL_R, '', {p_emp_id: this.emp.id, p_right_id: this.currentRow.right_id});*/
         },
         fetchData(){
             this.loading = true
@@ -97,7 +90,7 @@ export default{
                           //  ? 
                             //: 
                 }
-                ElNotification({title: 'Редактирование пользователя', message: 'Состав прав успешно изменен!', type: 'success'})
+                ElNotification({title: 'Редактирование пользователя', message: 'Права пользователя отозваны.', type: 'success'})
             } catch (error) {
                 ElNotification({title: 'Редактирование пользователя', message: 'Что-то пошло не так!', type: 'error'});
                 console.log(error);

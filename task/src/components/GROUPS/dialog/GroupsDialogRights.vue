@@ -1,39 +1,40 @@
 <template>
-    <div>
-        <div style="margin-bottom: 20px;">
-            <el-button @click="addRight" size="large"><el-icon color="green"><Plus/></el-icon></el-button>
-            <el-button @click="removeRight" size="large"
-                :disabled="!currentRow && this.selectedRows?.length == 0"
-            >
-                <el-icon color="red"><Minus/></el-icon>
-            </el-button>
-        </div>
-        <el-table v-loading="loading" border stripe style="width: 100%" height="700"
-            :data="groupRights" :default-sort="{prop: 'name', order: 'ascending'}"
-            highlight-current-row
-            @row-click="handleRowClick" 
-            @selection-change="handleSelectionChange"
+<div>
+    <div style="margin-bottom: 20px;">
+        <el-button @click="addRight" size="large"><el-icon color="green"><Plus/></el-icon></el-button>
+        <el-button @click="removeRight" size="large"
+            :disabled="!currentRow && this.selectedRows?.length === 0"
         >
-            <el-table-column type="selection" width="40"></el-table-column>
-            <el-table-column prop="name" label="Название" sortable></el-table-column>
-            <el-table-column prop="rem" label="Описание"></el-table-column>
-            <el-table-column label="Разрешено" width="100">
-                <template #default>
-                    <el-icon color="green" size="large" style="margin: 0 35%;"><Select/></el-icon>
-                </template>
-            </el-table-column>
-        </el-table>
+            <el-icon color="red"><Minus/></el-icon>
+        </el-button>
     </div>
-    <dialog-data v-if="dialogVisible"
-        v-model="dialogVisible"
-        v-model:loading="loading"
-        :data="rightList"
-        :dialogType="'G_R'"
-        :id="group.id"
-        @refresh="this.$emit('refresh')"
-    />
+    <el-table v-loading="loading" border stripe style="width: 100%" height="700"
+        :data="groupRights" :default-sort="{prop: 'name', order: 'ascending'}"
+        highlight-current-row
+        @row-click="handleRowClick" 
+        @selection-change="handleSelectionChange"
+    >
+        <el-table-column type="selection" width="40"></el-table-column>
+        <el-table-column prop="name" label="Название" sortable></el-table-column>
+        <el-table-column prop="rem" label="Описание"></el-table-column>
+        <el-table-column label="Разрешено" width="100">
+            <template #default>
+                <el-icon color="green" size="large" style="margin: 0 35%;"><Select/></el-icon>
+            </template>
+        </el-table-column>
+    </el-table>
+</div>
+<dialog-data v-if="dialogVisible"
+    v-model="dialogVisible"
+    v-model:loading="loading"
+    :data="rightList"
+    :dialogType="'G_R'"
+    :id="group.id"
+    @refresh="this.$emit('refresh')"
+/>
 </template>
 <script>
+import { ElNotification } from 'element-plus';
 import { ref } from 'vue';
 export default{
     name: "groups-dialog-rights",
@@ -42,7 +43,7 @@ export default{
         const groupRights = ref([]);
         const rightList = ref([]);
         const selectedRows = ref([]);
-        const currentRow = ref({});
+        const currentRow = ref();
         return {dialogVisible, groupRights, rightList, selectedRows, currentRow}
     },
     props:{
@@ -66,7 +67,7 @@ export default{
             this.currentRow = Object.assign({}, row);
         },
         handleSelectionChange(val){
-            this.selectedRows = val;
+            val.length !== 0 ? this.selectedRows = val : this.selectedRows = [];
         },
         addRight(){
             this.dialogVisible = true
@@ -74,11 +75,16 @@ export default{
         removeRight(){
             if(this.selectedRows.length > 0){
                 this.selectedRows.forEach(row => {
-                    this.$postData(this.$URL_GROUP_DEL_R, '', {p_group_id: this.group.id, p_right_id: row.right_id}).then(this.$emit('refresh'));
+                    this.$postData(this.$URL_GROUP_DEL_R, '', {p_group_id: this.group.id, p_right_id: row.right_id})
+                        .then(() => {
+                            this.$emit('refresh');
+                            ElNotification({title: 'Редактирование групп', message: 'Права группы успешно отозваны.', type: 'success'})
+                        });
                 });
             }
-            else if(this.currentRow)
-                this.$postData(this.$URL_GROUP_DEL_R, '', {p_group_id: this.group.id, p_right_id: this.currentRow.right_id}).then(this.$emit('refresh'));
+            /*else if(this.currentRow)
+                this.$postData(this.$URL_GROUP_DEL_R, '', {p_group_id: this.group.id, p_right_id: this.currentRow.right_id})
+                    .then(this.$emit('refresh'));*/
         }
     },
     mounted(){

@@ -2,11 +2,11 @@
     <el-form :model="group">
         <el-form-item>
             <span>Название</span>
-            <el-input v-model="group.name"></el-input>
+            <el-input v-model="group.name" @keydown.enter="dialogType ? handleDialogEdit() : handleDialogCreate()"></el-input>
         </el-form-item>
         <el-form-item>
             <span>Описание</span>
-            <el-input v-model="group.rem"></el-input>
+            <el-input v-model="group.rem" @keydown.enter="dialogType ? handleDialogEdit() : handleDialogCreate()"></el-input>
         </el-form-item>
     </el-form>
     <div style="display: flex; justify-content: flex-end">

@@ -36,10 +36,11 @@
 <script>
 import GroupsDialogMain from "@/components/GROUPS/dialog/GroupsDialogMain"
 import GroupsDialogRights from "@/components/GROUPS/dialog/GroupsDialogRights"
+import GroupsDialogEmps from "@/components/GROUPS/dialog/GroupsDialogEmps"
 import { ref } from 'vue'
 export default{
     name: "groups-dialog",
-    components:{GroupsDialogMain, GroupsDialogRights},
+    components:{GroupsDialogMain, GroupsDialogRights, GroupsDialogEmps},
     setup(){
         const currentPage = ref(1);
         const currentKey = ref(0);
@@ -63,8 +64,10 @@ export default{
             return this.dialogType ? 'Редактирование' : 'Добавление'
         },
         refresh(){
-            this.currentKey += 1;
-            this.$emit('refresh');
+            setTimeout(() => {//Задержка чтобы не терялся контент
+                this.currentKey += 1;
+                this.$emit('refresh');
+            }, 500);
         }
     }
 }

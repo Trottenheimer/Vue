@@ -95,14 +95,24 @@ export default{
             this.search.name = query[1];
             this.search.patron = query[2];
             console.log(this.search);
+            console.log(undefined);
         }
     },
     computed:{
         empListComputed(){
             console.log(this.search);
-            return this.empList.filter(emp => {
-                return emp.surname.toLowerCase().includes(this.search.surname?.toLowerCase())
-            })
+            let surname = this.empList.filter(emp => {
+                return emp.surname?.toLowerCase().includes(this.search.surname?.toLowerCase())
+            });
+            let name = this.empList.filter(emp => {
+                return emp.name?.toLowerCase().includes(this.search.name?.toLowerCase())
+            });
+            let patron = this.empList.filter(emp => {
+                return emp.patron?.toLowerCase().includes(this.search.patron?.toLowerCase())
+            });
+            return surname.filter(item => {
+                return this.search.name ? name.includes(item) : true && this.search.patron ? patron.includes(item): true;
+            });
         }
     }
 }
