@@ -7,9 +7,6 @@
     <title>IBIS</title>
   </head>
   <body>
-    <el-header style="padding: 10px; background: #409EFF; display: none;">
-      <el-icon></el-icon><h2>Тестовое приложение</h2>
-    </el-header>
     <el-container>
       <el-aside width="200">
         <div style="margin: 20px;">

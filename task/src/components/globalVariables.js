@@ -21,7 +21,9 @@ export default{
     URL_GET_GROUP_RIGHTS: SERVER + 'rpc/get_group_rights?p_group_id=',
 
     URL_RIGHT_LIST: SERVER + 'right_list',
+    URL_GET_RIGHT_EMPS: SERVER + 'rpc/get_right_emps?p_right_id=',
     URL_GET_RIGHT_GROUPS: SERVER + 'rpc/get_right_groups?p_right_id=',
+    
 
     URL_POST_LIST: SERVER + 'post_list',
 

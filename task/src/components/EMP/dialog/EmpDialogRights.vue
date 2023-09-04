@@ -10,7 +10,7 @@
     </div>
     <el-table v-loading="loading" border stripe style="width: 100%" height="700"
         :data="empRights" :default-sort="{prop: 'name', order: 'descending'}"
-        highlight-current-row
+        highlight-current-row empty-text="<нет данных>"
         @selection-change="handleSelectionChange"
     >
         <el-table-column type="selection" width="40"></el-table-column>
@@ -59,13 +59,19 @@ export default{
             this.dialogVisible = true
         },
         removeRight(){
+            let promises = [];
             if(this.selectedRows.length !== 0){
-                this.selectedRows.forEach(row => {
-                    this.$postData(this.$URL_EMP_DEL_R, '', {p_emp_id: this.emp.id, p_right_id: row.right_id}).then(this.$emit('refresh'));
+                promises = this.selectedRows.map(row => {
+                    return new Promise((resolve) => {
+                        this.$postData(this.$URL_EMP_DEL_R, '', {p_emp_id: this.emp.id, p_right_id: row.right_id})
+                        .then(resolve());
+                    });
                 });
+                Promise.all(promises).then(() => {
+                    this.$emit('refresh');
+                    ElNotification({title: 'Редактирование пользователя', message: 'Права пользователя успешно отозваны', type: 'success'});
+                })
             }
-            /*else if(this.currentRow)
-                this.$postData(this.$URL_EMP_DEL_R, '', {p_emp_id: this.emp.id, p_right_id: this.currentRow.right_id});*/
         },
         fetchData(){
             this.loading = true

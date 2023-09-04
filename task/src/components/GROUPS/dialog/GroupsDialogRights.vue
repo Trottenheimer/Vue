@@ -10,7 +10,7 @@
     </div>
     <el-table v-loading="loading" border stripe style="width: 100%" height="700"
         :data="groupRights" :default-sort="{prop: 'name', order: 'ascending'}"
-        highlight-current-row
+        highlight-current-row empty-text="<нет данных>"
         @row-click="handleRowClick" 
         @selection-change="handleSelectionChange"
     >
@@ -73,14 +73,19 @@ export default{
             this.dialogVisible = true
         },
         removeRight(){
+            let promises = [];
             if(this.selectedRows.length > 0){
-                this.selectedRows.forEach(row => {
-                    this.$postData(this.$URL_GROUP_DEL_R, '', {p_group_id: this.group.id, p_right_id: row.right_id})
-                        .then(() => {
-                            this.$emit('refresh');
-                            ElNotification({title: 'Редактирование групп', message: 'Права группы успешно отозваны.', type: 'success'})
-                        });
+                promises = this.selectedRows.map(row => {
+                    return new Promise((resolve) => {
+                        this.$postData(this.$URL_GROUP_DEL_R, '', {p_group_id: this.group.id, p_right_id: row.right_id})
+                        .then(resolve());
+                    })
                 });
+                Promise.all(promises).then(() => {
+                    this.$emit('refresh');
+                    ElNotification({title: 'Редактирование групп', message: 'Права группы успешно отозваны.', type: 'success'});
+                })
+                
             }
             /*else if(this.currentRow)
                 this.$postData(this.$URL_GROUP_DEL_R, '', {p_group_id: this.group.id, p_right_id: this.currentRow.right_id})

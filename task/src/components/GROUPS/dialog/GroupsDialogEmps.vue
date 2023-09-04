@@ -10,7 +10,7 @@
     </div>
     <el-table v-loading="loading" border stripe style="width: 100%" height="700"
         :data="groupEmps" :default-sort="{prop: 'surname', order: 'ascending'}"
-        highlight-current-row
+        highlight-current-row empty-text="<нет данных>"
         @row-click="handleRowClick" 
         @selection-change="handleSelectionChange"
     >
@@ -91,18 +91,19 @@ export default{
             this.dialogVisible = true
         },
         removeEmp(){
+            let promises = [];
             if(this.selectedRows.length > 0){
-                this.selectedRows.forEach(row => {
-                    this.$postData(this.$URL_EMP_DEL_G, '', {p_emp_id: row.emp_id, p_group_id: this.group.id})
-                    .then(() => {
-                            this.$emit('refresh');
-                            ElNotification({title: 'Редактирование групп', message: 'Пользователи группы успешно удалены.', type: 'success'});
-                        });
+                promises = this.selectedRows.map(row => {
+                    return new Promise((resolve) => {
+                        this.$postData(this.$URL_EMP_DEL_G, '', {p_emp_id: row.emp_id, p_group_id: this.group.id})
+                        .then(resolve());
+                    })
                 });
+                Promise.all(promises).then(() => {
+                    this.$emit('refresh');
+                    ElNotification({title: 'Редактирование групп', message: 'Пользователи группы успешно удалены.', type: 'success'});
+                })
             }
-            /*else if(this.currentRow)
-                this.$postData(this.$URL_EMP_DEL_G, '', {p_emp_id: this.currentRow.emp_id, p_group_id: this.group.id})
-                    .then(this.$emit('refresh'));*/
         }
     },
     mounted(){

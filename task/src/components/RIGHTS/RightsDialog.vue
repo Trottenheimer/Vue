@@ -27,16 +27,22 @@
     @close="closeDialog"
     @refresh="refresh"
 />
-<el-text v-if="currentPage === 3">Временно не работает</el-text>
+<rights-dialog-emps v-if="currentPage === 3"
+    :key="currentKey"
+    :right="item"
+    @close="closeDialog"
+    @refresh="refresh"
+/>
 </el-dialog>
 </template>
 <script>
 import RightsDialogMain from "@/components/RIGHTS/dialog/RightsDialogMain"
 import RightsDialogGroups from "@/components/RIGHTS/dialog/RightsDialogGroups"
+import RightsDialogEmps from "@/components/RIGHTS/dialog/RightsDialogEmps"
 import { ref } from 'vue';
 export default{
     name: "rights-dialog",
-    components: {RightsDialogMain, RightsDialogGroups},
+    components: {RightsDialogMain, RightsDialogGroups, RightsDialogEmps},
     setup(){
         const currentPage = ref(1);
         const currentKey = ref(0);
@@ -55,7 +61,7 @@ export default{
             this.$emit('update:dialogVisible', false)
         },
         dialogName(){
-            return this.dialogType ? 'Создание' : 'Редактирование'
+            return this.dialogType ? 'Редактирование' : 'Создание'
         },
         refresh(){
             this.$emit('refresh');

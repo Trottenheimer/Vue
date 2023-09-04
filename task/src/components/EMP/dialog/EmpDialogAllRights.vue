@@ -1,8 +1,8 @@
 <template>
 <div v-if="rights.length > 0">
-    <el-table border stripe style="width: 100%;"
+    <el-table border stripe style="width: 100%;" empty-text="<нет данных>"
         :data="rights" v-loading="loading"
-        highlight-current-row height="700"
+        highlight-current-row height="700" 
     >
         <el-table-column prop="name" label="Название"></el-table-column>
         <el-table-column prop="rem" label="Описание"></el-table-column>

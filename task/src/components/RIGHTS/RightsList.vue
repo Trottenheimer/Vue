@@ -2,15 +2,15 @@
 <el-container>
     <el-header>
         <div>
-            <h1>Страница прав</h1>
+            <h1>Модуль прав</h1><br>
+            <el-button-group>
+                <el-button type="primary" @click=" rightItem = {}; dialogType = 0; dialogVisible = true">
+                    Добавить право
+                </el-button>
+                <el-button type="primary" @click="this.$emit('refresh')" icon="Refresh">Обновить</el-button>
+            </el-button-group>
             <el-row>
-                <el-col :span="3">
-                    <el-button type="primary"
-                        @click="rightItem = {}; dialogType = 0; dialogVisible = true"
-                        >Создать право
-                    </el-button>
-                </el-col>
-                <el-col :span="9">
+                <el-col :span="12">
                     <el-input placeholder="поиск по названию..."
                         v-model="searchQuery" clearable
                         ><template #append>
@@ -22,18 +22,21 @@
         </div>
     </el-header>
     <el-main>
-        <div v-if="rightList.length > 0">
-            <el-text>Найдено: {{rightList.length}}</el-text>
+        <div v-if="rightListComputed.length > 0">
+            <el-text>Найдено: {{rightListComputed.length}}</el-text>
             <el-table border stripe :data="rightListComputed" highlight-current-row height="800"
                 :default-sort="{prop: 'name', order: 'ascending'}"
-                @row-click="handleRowClick"
+                @row-click="handleRowClick" empty-text="<нет данных>"
             >
                 <el-table-column prop="name" label="Название" sortable></el-table-column>
                 <el-table-column prop="rem" label="Описание"></el-table-column>
             </el-table>
         </div>
+        <div v-else-if="rightList.length == 0">
+            <h1>Не удалось загрузить данные! Возможно таблица пуста или ссылка на сервер неправильная</h1>
+        </div>
         <div v-else>
-            <h1 type="danger">Тут пусто</h1>
+            <h1>По запросу ничего не найдено.</h1>
         </div>
     </el-main>
 </el-container>
@@ -82,4 +85,15 @@ export default{
     }
 }
 </script>
-<style></style>
+<style>
+*{
+    font-weight: bold;
+    font-size: 16px;
+}
+.el-header{
+    height: 10%;
+}
+.el-row, .el-button-group{
+    margin-bottom: 20px;
+}
+</style>
