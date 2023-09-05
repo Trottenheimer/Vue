@@ -36,5 +36,4 @@ export async function deleteData(url, query){
     } catch (error) {
         console.log('ошибка при удалении: ', error);
     }
-    
 }

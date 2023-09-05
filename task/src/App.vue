@@ -8,50 +8,48 @@
   </head>
   <body>
     <el-container>
-      <el-aside width="200">
-        <div style="margin: 20px;">
-          <el-menu 
-            default-active="2"
-            class="el-menu-vertical-demo"
-            :collapse="isCollapse"
-            @open="handleOpen"
-            @close="handleClose"
-          >
-            <el-menu-item index="1">
-              <template #title>
-                <el-link href="/" :underline="false">
-                  <el-icon><HomeFilled/></el-icon>
-                  <span>Главная</span>
-                </el-link>
-              </template>
-            </el-menu-item>
-            <el-menu-item index="2">
-              <template #title>
-                <el-link href="/emp" :underline="false">
-                  <el-icon><UserFilled/></el-icon>
-                  <span>Пользователи</span>
-                </el-link>
-              </template>
-            </el-menu-item>
-            <el-menu-item index="3">
-              <template #title>
-                <el-link href="/groups" :underline="false">
-                  <el-icon><Grid /></el-icon>
-                  <span>Группы</span>
-                </el-link>
-              </template>
-            </el-menu-item>
-            <el-menu-item index="4">
-              <template #title>
-                <el-link href="/rights" :underline="false">
-                  <el-icon><Select /></el-icon>
-                  <span>Права</span>
-                </el-link>
-              </template>
-            </el-menu-item>
-          </el-menu>
+      <el-header>
+        <div class="nav-bar">
+          <div class="nav-items">
+            <el-link href="/" :underline="false">
+              <el-icon><HomeFilled/></el-icon>
+              <span>Главная</span>
+            </el-link>
+            <el-link href="/emp" :underline="false">
+              <el-icon><UserFilled/></el-icon>
+              <span>Пользователи</span>
+            </el-link>
+            <el-link href="/groups" :underline="false">
+              <el-icon><Grid /></el-icon>
+              <span>Группы</span>
+            </el-link>
+            <el-link href="/rights" :underline="false">
+              <el-icon><Select /></el-icon>
+              <span>Права</span>
+            </el-link>
+          </div>
+          <div>
+            <div>
+              <el-link v-if="!isAuth" href="/auth" :underline="false" class="menu-link">
+                <span>Войти</span>
+              </el-link>
+              <el-dropdown v-else>
+                <span class="el-dropdown-link">
+                  <el-icon><More/></el-icon>
+                  Меню
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item>Action 1</el-dropdown-item>
+                    <el-dropdown-item disabled>Action 4</el-dropdown-item>
+                    <el-dropdown-item divided>Action 5</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
+          </div>
         </div>
-      </el-aside>
+      </el-header>
       <el-main>
         <router-view/>
       </el-main>
@@ -65,7 +63,7 @@ export default {
   name: 'App',
   data(){
     return{
-      isCollapse: false,
+      isAuth: false
     }
   }
 }
@@ -78,16 +76,45 @@ export default {
   box-sizing: border-box;
   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
-.el-menu-vertical-demo:not(.el-menu--collapse) {
-  width: 200px;
-  min-height: 400px;
+.el-header{
+  padding: 0;
+}
+.nav-bar{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: aliceblue;
+  padding: 0 40px 0 20px;
+}
+.nav-items{
+  display: flex;
 }
 .el-menu span{
   font-size: 20px;
   font-weight: bold;
 }
 .el-link{
-  font-size: 16px;
+  padding: 20px;
   font-weight: bold;
+  border-left: 1px solid gray;
+  transition: 0.1s linear;
+}
+.el-link span {
+  font-size: 18px;
+}
+.el-link:hover{
+  background: #409EFF;
+  color: white;
+  transition: 0.1s linear;
+}
+.menu-link{
+  border: 2px solid black;
+  border-radius: 5px; 
+  padding: 6px;
+  transition: 0.1s linear;
+}
+.menu-link:hover{
+  border-color: #409EFF;
+  transition: 0.1s linear;
 }
 </style>

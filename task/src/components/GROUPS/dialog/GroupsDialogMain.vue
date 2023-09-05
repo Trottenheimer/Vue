@@ -37,34 +37,34 @@ export default{
     methods:{
         handleDialogCreate(){//ДОБАВЛЕНИЕ
             this.$postData(this.$URL_GROUP_LIST, '', this.group).then(response => {
-                console.log(response);
-                if (response && response.status === 201)
-                    ElNotification({title:'Редактирование групп', message: 'Группа успешно добавлена!', type:'success'})
-                else
-                    ElNotification({title:'Редактирование групп', message: 'Что-то пошло не так!', type:'error'})
                 this.$emit('refresh');
+                if (response && response.status === 201)
+                    ElNotification({title:'Редактирование групп', message: 'Группа успешно добавлена!', type:'success'});
+                else if (response && response.response.status === 409)
+                    ElNotification({title:'Редактирование групп', message: 'Группа с таким названием уже существует!', type:'warning'});
+                else
+                    ElNotification({title:'Редактирование групп', message: 'Что-то пошло не так!', type:'error'});
             });
         },
         handleDialogEdit(){//РЕДАКТИРОВАНИЕ
             const request = Object.assign({}, this.group);
             delete request.id;
             this.$updateData(this.$URL_GROUP_LIST, '?id=eq.' + this.group.id, request).then( response => {
-                console.log(response);
+                this.$emit('refresh');
                 if (response && response.status === 204)
                     ElNotification({title:'Редактирование групп', message: 'Группа успешно обновлена!', type:'success'})
                 else
-                    ElNotification({title:'Редактирование групп', message: 'Что-то пошло не так!', type:'error'})    
-                this.$emit('refresh');
+                    ElNotification({title:'Редактирование групп', message: 'Что-то пошло не так!', type:'error'})
             });
         },
         handleDialogDelete(){//УДАЛЕНИЕ
             this.$deleteData(this.$URL_GROUP_LIST, '?id=eq.' + this.group.id).then(response => {
+                this.$emit('refresh');
                 if (response && response.status === 204)
                     ElNotification({title:'Редактирование групп', message: 'Группа успешно удалена!', type:'success'})
                 else
                     ElNotification({title:'Редактирование групп', message: 'Что-то пошло не так!', type:'error'})    
                 this.$emit('close');
-                this.$emit('refresh');
             });
         },
     }

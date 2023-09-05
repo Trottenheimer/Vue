@@ -38,38 +38,36 @@ export default{
             let request = Object.assign({}, this.right);
             delete request.id;
             this.$postData(this.$URL_RIGHT_LIST, '', request).then(response => {
+                this.$emit('refresh');
                 if(response && response.status === 201)
-                    ElNotification({title: 'Создание', message: 'Право успешно создано.', type: 'success'})
+                    ElNotification({title: 'Добавление', message: 'Право успешно создано.', type: 'success'})
+                else if (response && response.response.status === 409)
+                    ElNotification({title: 'Добавление', message: 'Право с таким названием уже существует!', type: 'warning'})
                 else
-                    ElNotification({title: 'Создание', message: 'Что-то пошло не так!', type: 'error'})
-                this.$emit('refresh')
+                    ElNotification({title: 'Добавление', message: 'Что-то пошло не так!', type: 'error'});
             });
         },
         handleDialogEdit(){
             let request = Object.assign({}, this.right);
             delete request.id;
             this.$updateData(this.$URL_RIGHT_LIST + '?id=eq.', this.right.id , request).then(response => {
+                this.$emit('refresh');
                 if (response && response.status === 204)
                     ElNotification({title: 'Редактирование', message: 'Запись успешно обновлена.', type: 'success'})
                 else
                     ElNotification({title: 'Редактирование', message: 'Что-то пошло не так!', type: 'error'})
-                this.$emit('refresh')
             });
         },
         handleDialogDelete(){
             this.$deleteData(this.$URL_RIGHT_LIST + '?id=eq.', this.right.id).then(response => {
-                console.log(response);
+                this.$emit('refresh');
                 if (response && response.status === 204)
                     ElNotification({title: 'Удаление', message: 'Запись успешно удалена!', type: 'success'});
                 else
-                    ElNotification({title: 'Удаление', message: 'Что-то пошло не так!', type: 'error'})
-                this.$emit('refresh')
-                this.$emit('close')
+                    ElNotification({title: 'Удаление', message: 'Что-то пошло не так!', type: 'error'});
+                this.$emit('close');
             });
         },
-    },
-    mounted(){
-        console.log(this.item)
     }
 }
 </script>

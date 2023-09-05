@@ -23,16 +23,10 @@ export default{
     methods:{
         refreshData(){
             this.loading
-            const promises = [//СБОР ПРОМИСА ДЛЯ ОТСЛЕЖИВАНИЯ ВСЕХ АСИНХ ФУНКЦИЙ
-                this.$getData(this.$URL_GROUP_LIST, '').then(data => {
-                    this.groupList = data
-                }),
-            ]
-            Promise.all(promises).then(() => {
+            this.$getData(this.$URL_GROUP_LIST, '').then(data => {
+                this.groupList = data
                 this.loading.close();
-                console.log('All promises completed successfully.');
-            }).catch((e) => {
-                console.log('Error occured during promise processing:', e);
+                console.log('Data fetched');
             })
         },
     },

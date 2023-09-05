@@ -4,7 +4,7 @@
         <h1>Модуль пользователей</h1><br>
         <el-button-group>
             <el-button type="primary" @click=" item = {}; dialogType = 0; dialogVisible = true">
-                Добавить
+                Добавить пользователя
             </el-button>
             <el-button type="primary" @click="this.$emit('refresh')" icon="Refresh">Обновить</el-button>
         </el-button-group>

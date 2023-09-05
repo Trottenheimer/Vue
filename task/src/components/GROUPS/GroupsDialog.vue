@@ -64,10 +64,8 @@ export default{
             return this.dialogType ? 'Редактирование' : 'Добавление'
         },
         refresh(){
-            setTimeout(() => {//Задержка чтобы не терялся контент
-                this.currentKey += 1;
-                this.$emit('refresh');
-            }, 500);
+            this.$emit('refresh');
+            this.currentKey += 1;
         }
     }
 }

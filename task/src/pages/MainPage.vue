@@ -1,8 +1,5 @@
 <template>
   <el-container>
-    <el-header style="background: #409EFF;">
-      <h1><strong style="color: white; font-size: 36px">Главная страница</strong></h1>
-    </el-header>
     <el-main>
       <el-container style="width: 100%;">
         <el-row class="row">

@@ -120,27 +120,25 @@ export default{
             delete request.dept;
             delete request.people_id;
             this.$postData(this.$URL_EMP_UPSERT, '', {p_emp_data: request}).then( response => {
-                if (response && response.status === 200)
-                    ElNotification({title:'Редактирование пользователей', message: 'Пользователь успешно обновлен!', type:'success'})
-                else
-                    ElNotification({title:'Редактирование пользователей', message: 'Что-то пошло не так!', type:'error'})    
                 this.$emit('refresh');
+                if (response && response.status === 200)
+                    ElNotification({title:'Редактирование пользователей', message: 'Пользователь успешно обновлен!', type:'success'});
+                else
+                    ElNotification({title:'Редактирование пользователей', message: 'Что-то пошло не так!', type:'error'});
             });
         },
         handleDialogDelete(){//УДАЛЕНИЕ
             if (this.emp.id === 1) {//Надеюсь, это сработает и админ не удалится
-                console.log('Попытка удалить админа');
-                alert('Тебе не удалить админа!');
+                ElNotification({title:'Редактирование пользователей', message: 'Удаление администратора запрещено!', type:'warning'});
             }
             else
                 this.$postData(this.$URL_EMP_DELETE, '', {"p_emp_id": this.emp.id}).then(response => {
-                    console.log(response);
-                    if (response && response.status === 204)
-                        ElNotification({title:'Редактирование пользователей', message: 'Пользователь успешно удален!', type:'success'})
-                    else
-                        ElNotification({title:'Редактирование пользователей', message: 'Что-то пошло не так!', type:'error'})
-                    this.$emit('close');
                     this.$emit('refresh');
+                    if (response && response.status === 204)
+                        ElNotification({title:'Редактирование пользователей', message: 'Пользователь успешно удален!', type:'success'});
+                    else
+                        ElNotification({title:'Редактирование пользователей', message: 'Что-то пошло не так!', type:'error'});
+                    this.$emit('close');
                 });
         },
     }

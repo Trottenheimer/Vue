@@ -88,22 +88,6 @@ export default{
             });
             this.loading = false
         },
-        handleDialog(){
-            try {
-                for (let i = 0; i < this.rightList.length; i++) {
-                    //if (this.rightList[i].checked !== this.rightListCompare[i].checked)
-                        //this.rightList[i].checked
-                          //  ? 
-                            //: 
-                }
-                ElNotification({title: 'Редактирование пользователя', message: 'Права пользователя отозваны.', type: 'success'})
-            } catch (error) {
-                ElNotification({title: 'Редактирование пользователя', message: 'Что-то пошло не так!', type: 'error'});
-                console.log(error);
-            }
-            
-            this.$emit('refresh')
-        }
     },
     mounted(){
         this.fetchData();

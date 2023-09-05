@@ -84,9 +84,6 @@ export default{
             this.$emit('refresh')
             this.componentKey += 1;
         },
-        rerender(){
-            this.componentKey += 1;
-        }
     },
     mounted(){
         this.options.post = this.postList.map(obj =>{
