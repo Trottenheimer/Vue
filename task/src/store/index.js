@@ -1,23 +1,28 @@
 import {createStore} from "vuex";
 
 export default createStore({
-    state: () => ({//global storage $store.state.SERVER_URL
-        SERVER_URL: 'http://192.168.0.102:4000/'
+    state: () => ({//global storage $store.state.VAR
+        auth: {status: false},
+        user: {surname: '', name: '', patron: '', birth: '', sex: Number, dept: '', post: '', del: ''},
     }),
     getters:{//computed property
-        
     },
     mutations:{//allowed mutations
-        changeURL(state){//to use: $store.commit('changeURL')
-            state.SERVER_URL += 'URL';
+        SET_AUTH_STATUS: (state, status) => {
+            state.auth.status = status;
+        },
+        SET_USER_DATA: (state, data) => {
+            state.user = data;
         }
     },
     actions:{//functions. on input ALWAYS require object-context:{state, rootState, commit, dispatch, getters, rootGetters}
-        updateEmp(){
-
+        setAuthStatus: async(ctx, statusChange) => {
+            ctx.commit('SET_AUTH_STATUS', statusChange);
+        },
+        setUserData: async(ctx, data) => {
+            ctx.commit ('SET_USER_DATA', data);
         }
     },
     modules:{//register modules
-
-    }
+    },
 })

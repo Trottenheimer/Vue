@@ -1,10 +1,12 @@
+import { createRouter, createWebHistory } from "vue-router"
+
 import MainPage from "@/pages/MainPage"
 import GroupsPage from "@/pages/GroupsPage"
 import RightsPage from "@/pages/RightsPage"
 import EmpPage from "@/pages/EmpPage"
 import AuthPage from "@/pages/AuthPage"
 import TestPage from "@/pages/TestPage"
-import { createRouter, createWebHistory } from "vue-router"
+import ProfilePage from "@/pages/ProfilePage"
 
 const routes = [
     {
@@ -28,9 +30,13 @@ const routes = [
         component: AuthPage
     },
     {
+        path: '/profile',
+        component: ProfilePage
+    },
+    {
         path: '/test',
         component: TestPage
-    },
+    }
 ]
 
 const router = createRouter({

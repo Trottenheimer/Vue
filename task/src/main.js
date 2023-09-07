@@ -1,4 +1,4 @@
-import { createApp} from 'vue'
+import { createApp } from 'vue'
 import components from '@/components';
 //import "bootstrap/dist/css/bootstrap.min.css"
 //import "bootstrap"
@@ -9,6 +9,8 @@ import App from './App.vue'
 import router from './router/router';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import globalPlugin from "@/components/globalPlugin"
+import VueCookies from 'vue-cookies'
+import { VueCookieNext } from 'vue-cookie-next';
 
 const app = createApp(App)
 
@@ -23,4 +25,6 @@ app
     .use(router)
     .use(ElementPlus)
     .use(store)
+    .use(VueCookies)
+    .use(VueCookieNext)
     .mount('#app');

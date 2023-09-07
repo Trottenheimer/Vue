@@ -1,8 +1,9 @@
 <template>
-    <rights-list
+    <rights-list v-if="auth.status"
     :rightList="rightListComputed"
     @refresh="refresh"
     />
+    <non-auth v-else/>
 </template>
     
 <script>
@@ -10,15 +11,19 @@ import RightsList from "@/components/RIGHTS/RightsList.vue"
 
 import { ref } from 'vue';
 import { ElLoading } from 'element-plus'
+import { useStore } from "vuex";
 export default{
     name: 'rights-page',
     components:{
         RightsList,
     },
     setup(){
+        const store = useStore();
+        const auth = store.state.auth;
         const rightList = ref([]);
         const isLoaded = ref(false);
-        return{rightList, isLoaded};
+        console.log(auth);
+        return{rightList, isLoaded, auth};
     },
     methods:{
         refresh(){
@@ -39,7 +44,8 @@ export default{
         }
     },
     mounted(){
-        this.refresh();
+        if(this.auth.status)
+            this.refresh();
     }       
 }
 </script>

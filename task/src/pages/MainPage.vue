@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container v-if="auth.status">
     <el-main>
       <el-container style="width: 100%;">
         <el-row class="row">
@@ -33,8 +33,17 @@
       </el-container>
     </el-main>
   </el-container>
+  <non-auth v-else/>
 </template>
 <script>
+export default{
+  name: 'main-page',
+  data(){
+    return{
+      auth: this.$store.state.auth
+    }
+  }
+}
 </script>
 <style scoped>
 .row{
@@ -66,5 +75,8 @@ a{
 }
 a:hover{
   color: white;
+}
+.el-link span{
+  font-size: 24px;
 }
 </style>

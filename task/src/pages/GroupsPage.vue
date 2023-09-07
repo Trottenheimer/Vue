@@ -1,24 +1,28 @@
 <template>
-<groups-list
+<groups-list v-if="auth.status"
     :groupList="groupListComputed"
     @refresh="refreshData"
 />
+<non-auth v-else/>
 </template>
 <script>
 import GroupsList from "@/components/GROUPS/GroupsList.vue"
 import { ref } from "vue";
 import { ElLoading } from "element-plus";
+import { useStore } from "vuex";
 
 export default{
     name: "emp-page",
     components:{GroupsList},
     setup(){
+        const store = useStore();
+        const auth = store.state.auth;
         const groupList = ref([]);
         const loading = ElLoading.service({
             lock: true, text: 'Загрузка',
             background: 'rgba(0, 0, 0, 0.7)'
         });
-        return{groupList, loading};
+        return{groupList, loading, auth};
     },
     methods:{
         refreshData(){
@@ -36,7 +40,8 @@ export default{
         }
     },
     mounted(){
-        this.refreshData();
+        if(this.auth.status)
+            this.refreshData();
     }
 }
 </script>

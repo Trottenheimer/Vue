@@ -1,19 +1,23 @@
 <template>
-<emp-list
+<emp-list v-if="auth.status"
     :empList="empListComputed"
     :postList="postList"
     :deptList="deptList"
     @refresh="refreshData()"
 />
+<non-auth v-else/>
 </template>
 <script>
 import EmpList from "@/components/EMP/EmpList"
 import { ref } from "vue";
 import { ElLoading} from "element-plus";
+import { useStore } from "vuex";
 export default{
     name: "emp-page",
     components:{EmpList},
     setup(){
+        const store = useStore();
+        const auth = store.state.auth;
         const show = ref(false);
         const empList = ref([]);
         const postList = ref([]);
@@ -22,7 +26,7 @@ export default{
             lock: true, text: 'Загрузка',
             background: 'rgba(0, 0, 0, 0.7)'
         });
-        return{empList, deptList, postList, loading, show};
+        return{empList, deptList, postList, loading, show, auth};
     },
     methods:{
         refreshData(){
@@ -60,7 +64,8 @@ export default{
         }
     },
     mounted(){
-        this.refreshData();
+        if (this.auth.status)
+            this.refreshData();
     }
 }
 </script>

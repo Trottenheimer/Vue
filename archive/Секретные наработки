@@ -1,3 +1,5 @@
+//Отбрось надежды всяк сюда входящий
+
 let msg = [...//filling warning message using spread operator
                 [login.length === 0 ? 'Необходимо ввести логин.'
                     : !/^[a-zA-Z0-9]+$/.test(login) ? 'Разрешено вводить только буквы латиницы и цифры.' : ''],

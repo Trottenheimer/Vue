@@ -7,10 +7,10 @@
         ref="form"
     >
         <el-form-item label="Логин">
-            <el-input type="login" v-model="user.login" @keydown.enter="submitAuth" placeholder="Введите логин" clearable
+            <el-input type="login" v-model="user.login" @keydown.enter="submitForm" placeholder="Введите логин" clearable
             :minlength="4" :maxlength="16" show-word-limit/>
             <div v-if="warningMessage.login" class="warning-list">
-                <div class="warning-item" v-for="(msg, index) in warningMessage.login" :key="index">
+                <div class="warning-item" v-for="msg in warningMessage.login" :key="msg">
                     <template v-if="msg">
                         <el-icon><Close/></el-icon>
                         {{msg}}
@@ -19,9 +19,9 @@
             </div>
         </el-form-item>
         <el-form-item label="Пароль">
-            <el-input type="password" v-model="user.password" @keydown.enter="submitAuth" placeholder="Введите пароль" clearable/>
+            <el-input type="password" v-model="user.password" @keydown.enter="submitForm" placeholder="Введите пароль" clearable/>
             <div v-if="warningMessage.password" class="warning-list">
-                <span class="warning-item" v-for="(msg, index) in warningMessage.password" :key="index">
+                <span class="warning-item" v-for="msg in warningMessage.password" :key="msg">
                     <template v-if="msg">
                         <el-icon><Close/></el-icon>
                         {{msg}}
@@ -30,30 +30,42 @@
             </div>
         </el-form-item>
   </el-form>
-  <el-button type="primary" @click="submitAuth">Войти</el-button>
+  <el-button type="primary" @click="submitForm">Войти</el-button>
+  <el-button type="danger" @click="startAuth">Forced Auth</el-button>
 </el-container>
 </template>
 <script>
 import { ref } from 'vue';
+import { useStore } from 'vuex';
+import { useCookie } from 'vue-cookie-next'
+import { useRouter } from 'vue-router';
+import { ElNotification } from 'element-plus';
 export default{
     name: "auth-page",
     setup(){
         //VARIABLES
+        const { setCookie } = useCookie();
+        const store = useStore();
+        const router = useRouter();
         let user = ref({login: '', password: ''})
         let warningMessage = ref({login: [], password: []});
 
-
         //FUNCTIONS
-        const submitAuth = () => {
+        const submitForm = () => {
             warningMessage.value.login = validateLogin(user.value.login);
             warningMessage.value.password = validatePassword(user.value.password);
-
-            if (!warningMessage.value.login.length && !warningMessage.value.password.length)
-                console.log('Login accepted');
+            (!warningMessage.value.login.length && !warningMessage.value.password.length)
+                ? startAuth()
+                : ElNotification({title: 'Авторизация', message: 'Некорректно введены данные', type: 'warning'});
         }
+        const startAuth = async () => {
+            console.log('proceeding auth...');
+            setCookie('token', 'secret', {maxAge: 60*60*1000});
+            store.dispatch('setAuthStatus', true);
+            router.push('/');
+        }
+
         const validateLogin = (login) => {//Login validation
-            
-            
             let msg = [];
             if(login.length === 0) msg.push('Необходимо ввести логин.');
             if(!/^[a-zA-Z0-9]+$/.test(login) && login.length > 0) msg.push('Разрешено вводить только буквы латиницы и цифры.');
@@ -72,8 +84,16 @@ export default{
         //RETURN
         return{
             user, warningMessage,
-            submitAuth,
+            submitForm, startAuth,
         };
+    },
+    methods:{
+        setToken(key){
+            this.$cookies.set('token', key, '1h');
+        }
+    },
+    mounted(){
+        console.log('AUTH STATUS', this.$store.state.auth);
     }
 }
 </script>

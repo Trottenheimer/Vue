@@ -1,0 +1,31 @@
+{
+  "players": [
+    {
+      "id": 0,
+      "name": "Алдар",
+      "coords": {
+        "x": 0,
+        "y": 0
+      },
+      "active": true
+    },
+    {
+      "id": 1,
+      "name": "Мишаня",
+      "coords": {
+        "x": 0,
+        "y": 0
+      },
+      "active": false
+    },
+    {
+      "id": 2,
+      "name": "Максимыч",
+      "coords": {
+        "x": 0,
+        "y": 0
+      },
+      "active": false
+    }
+  ]
+}
