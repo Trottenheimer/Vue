@@ -9,8 +9,8 @@
 <script>
 import RightsList from "@/components/RIGHTS/RightsList.vue"
 
-import { ref } from 'vue';
-import { ElLoading } from 'element-plus'
+import { onErrorCaptured, ref } from 'vue';
+import { ElLoading, ElNotification } from 'element-plus'
 import { useStore } from "vuex";
 export default{
     name: 'rights-page',
@@ -22,7 +22,9 @@ export default{
         const auth = store.state.auth;
         const rightList = ref([]);
         const isLoaded = ref(false);
-        console.log(auth);
+        onErrorCaptured(() => {
+            ElNotification({title: 'Модуль ползователей', message: 'Произошла ошибка!', type: 'error'});
+        })
         return{rightList, isLoaded, auth};
     },
     methods:{

@@ -2,16 +2,16 @@
   "players": [
     {
       "id": 0,
-      "name": "Алдар",
+      "name": "Тест 0",
       "coords": {
         "x": 0,
         "y": 0
       },
-      "active": true
+      "active": false
     },
     {
       "id": 1,
-      "name": "Мишаня",
+      "name": "Тест 1",
       "coords": {
         "x": 0,
         "y": 0
@@ -20,7 +20,7 @@
     },
     {
       "id": 2,
-      "name": "Максимыч",
+      "name": "Тест 2",
       "coords": {
         "x": 0,
         "y": 0

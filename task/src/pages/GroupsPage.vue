@@ -7,8 +7,8 @@
 </template>
 <script>
 import GroupsList from "@/components/GROUPS/GroupsList.vue"
-import { ref } from "vue";
-import { ElLoading } from "element-plus";
+import { onErrorCaptured, ref } from "vue";
+import { ElLoading, ElNotification } from "element-plus";
 import { useStore } from "vuex";
 
 export default{
@@ -22,6 +22,9 @@ export default{
             lock: true, text: 'Загрузка',
             background: 'rgba(0, 0, 0, 0.7)'
         });
+        onErrorCaptured(() => {
+            ElNotification({title: 'Модуль групп', message: 'Произошла ошибка!', type: 'error'});
+        })
         return{groupList, loading, auth};
     },
     methods:{

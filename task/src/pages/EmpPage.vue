@@ -9,8 +9,8 @@
 </template>
 <script>
 import EmpList from "@/components/EMP/EmpList"
-import { ref } from "vue";
-import { ElLoading} from "element-plus";
+import { onErrorCaptured, ref } from "vue";
+import { ElLoading, ElNotification} from "element-plus";
 import { useStore } from "vuex";
 export default{
     name: "emp-page",
@@ -26,6 +26,9 @@ export default{
             lock: true, text: 'Загрузка',
             background: 'rgba(0, 0, 0, 0.7)'
         });
+        onErrorCaptured(() => {
+            ElNotification({title: 'Модуль пользователей', message: 'Произошла ошибка!', type: 'error'});
+        })
         return{empList, deptList, postList, loading, show, auth};
     },
     methods:{

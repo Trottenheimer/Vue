@@ -1,58 +1,50 @@
 <template>
   <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IBIS</title>
-  </head>
-  <body>
-    <el-container>
-      <el-header>
-        <div class="nav-bar" v-if="auth.status">
-          <div class="nav-items">
-            <el-link href="/" :underline="false">
-              <el-icon><HomeFilled/></el-icon>
-              <span>Главная</span>
-            </el-link>
-            <el-link href="/emp" :underline="false">
-              <el-icon><UserFilled/></el-icon>
-              <span>Пользователи</span>
-            </el-link>
-            <el-link href="/groups" :underline="false">
-              <el-icon><Grid /></el-icon>
-              <span>Группы</span>
-            </el-link>
-            <el-link href="/rights" :underline="false">
-              <el-icon><Select /></el-icon>
-              <span>Права</span>
-            </el-link>
-          </div>
-          <div class="nav-menu">
-              <el-link v-if="!auth.status" href="/auth" :underline="false" class="menu-link">
-                <span>Войти</span>
-              </el-link>
-              <el-dropdown v-else>
-                <span class="menu-link">
-                  <el-icon color="black" size="18" style="border: 1px solid black; border-radius: 2px;"><More/></el-icon>
-                  <span>Меню</span>
-                </span>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item @click="$router.push('/profile')">Профиль</el-dropdown-item>
-                    <el-dropdown-item divided @click="logOut">Выйти</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-          </div>
+  <el-container>
+    <el-header>
+      <div class="nav-bar" v-if="auth.status">
+        <div class="nav-items">
+          <el-link href="/" :underline="false">
+            <el-icon><HomeFilled/></el-icon>
+            <span>Главная</span>
+          </el-link>
+          <el-link href="/emp" :underline="false">
+            <el-icon><UserFilled/></el-icon>
+            <span>Пользователи</span>
+          </el-link>
+          <el-link href="/groups" :underline="false">
+            <el-icon><Grid /></el-icon>
+            <span>Группы</span>
+          </el-link>
+          <el-link href="/rights" :underline="false">
+            <el-icon><Select /></el-icon>
+            <span>Права</span>
+          </el-link>
         </div>
-      </el-header>
-      <el-main>
-        <router-view/>
-      </el-main>
-    </el-container>
-  </body>
-</html>
+        <div class="nav-menu">
+            <el-link v-if="!auth.status" href="/auth" :underline="false" class="menu-link">
+              <span>Войти</span>
+            </el-link>
+            <el-dropdown v-else>
+              <span class="menu-link">
+                <el-icon color="black" size="18" style="border: 1px solid black; border-radius: 2px;"><More/></el-icon>
+                <span>Меню</span>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item @click="$router.push('/profile')">Профиль</el-dropdown-item>
+                  <el-dropdown-item @click="$router.push('/test')">тест</el-dropdown-item>
+                  <el-dropdown-item divided @click="logOut">Выйти</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+        </div>
+      </div>
+    </el-header>
+    <el-main>
+      <router-view/>
+    </el-main>
+  </el-container>
 </template>
 
 <script>

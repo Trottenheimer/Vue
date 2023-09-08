@@ -1,10 +1,16 @@
 <template>
 <div class="screen">
-    <div v-if="!player.active" style="margin: auto;">
-        <el-button size="large" @click="dialogVisible = true">Начать игру</el-button>
+    <div v-if="player.active" class="map">
+        <table>
+            <tbody v-for="Y in sizeY" :key="-Y">
+                <tr v-for="X in sizeX" :key="X">
+                    <td>Hello</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-    <div>
-
+    <div v-else style="margin: auto;">
+        <el-button size="large" @click="showMenu">Тест</el-button>
     </div>
 </div>
 
@@ -21,7 +27,7 @@
     </template>
     <template #footer>
     <div class="dialog-footer">
-        <el-button type="primary">Готово</el-button>
+        <el-button type="primary" @click="dialogVisible = false">Готово</el-button>
     </div>
     </template>
 </el-dialog>
@@ -43,30 +49,30 @@ export default{
 
 
         //функции
+        const showMenu = async() => {
+            dialogVisible.value = true;
+            refreshData();
+        }
         const refreshData = async() => {
-            getData(server,'').then(data => {
+            getData(server, '').then(data => {
                 playerList.value = data;
             });
         };
         const selectPlayer = async (id) => {
-            refreshData();
-            player.value = playerList.value[id]
-            console.log(playerList.value[id]);
-            !player.value.active
-                ? updateData(server, id, {active: true})
-                : console.log('no');
+            updateData(server, id, {active: true}).then(refreshData().then(player.value = Object.assign(playerList.value[id])));
+            console.log([player.value]);
         };
         return {
             mapSize, currentCoords, player, playerList, dialogVisible,
-            refreshData, selectPlayer,
+            refreshData, selectPlayer, showMenu
         }
     },
     mounted(){
         this.refreshData();
     },
-    beforeUnmount(){
+    unmounted(){
         updateData(server, this.player.id, {active: false})
-    }
+    },
 }
 </script>
 <style>
@@ -87,5 +93,8 @@ export default{
 }
 .player-card:hover{
     background: aliceblue;
+}
+.map{
+    background: white;
 }
 </style>
