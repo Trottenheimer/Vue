@@ -3,7 +3,7 @@ import {createStore} from "vuex";
 export default createStore({
     state: () => ({//global storage $store.state.VAR
         auth: {status: false},
-        user: {surname: '', name: '', patron: '', birth: '', sex: Number, dept: '', post: '', del: ''},
+        user: {id: Number, token: ''}
     }),
     getters:{//computed property
     },

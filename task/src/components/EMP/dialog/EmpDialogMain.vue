@@ -1,15 +1,15 @@
 <template>
 <el-form :model="emp">
     <el-form-item>
-        <span>Фамилия</span>
+        <span>Фамилия*</span>
         <el-input v-model="emp.surname"></el-input>
     </el-form-item>
     <el-form-item>
-        <span>Имя</span>
+        <span>Имя*</span>
         <el-input v-model="emp.name"></el-input>
     </el-form-item>
     <el-form-item>
-        <span>Отчество</span>
+        <span>Отчество*</span>
         <el-input v-model="emp.patron"></el-input>
     </el-form-item>
     <el-form-item>
@@ -22,7 +22,7 @@
         </el-form-item>
     <el-row>
         <el-col :span="10">
-            <span>Пол</span><br>
+            <span>Пол*</span><br>
             <el-select placeholder="Укажите пол..."
                 v-model="emp.sex"
             >
@@ -35,18 +35,19 @@
             </el-select>
         </el-col>
         <el-col :span="10">
-            <span>Дата рождения</span><br>
+            <span>Дата рождения*</span><br>
             <el-form-item>
                 <el-date-picker type="date" v-model="emp.birth"
                     format="YYYY/MM/DD" placeholder="Укажите дату рождения"
                     value-format="YYYY-MM-DD"
+                    :min="minDate" :max="maxDate"
                 />
             </el-form-item>
         </el-col>
     </el-row>
     <el-row>
         <el-col :span="10">
-            <span>Должность</span>
+            <span>Должность*</span>
             <el-form-item>
                 <el-select placeholder="Укажите должность..."
                     v-model="emp.post_id"
@@ -61,7 +62,7 @@
             </el-form-item>
         </el-col>
         <el-col :span="10">
-            <span>Отделение</span>
+            <span>Отделение*</span>
             <el-form-item>
                 <el-select placeholder="Укажите отделение..."
                     v-model="emp.dept_id"
@@ -96,6 +97,8 @@ export default{
         return{
             emp: this.item,
             options: this.getOptions,
+            minDate: '1900-01-01',
+            maxDate: new Date().toISOString().slice(0, 10)
         }
     },
     props:{
@@ -105,13 +108,16 @@ export default{
     },
     methods:{
         handleDialogCreate(){//ДОБАВЛЕНИЕ
-            this.$postData(this.$URL_EMP_UPSERT, '', {"p_emp_data": this.emp}).then(response => {
-                if (response && response.status === 200)
-                    ElNotification({title:'Редактирование пользователей', message: 'Пользователь успешно добавлен!', type:'success'})
-                else
-                    ElNotification({title:'Редактирование пользователей', message: 'Что-то пошло не так!', type:'error'})
-                this.$emit('refresh');
-            });
+            if (!this.emp.surname || !this.emp.name || !this.emp.patron || !this.emp.birth || !this.emp.sex || !this.emp.dept_id || !this.emp.post_id)
+                ElNotification({title: 'Редактирование пользователей', message: 'Необходимо заполнить обязательные поля!', type: 'warning'})
+            else
+                this.$postData(this.$URL_EMP_UPSERT, '', {"p_emp_data": this.emp}).then(response => {
+                    if (response && response.status === 200)
+                        ElNotification({title:'Редактирование пользователей', message: 'Пользователь успешно добавлен!', type:'success'})
+                    else
+                        ElNotification({title:'Редактирование пользователей', message: 'Что-то пошло не так!', type:'error'})
+                    this.$emit('refresh');
+                });
         },
         handleDialogEdit(){//РЕДАКТИРОВАНИЕ
             const request = Object.assign({}, this.emp);
@@ -119,13 +125,16 @@ export default{
             delete request.post;
             delete request.dept;
             delete request.people_id;
-            this.$postData(this.$URL_EMP_UPSERT, '', {p_emp_data: request}).then( response => {
-                this.$emit('refresh');
-                if (response && response.status === 200)
-                    ElNotification({title:'Редактирование пользователей', message: 'Пользователь успешно обновлен!', type:'success'});
-                else
-                    ElNotification({title:'Редактирование пользователей', message: 'Что-то пошло не так!', type:'error'});
-            });
+            if (!this.emp.surname || !this.emp.name || !this.emp.patron || !this.emp.birth || !this.emp.sex || !this.emp.dept_id || !this.emp.post_id)
+                ElNotification({title: 'Редактирование пользователей', message: 'Необходимо заполнить обязательные поля!', type: 'warning'})
+            else
+                this.$postData(this.$URL_EMP_UPSERT, '', {p_emp_data: request}).then( response => {
+                    this.$emit('refresh');
+                    if (response && response.status === 200)
+                        ElNotification({title:'Редактирование пользователей', message: 'Пользователь успешно обновлен!', type:'success'});
+                    else
+                        ElNotification({title:'Редактирование пользователей', message: 'Что-то пошло не так!', type:'error'});
+                });
         },
         handleDialogDelete(){//УДАЛЕНИЕ
             if (this.emp.id === 1) {//Надеюсь, это сработает и админ не удалится

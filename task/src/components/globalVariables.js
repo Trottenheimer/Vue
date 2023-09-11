@@ -2,6 +2,8 @@ const SERVER = 'http://pgrest.oblteh:4000/';
 export default{
     //АДРЕСА ЗАПРОСОВ
     URL_SERVER: SERVER,
+    
+    URL_AUTH: SERVER + 'rpc/authenticate',
 
     URL_EMP_LIST: SERVER + 'emp_list',
     URL_EMP_UPSERT: SERVER + 'rpc/emp_upsert',

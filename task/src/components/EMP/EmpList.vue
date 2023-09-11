@@ -98,7 +98,6 @@ export default{
             this.search.name = query[1];
             this.search.patron = query[2];
             console.log(this.search);
-            this.search.patron ? console.log('est') : console.log('no');
         },
         tableRowClassName({row}){
             return row.del == 1 ? 'row-danger' : ''
@@ -116,9 +115,12 @@ export default{
             let patron = this.empList.filter(emp => {
                 return emp.patron?.toLowerCase().includes(this.search.patron?.toLowerCase());
             });
-            return surname.filter(item => {
-                return this.search.name ? name.includes(item) : true && this.search.patron ? patron.includes(item): true;
+            let filteredBySN = surname.filter(item => {//Фильтрация по фамилии и имени
+                return this.search.name ? name.includes(item) : true;
             });
+            return filteredBySN.filter(item => {//Фильтрация по отчеству
+                return this.search.patron ? patron.includes(item): true;
+            })//УРРРАА РАБОТАЕТ
         }
     }
 }

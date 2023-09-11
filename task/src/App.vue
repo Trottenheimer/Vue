@@ -4,19 +4,19 @@
     <el-header>
       <div class="nav-bar" v-if="auth.status">
         <div class="nav-items">
-          <el-link href="/" :underline="false">
+          <el-link href="/" :underline="false" :class="{'active' : currentPath === '/'}">
             <el-icon><HomeFilled/></el-icon>
             <span>Главная</span>
           </el-link>
-          <el-link href="/emp" :underline="false">
+          <el-link href="/emp" :underline="false" :class="{'active' : currentPath === '/emp'}">
             <el-icon><UserFilled/></el-icon>
             <span>Пользователи</span>
           </el-link>
-          <el-link href="/groups" :underline="false">
+          <el-link href="/groups" :underline="false" :class="{'active' : currentPath === '/groups'}">
             <el-icon><Grid /></el-icon>
             <span>Группы</span>
           </el-link>
-          <el-link href="/rights" :underline="false">
+          <el-link href="/rights" :underline="false" :class="{'active' : currentPath === '/rights'}">
             <el-icon><Select /></el-icon>
             <span>Права</span>
           </el-link>
@@ -33,7 +33,7 @@
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item @click="$router.push('/profile')">Профиль</el-dropdown-item>
-                  <el-dropdown-item @click="$router.push('/test')">тест</el-dropdown-item>
+                  <el-dropdown-item @click="testSomething">тест</el-dropdown-item>
                   <el-dropdown-item divided @click="logOut">Выйти</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -52,21 +52,39 @@ export default {
   name: 'App',
   data(){
     return{
-      auth: this.$store.state.auth
+      auth: this.$store.state.auth,
     }
   },
   methods:{
     checkAuth(){
       let status = false;
-      console.log('Token: ', this.$cookies.get('token'));
-      this.$cookies.get('token') ? status = true : status = false;
+      let token = this.$cookies.get('token');
+      console.log('Token: ', token);
+      if(!token)
+        console.log('Non-authed.');
+      token ? status = true : status = false;
       this.$store.dispatch('setAuthStatus', status);
+      if (status)
+        this.$store.dispatch('setUserData', {id: this.$decodeToken().emp_id});
     },
     logOut(){
       this.$store.dispatch('setAuthStatus', false);
+      this.$store.dispatch('setUserData', {});
       this.$cookies.remove('token');
-      this.$router.push('/')
+      this.$router.push('/auth')
+    },
+    testSomething(){
+      console.log(this.$cookie.getCookie('token'));//token
     }
+  },
+  computed:{
+    currentPath(){
+      return this.$route.path;
+    }
+  },
+  updated(){
+    if (this.$getCookie() == null)
+      console.log('кука истекла');
   },
   mounted(){
     this.checkAuth();
@@ -144,5 +162,9 @@ export default {
   font-weight: bold;
   border-left: 1px solid gray;
   transition: 0.1s linear;
+}
+.active{
+  background: #409EFF;
+  color: white;
 }
 </style>

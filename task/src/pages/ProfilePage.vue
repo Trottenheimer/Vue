@@ -1,6 +1,6 @@
 <template>
     <el-container style="flex-direction:column" v-if="auth.status">
-        <h1>Профиль</h1>
+        <h1>Профиль врача {{user.id}}</h1>
         <div class="profile-block">
             <div class="profile">
                 <div class="profile-main">
@@ -13,19 +13,19 @@
                             :before-upload="beforeAvatarUpload"
                         >
                             <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-                            <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+                            <el-icon v-else class="avatar-uploader-icon"><User/></el-icon>
                         </el-upload>
                     </div>
                     <div class="main-info">
-                        <span>Фамилия</span>
-                        <span>Имя</span>
-                        <span>Отчество</span>
-                        <span>Дата рождения</span>
-                        <span>Пол</span>
+                        <span>{{userData.surname}}</span>
+                        <span>{{userData.name}}</span>
+                        <span>{{userData.patron}}</span>
+                        <span>{{userData.birth}}</span>
+                        <span>{{userData.sex === 1 ? 'Мужской' : userData.sex === 2 ? 'Женский' : 'Не указан'}}</span>
                     </div>
                 </div>
-                <span>Отделение</span>
-                <span>Должность</span>
+                <span>{{userData.post}}</span>
+                <span>{{userData.dept}}</span>
             </div>
         </div>
     </el-container>
@@ -36,8 +36,43 @@ export default{
     name: "profile-page",
     data(){
         return{
-            auth: this.$store.state.auth
+            auth: this.$store.state.auth,
+            user: this.$store.state.user,
+            userData: {}
         }
+    },
+    methods:{
+        fetchData(){
+            this.loading
+            this.$getData(this.$URL_EMP_LIST, '?id=eq.'+ this.user.id).then(data => {
+                this.userData = data[0];
+                const promises = [//СБОР ПРОМИСА ДЛЯ ОТСЛЕЖИВАНИЯ ВСЕХ АСИНХ ФУНКЦИЙ
+                    this.$getData(this.$URL_POST_LIST, '?id=eq.' + this.userData.post_id).then(data => {
+                        this.userData.post = data;
+                    }),
+                    this.$getData(this.$URL_DEPT_LIST, '?id=eq.' + this.userData.dept_id).then(data => {
+                        this.userData.dept = data;
+                    })
+                ]
+                Promise.all(promises).then(() => {
+                    this.loading.close();
+                    console.log('All promises completed successfully.');
+                    this.empList.forEach(emp => {
+                        this.postList.forEach(post => {
+                            if (emp.post_id === post.id) emp.post = post.name
+                        })
+                        this.deptList.forEach(dept => {
+                            if (emp.dept_id === dept.id) emp.dept = dept.name
+                        })
+                    });
+                }).catch((e) => {
+                    console.log('Error occured during promise processing:', e);
+                })
+            });
+        }
+    },
+    mounted(){
+        this.fetchData();
     }
 }
 </script>
@@ -72,5 +107,9 @@ h1{
 .main-image{
     border: 1px solid black;
     min-width: 20%;
+}
+.el-icon{
+    height: 100px;
+    width: 100px;
 }
 </style>
