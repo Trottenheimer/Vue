@@ -5,7 +5,6 @@
     />
     <non-auth v-else/>
 </template>
-    
 <script>
 import RightsList from "@/components/RIGHTS/RightsList.vue"
 

@@ -48,6 +48,20 @@
 </template>
 
 <script>
+import axios from 'axios';
+import { ElNotification } from 'element-plus';
+
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response.status === 401) {
+      console.error('Ошибка авторизации(401):', error.response.data);
+      this.logOut();
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default {
   name: 'App',
   data(){
@@ -65,16 +79,20 @@ export default {
       token ? status = true : status = false;
       this.$store.dispatch('setAuthStatus', status);
       if (status)
-        this.$store.dispatch('setUserData', {id: this.$decodeToken().emp_id});
+        this.$store.dispatch('setUserData', {id: this.$decodeToken().people_id});
     },
     logOut(){
       this.$store.dispatch('setAuthStatus', false);
       this.$store.dispatch('setUserData', {});
       this.$cookies.remove('token');
-      this.$router.push('/auth')
+      this.$router.push('/auth');
+      ElNotification({title: 'Система', message: 'Время сессии истекло. Необходимо перезайти в систему!', type: 'info'})
     },
     testSomething(){
       console.log(this.$cookie.getCookie('token'));//token
+      this.$getData(this.$URL_EMP_GET_PROFILES, '?p_people_id=' + this.$decodeToken().people_id).then(data => {
+        console.log(data);
+      })
     }
   },
   computed:{
@@ -82,12 +100,14 @@ export default {
       return this.$route.path;
     }
   },
-  updated(){
-    if (this.$getCookie() == null)
-      console.log('кука истекла');
-  },
   mounted(){
     this.checkAuth();
+    /*setInterval(() => {
+      if(this.auth.status){
+        if (!this.$getCookie('token'))
+          this.logOut();
+      }
+    }, 10000);*/
   }
 }
 </script>
@@ -163,7 +183,7 @@ export default {
   border-left: 1px solid gray;
   transition: 0.1s linear;
 }
-.active{
+.active{/*active navbar item*/
   background: #409EFF;
   color: white;
 }

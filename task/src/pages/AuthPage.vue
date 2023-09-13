@@ -33,14 +33,19 @@
   </el-form>
   <el-button type="primary" @click="validateAuth">Войти</el-button>
 </el-container>
+
+<el-dialog v-model="dialogVisible" v-if="dialogVisible">
+Privet
+</el-dialog>
 </template>
+
 <script>
 import { ref } from 'vue';
 import { useStore } from 'vuex';
 import { useCookie } from 'vue-cookie-next'
 import { useRouter } from 'vue-router';
 import { ElNotification } from 'element-plus';
-import { postData } from '@/components/globalFunctions'
+import { getData, postData, decodeToken } from '@/components/globalFunctions'
 export default{
     name: "auth-page",
     setup(){
@@ -51,6 +56,7 @@ export default{
 
         let user = ref({login: '', password: ''})
         let warningMessage = ref({login: [], password: []});
+        let dialogVisible = ref(false);
 
         //FUNCTIONS
         const validateAuth = () => {
@@ -67,17 +73,28 @@ export default{
                 p_login: user.value.login.toUpperCase(),
                 p_pass: user.value.password
             }).then(response => {
-                console.log(response.status);
-                if (response.status === 200){    
-                    console.log(response.data.token);
+                console.log(response);
+                if (response.status === 200){
                     let token = response.data.token;
-                    setCookie('token', token, {expire: 60*60});
-                    store.dispatch('setAuthStatus', true);
-                    router.push('/');
+                    let expirationTime = 60*60//seconds
+                    setCookie('token', token, {expire: expirationTime});
+                    console.log(`Token expiration time: ${expirationTime} seconds`);
+                    chooseProfile();
                 }
-                else if (response.response.status === 403)
-                    warningMessage.value.password.push('Логин или пароль неверен')
+                else if (response.status === 403)
+                    warningMessage.value.password.push('Логин или пароль неверен');
+                else if (response === [])
+                    console.log('Ошибка');
             })
+        }
+
+        const chooseProfile = async () => {
+            getData('http://pgrest.oblteh:4000/rpc/emp_get_profiles', '?p_people_id=' + decodeToken().people_id).then(data => {
+                console.log(data);
+                dialogVisible = true;
+            });
+            store.dispatch('setAuthStatus', true);
+            user.value === 213213 ? router.push('/') : true;
         }
 
         const validateLogin = (login) => {//Login validation
@@ -98,8 +115,8 @@ export default{
         };
         //RETURN
         return{
-            user, warningMessage,
-            validateAuth, startAuth,
+            user, warningMessage, dialogVisible,
+            validateAuth,
         };
     },
     mounted(){

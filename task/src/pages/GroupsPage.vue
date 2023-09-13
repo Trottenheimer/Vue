@@ -18,18 +18,17 @@ export default{
         const store = useStore();
         const auth = store.state.auth;
         const groupList = ref([]);
-        const loading = ElLoading.service({
-            lock: true, text: 'Загрузка',
-            background: 'rgba(0, 0, 0, 0.7)'
-        });
         onErrorCaptured(() => {
             ElNotification({title: 'Модуль групп', message: 'Произошла ошибка!', type: 'error'});
         })
-        return{groupList, loading, auth};
+        return{groupList, auth};
     },
     methods:{
         refreshData(){
-            this.loading
+            this.loading = ElLoading.service({
+                lock: true, text: 'Загрузка',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
             this.$getData(this.$URL_GROUP_LIST, '').then(data => {
                 this.groupList = data
                 this.loading.close();

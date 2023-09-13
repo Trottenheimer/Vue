@@ -12,6 +12,7 @@ export default{
     URL_EMP_ADD_G: SERVER + 'rpc/emp_add_group',
     URL_EMP_DEL_R: SERVER + 'rpc/emp_delete_right',
     URL_EMP_DEL_G: SERVER + 'rpc/emp_delete_group',//{"p_emp_id": 0,"p_group_id": 0}
+    URL_EMP_GET_PROFILES: SERVER + 'rpc/emp_get_profiles',
     URL_EMP_GROUPS: SERVER + 'rpc/get_emp_groups?p_emp_id=',
     URL_EMP_RIGHTS: SERVER + 'rpc/get_emp_all_rights?p_emp_id=',
     URL_EMP_DIR_RIGHTS: SERVER + 'rpc/get_emp_direct_right?p_emp_id=',

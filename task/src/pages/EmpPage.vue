@@ -22,18 +22,17 @@ export default{
         const empList = ref([]);
         const postList = ref([]);
         const deptList = ref([]);
-        const loading = ElLoading.service({
-            lock: true, text: 'Загрузка',
-            background: 'rgba(0, 0, 0, 0.7)'
-        });
         onErrorCaptured(() => {
             ElNotification({title: 'Модуль пользователей', message: 'Произошла ошибка!', type: 'error'});
         })
-        return{empList, deptList, postList, loading, show, auth};
+        return{empList, deptList, postList, show, auth};
     },
     methods:{
         refreshData(){
-            this.loading
+            this.loading = ElLoading.service({
+                lock: true, text: 'Загрузка',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
             const promises = [//СБОР ПРОМИСА ДЛЯ ОТСЛЕЖИВАНИЯ ВСЕХ АСИНХ ФУНКЦИЙ
                 this.$getData(this.$URL_EMP_LIST, '').then(data => {
                     this.empList = data

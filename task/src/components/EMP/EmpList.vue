@@ -97,7 +97,6 @@ export default{
             this.search.surname = query[0];
             this.search.name = query[1];
             this.search.patron = query[2];
-            console.log(this.search);
         },
         tableRowClassName({row}){
             return row.del == 1 ? 'row-danger' : ''
@@ -105,7 +104,6 @@ export default{
     },
     computed:{
         empListComputed(){
-            console.log(this.search);
             let surname = this.empList.filter(emp => {
                 return emp.surname?.toLowerCase().includes(this.search.surname?.toLowerCase());
             });

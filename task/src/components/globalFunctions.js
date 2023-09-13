@@ -2,7 +2,7 @@ import axios from "axios";
 import jwtDecode from 'jwt-decode';
 
 
-const getCookie = (name) => {
+export function getCookie (name){
     const cookies = document.cookie.split(';');
     for (let i = 0; i < cookies.length; i++) {
         const cookie = cookies[i].trim();
@@ -10,8 +10,7 @@ const getCookie = (name) => {
             return cookie.substring(name.length + 1);
     }
     return null;
-};
-
+}
 export async function getData(url, query){
     let config = {
         headers:{
@@ -23,6 +22,7 @@ export async function getData(url, query){
         return response.data;
     } catch (error) {
         console.error('ошибка при сборе данных: ', error);
+        return error;
     }
 }
 export async function postData(url, query, data){
@@ -42,7 +42,7 @@ export async function postData(url, query, data){
         return response;
     } catch (error) {
         console.error('ошибка при POST-запросе: ', error);
-        return error
+        return error.response;
     }
 }
 export async function updateData(url, query, data){
@@ -58,6 +58,7 @@ export async function updateData(url, query, data){
         return response;   
     } catch (error) {
         console.log('ошибка при обновлении: ', error);
+        return error;
     }
 }
 export async function deleteData(url, query){
@@ -71,6 +72,7 @@ export async function deleteData(url, query){
         return response;    
     } catch (error) {
         console.error('ошибка при удалении: ', error);
+        return error;
     }
 }
 export function decodeToken(token){
