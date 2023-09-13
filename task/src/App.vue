@@ -51,17 +51,6 @@
 import axios from 'axios';
 import { ElNotification } from 'element-plus';
 
-axios.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.response.status === 401) {
-      console.error('Ошибка авторизации(401):', error.response.data);
-      this.logOut();
-    }
-    return Promise.reject(error);
-  }
-);
-
 export default {
   name: 'App',
   data(){
@@ -73,26 +62,22 @@ export default {
     checkAuth(){
       let status = false;
       let token = this.$cookies.get('token');
-      console.log('Token: ', token);
       if(!token)
         console.log('Non-authed.');
-      token ? status = true : status = false;
+      token ? status = true : this.logOut();
       this.$store.dispatch('setAuthStatus', status);
       if (status)
-        this.$store.dispatch('setUserData', {id: this.$decodeToken().people_id});
+        this.$store.dispatch('setUserData', {id: this.$getCookie('emp_id')});
     },
-    logOut(){
+    async logOut(){
       this.$store.dispatch('setAuthStatus', false);
       this.$store.dispatch('setUserData', {});
       this.$cookies.remove('token');
+      this.$cookies.remove('emp_id');
       this.$router.push('/auth');
-      ElNotification({title: 'Система', message: 'Время сессии истекло. Необходимо перезайти в систему!', type: 'info'})
     },
     testSomething(){
       console.log(this.$cookie.getCookie('token'));//token
-      this.$getData(this.$URL_EMP_GET_PROFILES, '?p_people_id=' + this.$decodeToken().people_id).then(data => {
-        console.log(data);
-      })
     }
   },
   computed:{
@@ -102,12 +87,18 @@ export default {
   },
   mounted(){
     this.checkAuth();
-    /*setInterval(() => {
-      if(this.auth.status){
-        if (!this.$getCookie('token'))
+
+    //Интерсепт ошибки 401, если токен просрочится
+    axios.interceptors.response.use( response => response,
+      error => {
+        if (error.response.status === 401) {
+          console.error('Ошибка авторизации(401):', error.response.data);
+          ElNotification({title: 'Система', message: 'Время сессии истекло. Пожалуйста, перезайдите', type: 'warning', duration: 0});
           this.logOut();
+        }
+        return Promise.reject(error);
       }
-    }, 10000);*/
+    );
   }
 }
 </script>

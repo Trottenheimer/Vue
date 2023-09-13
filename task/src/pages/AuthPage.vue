@@ -1,6 +1,6 @@
 <template>
 <el-container>
-    <span>Форма авторизации</span>
+    <span class="form__title">Авторизация</span>
     <el-form style="max-width: 460px"
         label-position="top"
         label-width="100px"
@@ -34,29 +34,29 @@
   <el-button type="primary" @click="validateAuth">Войти</el-button>
 </el-container>
 
-<el-dialog v-model="dialogVisible" v-if="dialogVisible">
-Privet
-</el-dialog>
+<select-profile v-if="dialogVisible"
+    v-model="dialogVisible"
+    :profileList="profileList"
+    @removeToken="removeToken"
+/>
 </template>
 
 <script>
 import { ref } from 'vue';
-import { useStore } from 'vuex';
 import { useCookie } from 'vue-cookie-next'
-import { useRouter } from 'vue-router';
-import { ElNotification } from 'element-plus';
-import { getData, postData, decodeToken } from '@/components/globalFunctions'
+import { ElLoading, ElNotification } from 'element-plus';
+import { getData, postData, decodeToken } from '@/components/globalFunctions';
 export default{
     name: "auth-page",
     setup(){
         //VARIABLES
         const { setCookie } = useCookie();
-        const store = useStore();
-        const router = useRouter();
 
         let user = ref({login: '', password: ''})
         let warningMessage = ref({login: [], password: []});
         let dialogVisible = ref(false);
+        let profileList = ref([]);
+        let expirationTime = 60*60;//seconds
 
         //FUNCTIONS
         const validateAuth = () => {
@@ -69,32 +69,36 @@ export default{
         
         const startAuth = async () => {
             console.log('proceeding auth...');
+            const loading = ElLoading.service({
+                lock: true,
+                text: 'Loading',
+                background: 'rgba(0, 0, 0, 0.7)',
+            })
             postData('http://pgrest.oblteh:4000/rpc/authenticate', '', {
                 p_login: user.value.login.toUpperCase(),
                 p_pass: user.value.password
             }).then(response => {
-                console.log(response);
                 if (response.status === 200){
                     let token = response.data.token;
-                    let expirationTime = 60*60//seconds
-                    setCookie('token', token, {expire: expirationTime});
+                    setCookie('token', token, {expire: expirationTime.value});
                     console.log(`Token expiration time: ${expirationTime} seconds`);
                     chooseProfile();
                 }
                 else if (response.status === 403)
                     warningMessage.value.password.push('Логин или пароль неверен');
-                else if (response === [])
-                    console.log('Ошибка');
+                loading.close()
             })
         }
 
         const chooseProfile = async () => {
             getData('http://pgrest.oblteh:4000/rpc/emp_get_profiles', '?p_people_id=' + decodeToken().people_id).then(data => {
-                console.log(data);
-                dialogVisible = true;
+                profileList.value = data;
+                dialogVisible.value = true;
             });
-            store.dispatch('setAuthStatus', true);
-            user.value === 213213 ? router.push('/') : true;
+        }
+
+        const removeToken = async () => {
+            document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         }
 
         const validateLogin = (login) => {//Login validation
@@ -115,12 +119,9 @@ export default{
         };
         //RETURN
         return{
-            user, warningMessage, dialogVisible,
-            validateAuth,
+            user, warningMessage, dialogVisible, profileList,
+            validateAuth, chooseProfile, removeToken,
         };
-    },
-    mounted(){
-        console.log('AUTH STATUS', this.$store.state.auth);
     }
 }
 </script>
@@ -154,10 +155,10 @@ export default{
 .warning-item{
     color: red;
 }
-.span{
+.form__title{
+    display: flex;
     justify-content: center;
-    align-items: center;
-    text-align: center;
-    size: 40px;
+    font-size: 24px;
+    margin-bottom: 20px;
 }
 </style>
