@@ -20,7 +20,6 @@
             <el-icon><Select /></el-icon>
             <span>Права</span>
           </el-link>
-          <el-button @click="testSomething">ТЕСТ</el-button>
         </div>
         <div class="nav-menu">
             <el-link v-if="!auth.status" href="/auth" :underline="false" class="menu-link">
