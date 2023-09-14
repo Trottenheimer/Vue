@@ -7,7 +7,7 @@
             <a href="/emp">
               <div class="plate">
                   <el-icon size="200"><UserFilled/></el-icon>
-                  ТАБЛИЦА ПОЛЬЗОВАТЕЛЕЙ
+                  ПОЛЬЗОВАТЕЛИ
               </div>
             </a>
           </el-col>
@@ -16,7 +16,7 @@
             <a href="/groups">
               <div class="plate">
                   <el-icon size="200"><Grid/></el-icon>
-                  ТАБЛИЦА ГРУПП
+                  ГРУППЫ
               </div>
             </a>
           </el-col>
@@ -25,7 +25,7 @@
             <a href="/rights">
               <div class="plate">
                   <el-icon size="200"><Select/></el-icon>
-                  ТАБЛИЦА ПРАВ
+                  ПРАВА
               </div>
             </a>
           </el-col>

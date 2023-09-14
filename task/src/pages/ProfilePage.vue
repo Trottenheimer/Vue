@@ -5,16 +5,7 @@
         <div class="profile">
             <div class="profile-main">
                 <div class="main-image">
-                    <el-upload
-                        class="avatar-uploader"
-                        action="https://..."
-                        :show-file-list="false"
-                        :on-success="handleAvatarSuccess"
-                        :before-upload="beforeAvatarUpload"
-                    >
-                        <img v-if="imageUrl" src="../assets/logo.png" class="avatar" />
-                        <el-icon v-else><User/></el-icon>
-                    </el-upload>
+                    <img src="../assets/default-avatar.jpg" class="avatar" />
                 </div>
                 <div class="main-info">
                     <el-input v-model="userData.surname"/>
@@ -26,7 +17,7 @@
                 <el-row style="margin-top: 40px;">
                     <el-col :span="12">
                         <el-date-picker placeholder="Укажите дату рождения" style="width:240px"
-                        v-model="userData.birth" format="YYYY/MM/DD"
+                        v-model="userData.birth" format="DD/MM/YYYY"
                         type="date" value-format="YYYY-MM-DD"
                         min="1900-01-01" max="2022-01-01"
                         />
@@ -65,13 +56,10 @@
     <select-profile v-if="dialogVisible"
         v-model="dialogVisible"
         :profileList="profileList"
+        @refresh="fetchData"
     />
     <auth-dialog-extra v-if="dialogExtraVisible"
         v-model="dialogExtraVisible"
-        :data="groupList"
-        :dialogType="'A_E'"
-        :id="this.$decodeToken().people_id"
-        @refresh="this.$emit('fetchData')"
     />
 </el-container>
 <non-auth v-else/>
@@ -97,7 +85,7 @@ export default{
                 sex:[{value: 1, label: 'Мужской'}, {value: 2, label: 'Женский'}],
                 post: [],
                 dept: []
-            }
+            },
         }
     },
     methods:{
@@ -137,19 +125,19 @@ export default{
                         return profile;
                     }
                 });
-                console.log(this.profileList);
-                console.log(this.$getCookie('emp_id'));
                 this.dialogVisible = true;
             });
+        },
+        updateProfile(){
+            const request = this.userData;
+            console.log(request);
         },
         showExtraMenu(){
             this.dialogExtraVisible = true;
         }
     },
     mounted(){
-        console.log(this.user);
         this.fetchData();
-        console.log();
     }
 }
 </script>
@@ -196,9 +184,12 @@ h1{
     font-size: 20px;
 }
 .main-image{
-    border: 1px solid black;
-    min-width: 20%;
-    min-height: 20vh;
+    border: 1px solid gray;
+    border-radius: 4px;
+    width:20%;
+}
+.avatar{
+    width: 100%;
 }
 .el-col{
     display: flex;

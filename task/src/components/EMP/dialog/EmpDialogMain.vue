@@ -38,7 +38,7 @@
             <span>Дата рождения*</span><br>
             <el-form-item>
                 <el-date-picker type="date" v-model="emp.birth"
-                    format="YYYY/MM/DD" placeholder="Укажите дату рождения"
+                    format="DD/MM/YYYY" placeholder="Укажите дату рождения"
                     value-format="YYYY-MM-DD"
                     :min="minDate" :max="maxDate"
                 />
@@ -123,7 +123,6 @@ export default{
             const request = Object.assign({}, this.emp);
             delete request.dept;
             delete request.post;
-            delete request.dept;
             delete request.people_id;
             if (!this.emp.surname || !this.emp.name || !this.emp.patron || !this.emp.birth || !this.emp.sex || !this.emp.dept_id || !this.emp.post_id)
                 ElNotification({title: 'Редактирование пользователей', message: 'Необходимо заполнить обязательные поля!', type: 'warning'})

@@ -20,6 +20,7 @@
             <el-icon><Select /></el-icon>
             <span>Права</span>
           </el-link>
+          <el-button @click="testSomething">ТЕСТ</el-button>
         </div>
         <div class="nav-menu">
             <el-link v-if="!auth.status" href="/auth" :underline="false" class="menu-link">
@@ -56,6 +57,19 @@ export default {
   data(){
     return{
       auth: this.$store.state.auth,
+      logOutStatus: false,
+    }
+  },
+  watch:{
+    logOutStatus(value){
+      if(value){
+        ElNotification({title: 'Система', message: 'Время сессии истекло. Пожалуйста, перезайдите', type: 'warning', duration: 0});
+        setTimeout(() => {
+          this.logOut();
+          this.logOutStatus = false;
+        }, 100);
+      }
+      
     }
   },
   methods:{
@@ -77,7 +91,7 @@ export default {
       this.$router.push('/auth');
     },
     testSomething(){
-      console.log(this.$cookie.getCookie('token'));//token
+      console.log(this.$cookie.getCookie('token'));
     }
   },
   computed:{
@@ -93,8 +107,7 @@ export default {
       error => {
         if (error.response.status === 401) {
           console.error('Ошибка авторизации(401):', error.response.data);
-          ElNotification({title: 'Система', message: 'Время сессии истекло. Пожалуйста, перезайдите', type: 'warning', duration: 0});
-          this.logOut();
+          this.logOutStatus = true;
         }
         return Promise.reject(error);
       }
