@@ -46,7 +46,6 @@ export default{
             ]
             Promise.all(promises).then(() => {
                 this.loading.close();
-                console.log('All promises completed successfully.');
                 this.empList.forEach(emp => {
                     this.postList.forEach(post => {
                         if (emp.post_id === post.id) emp.post = post.name

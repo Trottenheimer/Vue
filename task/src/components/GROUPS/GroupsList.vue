@@ -79,15 +79,3 @@ export default{
     }
 }
 </script>
-<style>
-*{
-    font-weight: bold;
-    font-size: 16px;
-}
-.el-header{
-    height: 10%;
-}
-.el-row, .el-button-group{
-    margin-bottom: 20px;
-}
-</style>

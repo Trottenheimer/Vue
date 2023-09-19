@@ -86,10 +86,6 @@ export default{
 }
 </script>
 <style>
-*{
-    font-weight: bold;
-    font-size: 16px;
-}
 .el-header{
     height: 10%;
 }

@@ -49,7 +49,6 @@
             <div class="profile-footer">
                 <el-button type="primary" @click="showExtraMenu">Дополнительные настройки</el-button>
                 <el-button type="primary" @click="selectProfile">Сменить профиль</el-button>
-                <el-button type="primary" @click="updateProfile">Сохранить изменения</el-button>
             </div>
         </div>
     </div>

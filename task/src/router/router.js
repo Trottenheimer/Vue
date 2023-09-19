@@ -11,31 +11,38 @@ import ProfilePage from "@/pages/ProfilePage"
 const routes = [
     {
         path: '/',
-        component: MainPage
+        component: MainPage,
+        name: 'main'
     },
     {
         path: '/emp',
-        component: EmpPage
+        component: EmpPage,
+        name: 'emp'
     },
     {
         path: '/groups',
-        component: GroupsPage
+        component: GroupsPage,
+        name: 'groups'
     },
     {
         path: '/rights',
-        component: RightsPage
+        component: RightsPage,
+        name: 'rights'
     },
     {
         path: '/auth',
-        component: AuthPage
+        component: AuthPage,
+        name: 'auth'
     },
     {
         path: '/profile',
-        component: ProfilePage
+        component: ProfilePage,
+        name: 'profile'
     },
     {
         path: '/test',
-        component: TestPage
+        component: TestPage,
+        name: 'test'
     }
 ]
 

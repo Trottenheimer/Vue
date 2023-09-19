@@ -32,7 +32,6 @@ export default{
             this.$getData(this.$URL_GROUP_LIST, '').then(data => {
                 this.groupList = data
                 this.loading.close();
-                console.log('Data fetched');
             })
         },
     },

@@ -4,22 +4,26 @@
     <el-header>
       <div class="nav-bar" v-if="auth.status">
         <div class="nav-items">
-          <el-link href="/" :underline="false" :class="{'active' : currentPath === '/'}">
+          <router-link to="/" class="nav__item" :class="{'nav__item__active' : currentPath === '/'}"
+            >
             <el-icon><HomeFilled/></el-icon>
             <span>Главная</span>
-          </el-link>
-          <el-link href="/emp" :underline="false" :class="{'active' : currentPath === '/emp'}">
+          </router-link>
+          <router-link to="/emp" class="nav__item" :class="{'nav__item__active' : currentPath === '/emp'}"
+            >
             <el-icon><UserFilled/></el-icon>
             <span>Пользователи</span>
-          </el-link>
-          <el-link href="/groups" :underline="false" :class="{'active' : currentPath === '/groups'}">
+          </router-link>
+          <router-link to="/groups" class="nav__item" :class="{'nav__item__active' : currentPath === '/groups'}"
+            >
             <el-icon><Grid /></el-icon>
             <span>Группы</span>
-          </el-link>
-          <el-link href="/rights" :underline="false" :class="{'active' : currentPath === '/rights'}">
+          </router-link>
+          <router-link to="/rights" class="nav__item" :class="{'nav__item__active' : currentPath === '/rights'}"
+            >
             <el-icon><Select /></el-icon>
             <span>Права</span>
-          </el-link>
+          </router-link>
         </div>
         <div class="nav-menu">
             <el-link v-if="!auth.status" href="/auth" :underline="false" class="menu-link">
@@ -42,7 +46,11 @@
       </div>
     </el-header>
     <el-main>
-      <router-view/>
+      <router-view v-slot="{ Component }">
+        <transition name="fade">
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </el-main>
   </el-container>
 </template>
@@ -66,9 +74,11 @@ export default {
         setTimeout(() => {
           this.logOut();
           this.logOutStatus = false;
-        }, 100);
+        }, 300);
       }
-      
+    },
+    error(message){
+      if (message !== null) window.location.reload();
     }
   },
   methods:{
@@ -114,14 +124,14 @@ export default {
   }
 }
 </script>
-  
 <style>
 *{
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  font-weight: bold;
+  font-size: 16px;
   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
+</style>
+<style scoped>
 .el-header{
   padding: 0;
 }
@@ -158,36 +168,38 @@ export default {
   font-size: 18px;
   align-items: center;
 }
-.el-link span {
-  font-size: 18px;
-}
-.el-link:hover{
-  background: #409EFF;
-  color: white;
-  transition: 0.1s linear;
-}
 .menu-link{
   display: flex;
   flex-direction: row;
   border-left: 1px solid gray;
   transition: 0.1s linear;
   text-align: center;
-  
 }
 .menu-link:hover{
   border-color: #409EFF;
   transition: 0.1s linear;
 }
-</style>
-<style scoped>
-.el-link{
+.nav__item{
+  display: flex;
   padding: 20px;
-  font-weight: bold;
+  text-decoration: none;
+  color: black;
+  align-items: center;
   border-left: 1px solid gray;
-  transition: 0.1s linear;
 }
-.active{/*active navbar item*/
+.nav__item:hover{
+  background: #409EFF;
+}
+.nav__item__active{/*active navbar item*/
   background: #409EFF;
   color: white;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

@@ -103,7 +103,6 @@ export default {
             return msg;
 
         };
-        //postData('http://pgrest.oblteh:4000/rpc/authenticate', '', {})
         return {
             dialogExtraVisible, userData, warningMessage, passwordSecond,
             closeDialog, validateData,

@@ -1,11 +1,11 @@
 import { createApp } from 'vue'
+import App from './App.vue'
 import components from '@/components';
 //import "bootstrap/dist/css/bootstrap.min.css"
 //import "bootstrap"
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import store from "@/store"
-import App from './App.vue'
 import router from './router/router';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import globalPlugin from "@/components/globalPlugin"

@@ -124,16 +124,6 @@ export default{
 }
 </script>
 <style>
-*{
-    font-weight: bold;
-    font-size: 16px;
-}
-.el-header{
-    height: 10%;
-}
-.el-row, .el-button-group{
-    margin-bottom: 20px;
-}
 .row-danger{
     --el-table-tr-bg-color: var(--el-color-danger-light-9) ! important;
 }
