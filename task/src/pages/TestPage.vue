@@ -5,6 +5,7 @@
                 <span class="player__name">CHECK</span>
                 <div class="player__body" @click="check"></div>
             </div>
+            <div class="test__box"></div>
         </div>
     </div>
 </template>

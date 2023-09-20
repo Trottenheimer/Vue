@@ -1,5 +1,5 @@
 <template>
-  <!DOCTYPE html>
+  <link rel="stylesheet" type="text/css" href="../assets/style.scss" media="screen" />
   <el-container>
     <el-header>
       <div class="nav-bar" v-if="auth.status">
