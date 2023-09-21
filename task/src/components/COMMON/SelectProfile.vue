@@ -1,10 +1,9 @@
 <template>
 <el-dialog v-model="dialogVisible" v-if="dialogVisible" @closed="dialogClose"
-    @keydown="handleKeyPress" draggable
+    @keydown="handleKeyPress" draggable class="dialog"
     >
     <template #header>
         <h1>Выберите профиль</h1>
-        <h4>Можно выбрать стрелками</h4>
     </template>
         <el-scrollbar max-height="400px" class="profile" @mouseover="currentProfile = -1">
             <div v-for="(profile, index) in profileList" :key="index"
@@ -96,7 +95,5 @@ export default {
 .profile__info{
     display: flex;
     flex-direction: column;
-}
-.profile__index{
 }
 </style>

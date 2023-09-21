@@ -20,10 +20,10 @@
         </el-row>
     </el-header>
     <el-main>
-        <div v-if="empListComputed.length > 0">
+        <div v-if="empListFiltered.length > 0">
             <el-text>Найдено: {{empList.length}}</el-text>
             <el-table border height="800"
-                :data="empListComputed" :default-sort="{prop: 'surname', order: 'ascending'}"
+                :data="empListFiltered" :default-sort="{prop: 'surname', order: 'ascending'}"
                 highlight-current-row empty-text="<нет данных>"
                 :row-class-name="tableRowClassName"
                 @row-click="handleRowClick"
@@ -45,7 +45,7 @@
             </el-table>
         </div>
         <div v-else-if="empList.length == 0">
-            <h1>Не удалось загрузить данные! Возможно таблица пуста или ссылка недействительна</h1>
+            <h1>Загрука...</h1>
         </div>
         <div v-else>
             <h1>По запросу ничего не найдено.</h1>
@@ -86,7 +86,7 @@ export default{
         handleRowClick(row){
             this.item = Object.assign({}, row)
             console.log(this.item);
-            this.dialogType = 1
+            this.dialogType = this.empListFiltered
             this.dialogVisible = true
         },
         refresh(){
@@ -103,7 +103,7 @@ export default{
         }
     },
     computed:{
-        empListComputed(){
+        empListFiltered(){
             let surname = this.empList.filter(emp => {
                 return emp.surname?.toLowerCase().includes(this.search.surname?.toLowerCase());
             });

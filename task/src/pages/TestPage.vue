@@ -9,22 +9,32 @@
         </div>
     </div>
 </template>
-<script setup>
-const currentPos = [0,0]
-const handleKeyPress = (event) => {
-    if (event.key === 'ArrowDown'){
-        currentPos[0] +=4;
+<script>
+export default{
+    name: "test-page",
+    setup(){
+        const currentPos = [0,0]
+        const handleKeyPress = (event) => {
+            if (event.key === 'ArrowDown'){
+                currentPos[0] +=4;
+            }
+            else if (event.key === 'ArrowUp'){
+                currentPos[0] +=4;
+            }
+            else if (event.key === 'Enter'){
+                console.log(currentPos);
+            }
+        };
+        const check = () => {
+            console.log('check');
+        }
+        return{
+            currentPos,
+            handleKeyPress,check
+        }
     }
-    else if (event.key === 'ArrowUp'){
-        currentPos[0] +=4;
-    }
-    else if (event.key === 'Enter'){
-        console.log(currentPos);
-    }
-};
-const check = () => {
-    console.log('check');
 }
+
 </script>
 <style scoped>
 .layout{

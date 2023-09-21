@@ -1,5 +1,5 @@
 <template>
-<el-container>
+<div class="form">
     <span class="form__title">Авторизация</span>
     <el-form style="max-width: 460px"
         label-position="top"
@@ -32,12 +32,13 @@
         </el-form-item>
   </el-form>
   <el-button type="primary" @click="validateAuth">Войти</el-button>
-</el-container>
+</div>
 
 <select-profile v-if="dialogVisible"
     v-model="dialogVisible"
     :profileList="profileList"
     @removeToken="removeToken"
+    style="width: 50%; min-width: 300px"
 />
 </template>
 
@@ -125,8 +126,8 @@ export default{
     }
 }
 </script>
-<style scoped>
-.el-container{
+<style scoped lang="scss">
+.form{
     display: flex;
     flex-direction: column;
     margin: 50px auto;
@@ -155,5 +156,10 @@ export default{
     justify-content: center;
     font-size: 24px;
     margin-bottom: 20px;
+}
+@media only screen and (max-width: 760px) {
+    .form{
+        width: 100%;
+    }
 }
 </style>

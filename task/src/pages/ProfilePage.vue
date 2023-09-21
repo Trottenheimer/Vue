@@ -1,54 +1,46 @@
 <template>
 <el-container style="flex-direction:column" v-if="auth.status">
     <h1>Профиль врача {{user.id}}</h1>
-    <div class="profile-block">
+    <div class="profile__block">
         <div class="profile">
-            <div class="profile-main">
-                <div class="main-image">
+            <div class="profile__main">
+                <div class="main__image">
                     <img src="../assets/default-avatar.jpg" class="avatar" />
                 </div>
-                <div class="main-info">
+                <div class="main__info">
                     <el-input v-model="userData.surname"/>
                     <el-input v-model="userData.name"/>
                     <el-input v-model="userData.patron"/>
                 </div>
             </div>
-            <div class="profile-second">
-                <el-row style="margin-top: 40px;">
-                    <el-col :span="12">
-                        <el-date-picker placeholder="Укажите дату рождения" style="width:240px"
-                        v-model="userData.birth" format="DD/MM/YYYY"
-                        type="date" value-format="YYYY-MM-DD"
-                        min="1900-01-01" max="2022-01-01"
-                        />
-                    </el-col>
-                    <el-col :span="12">
-                        <el-select-v2 placeholder="Укажите пол" style="width: 240px"
-                            v-model="userData.sex"
-                            :options="options.sex"
-                        />
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="12">
-                        <el-select-v2 placeholder="Укажите должность" style="width: 240px"
-                            v-model="userData.post_id"
-                            :options="options.post"
-                            filterable
-                        />
-                    </el-col>
-                    <el-col :span="12">
-                        <el-select-v2 placeholder="Укажите отделение" style="width: 240px"
-                            v-model="userData.dept_id"
-                            :options="options.dept"
-                            filterable
-                        />
-                    </el-col>
-                </el-row>
+            <div class="profile__second">
+                <div class="second__row">
+                    <el-date-picker placeholder="Укажите дату рождения" style="width:240px"
+                    v-model="userData.birth" format="DD/MM/YYYY"
+                    type="date" value-format="YYYY-MM-DD"
+                    min="1900-01-01" max="2022-01-01"
+                    />
+                    <el-select-v2 placeholder="Укажите пол" style="width: 240px"
+                        v-model="userData.sex"
+                        :options="options.sex"
+                    />
+                </div>
+                <div class="second__row">
+                    <el-select-v2 placeholder="Укажите должность" style="width: 240px"
+                        v-model="userData.post_id"
+                        :options="options.post"
+                        filterable
+                    />
+                    <el-select-v2 placeholder="Укажите отделение" style="width: 240px"
+                        v-model="userData.dept_id"
+                        :options="options.dept"
+                        filterable
+                    />
+                </div>
             </div>
-            <div class="profile-footer">
-                <el-button type="primary" @click="showExtraMenu">Дополнительные настройки</el-button>
-                <el-button type="primary" @click="selectProfile">Сменить профиль</el-button>
+            <div class="profile__footer">
+                <el-button type="primary" @click="showExtraMenu" class="footer__btn">Дополнительные настройки</el-button>
+                <el-button type="primary" @click="selectProfile" class="footer__btn">Сменить профиль</el-button>
             </div>
         </div>
     </div>
@@ -68,7 +60,7 @@ import { ElLoading } from 'element-plus';
 import AuthDialogExtra from '@/components/AUTH/AuthDialogExtra'
 
 export default{
-    name: "profile-page",
+    name: "profile__page",
     components: {AuthDialogExtra},
     data(){
         return{
@@ -144,15 +136,14 @@ export default{
 h1{
     font-size: 32px;
 }
-.profile-block{
+.profile__block{
     display: flex;
     margin: 2% auto;
-    width: 80%;
+    width: 100%;
     max-height: 80vh;
     background: aliceblue;
-    border-radius: 15px;
 }
-.profile, .main-info{
+.profile, .main__info{
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -160,29 +151,22 @@ h1{
     background-color: white;
     justify-content: space-between;
 }
-.profile{
-    padding: 20px;
-}
-.profile-main{
+.profile__main{
     display: flex;
     flex-direction: row;;
 }
-.profile-second{
+.profile__second{
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    margin: 0 60px 0 60px;
+    width: 100%;
 }
-.profile-footer{
+.profile__footer{
     display: flex;
     justify-content: flex-end;
+    margin-top: 20px;
 }
-.profile span, .main-info span{
-    margin-top: 10px;
-    padding: 10px;
-    font-size: 20px;
-}
-.main-image{
+.main__image{
     border: 1px solid gray;
     border-radius: 4px;
     width:20%;
@@ -190,12 +174,26 @@ h1{
 .avatar{
     width: 100%;
 }
-.el-col{
+.second__row{
     display: flex;
     justify-content: center;
     width: 100%;
+    margin-top: 20px;
 }
 .el-select-v2{
     width: 100%;
+}
+@media screen and (max-width: 760px) {
+    .profile__main{
+        flex-direction: column;
+        justify-content: center;
+    }
+    .profile__footer{
+        justify-content: center;
+        flex-direction: column;
+    }
+    .footer__btn{
+        margin-top: 20px;
+    }
 }
 </style>

@@ -29,6 +29,7 @@ export default{
     },
     methods:{
         refreshData(){
+            this.empList = [];
             this.loading = ElLoading.service({
                 lock: true, text: 'Загрузка',
                 background: 'rgba(0, 0, 0, 0.7)'
