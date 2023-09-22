@@ -11,6 +11,7 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import globalPlugin from "@/components/globalPlugin"
 import VueCookies from 'vue-cookies'
 import { VueCookieNext } from 'vue-cookie-next';
+import '@/assets/style.css'
 
 const app = createApp(App)
 

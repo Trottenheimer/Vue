@@ -4,21 +4,18 @@
         <div>
             <h1>Модуль прав</h1><br>
             <el-button-group>
-                <el-button type="primary" @click=" rightItem = {}; dialogType = 0; dialogVisible = true">
+                <el-button type="primary" @click=" rightItem = {}; dialogType = 0; dialogVisible = true" icon="Plus">
                     Добавить право
                 </el-button>
                 <el-button type="primary" @click="this.$emit('refresh')" icon="Refresh">Обновить</el-button>
             </el-button-group>
-            <el-row>
-                <el-col :span="12">
-                    <el-input placeholder="поиск по названию..."
-                        v-model="searchQuery" clearable
-                        ><template #append>
-                            <el-icon><Search/></el-icon>
-                        </template>
-                    </el-input>
-                </el-col>
-            </el-row>
+            <br>
+            <el-input placeholder="поиск по названию..." class="search__input"
+                v-model="searchQuery" clearable
+                ><template #append>
+                    <el-icon><Search/></el-icon>
+                </template>
+            </el-input>
         </div>
     </el-header>
     <el-main>

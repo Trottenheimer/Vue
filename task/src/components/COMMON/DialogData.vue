@@ -2,6 +2,7 @@
 <el-dialog width="50%" draggable style="margin-top: 80px;" :title="title"
     :modelValue="dialogVisible"
     @closed="closeDialog"
+    class="dialog"
 >
     <el-row style="margin-bottom: 20px; background: aliceblue">
         <el-col :span="4">
@@ -54,6 +55,7 @@ export default{
             title: '',
             tempURL: '',
             tempReq: '',
+            search: {surname: '', name: '', patron: ''}
         }
     },
     props:{
@@ -62,6 +64,11 @@ export default{
         data: [],
         dialogType: String,
         id: Number,
+    },
+    watch:{
+        searchQuery(){
+            this.parseSearch();
+        }
     },
     methods:{
         closeDialog(){
@@ -113,8 +120,7 @@ export default{
                 case 'E_R'://Добавляет права пользователю
                     promises = this.selectedRows.map(row => {
                         return new Promise((resolve) => {
-                            this.$postData(this.tempURL, '', {p_emp_id: this.id, p_right_id: row.id}).then((resp) => {
-                                console.log(resp);
+                            this.$postData(this.tempURL, '', {p_emp_id: this.id, p_right_id: row.id}).then(() => {
                                 elTitle = 'Редактирование пользователя'; elMsg = 'Права успешно добавлены';
                                 elType = 'success'; resolve();
                             })
@@ -164,8 +170,7 @@ export default{
                 case 'R_E'://Добавляет пользователям права
                     promises = this.selectedRows.map(row => {
                         return new Promise((resolve) => {
-                            this.$postData(this.tempURL, '', {p_emp_id: row.id, p_right_id: this.id}).then((resp) => {
-                                console.log(resp);
+                            this.$postData(this.tempURL, '', {p_emp_id: row.id, p_right_id: this.id}).then(() => {
                                 elTitle = 'Редактирование права'; elMsg = 'Право успешно добавлено пользователям';
                                 elType = 'success'; resolve();
                             })
@@ -184,13 +189,33 @@ export default{
                 ElNotification({title: elTitle, message: 'Вы ничего не добавили.', type: 'warning'})
             }
         },
+        parseSearch(){
+            const query = this.searchQuery.split(' ');
+            this.search.surname = query[0];
+            this.search.name = query[1];
+            this.search.patron = query[2];
+        },
     },
     computed:{
         dataEditComputed(){
             return this.dataEdit.filter(data => data.name.toLowerCase().includes(this.searchQuery.toLowerCase()))
         },
         dataEditComputedEmp(){
-            return this.dataEdit.filter(data => data.surname.toLowerCase().includes(this.searchQuery.toLowerCase()))
+            let surname = this.dataEdit.filter(emp => {
+                return emp.surname?.toLowerCase().includes(this.search.surname?.toLowerCase());
+            });
+            let name = this.dataEdit.filter(emp => {
+                return emp.name?.toLowerCase().includes(this.search.name?.toLowerCase());
+            });
+            let patron = this.dataEdit.filter(emp => {
+                return emp.patron?.toLowerCase().includes(this.search.patron?.toLowerCase());
+            });
+            let filteredBySN = surname.filter(item => {//Фильтрация по фамилии и имени
+                return this.search.name ? name.includes(item) : true;
+            });
+            return filteredBySN.filter(item => {//Фильтрация по отчеству
+                return this.search.patron ? patron.includes(item): true;
+            })//УРРРАА РАБОТАЕТ
         }
     },
     mounted(){

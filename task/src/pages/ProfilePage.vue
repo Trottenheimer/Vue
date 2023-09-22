@@ -1,47 +1,45 @@
 <template>
-<el-container style="flex-direction:column" v-if="auth.status">
+<div style="flex-direction:column" v-if="auth.status">
     <h1>Профиль врача {{user.id}}</h1>
-    <div class="profile__block">
-        <div class="profile">
-            <div class="profile__main">
-                <div class="main__image">
-                    <img src="../assets/default-avatar.jpg" class="avatar" />
-                </div>
-                <div class="main__info">
-                    <el-input v-model="userData.surname"/>
-                    <el-input v-model="userData.name"/>
-                    <el-input v-model="userData.patron"/>
-                </div>
+    <div class="profile">
+        <div class="profile__main">
+            <div class="main__image">
+                <img src="../assets/default-avatar.jpg" class="avatar" />
             </div>
-            <div class="profile__second">
-                <div class="second__row">
-                    <el-date-picker placeholder="Укажите дату рождения" style="width:240px"
-                    v-model="userData.birth" format="DD/MM/YYYY"
-                    type="date" value-format="YYYY-MM-DD"
-                    min="1900-01-01" max="2022-01-01"
-                    />
-                    <el-select-v2 placeholder="Укажите пол" style="width: 240px"
-                        v-model="userData.sex"
-                        :options="options.sex"
-                    />
-                </div>
-                <div class="second__row">
-                    <el-select-v2 placeholder="Укажите должность" style="width: 240px"
-                        v-model="userData.post_id"
-                        :options="options.post"
-                        filterable
-                    />
-                    <el-select-v2 placeholder="Укажите отделение" style="width: 240px"
-                        v-model="userData.dept_id"
-                        :options="options.dept"
-                        filterable
-                    />
-                </div>
+            <div class="main__info">
+                <el-input v-model="userData.surname"/>
+                <el-input v-model="userData.name"/>
+                <el-input v-model="userData.patron"/>
             </div>
-            <div class="profile__footer">
-                <el-button type="primary" @click="showExtraMenu" class="footer__btn">Дополнительные настройки</el-button>
-                <el-button type="primary" @click="selectProfile" class="footer__btn">Сменить профиль</el-button>
+        </div>
+        <div class="profile__second">
+            <div class="second__row">
+                <el-date-picker placeholder="Укажите дату рождения" style="width:240px"
+                v-model="userData.birth" format="DD/MM/YYYY"
+                type="date" value-format="YYYY-MM-DD"
+                min="1900-01-01" max="2022-01-01"
+                />
+                <el-select-v2 placeholder="Укажите пол" style="width: 240px"
+                    v-model="userData.sex"
+                    :options="options.sex"
+                />
             </div>
+            <div class="second__row">
+                <el-select-v2 placeholder="Укажите должность" style="width: 240px"
+                    v-model="userData.post_id"
+                    :options="options.post"
+                    filterable
+                />
+                <el-select-v2 placeholder="Укажите отделение" style="width: 240px"
+                    v-model="userData.dept_id"
+                    :options="options.dept"
+                    filterable
+                />
+            </div>
+        </div>
+        <div class="profile__footer">
+            <el-button type="primary" @click="showExtraMenu" class="footer__btn">Дополнительные настройки</el-button>
+            <el-button type="primary" @click="selectProfile" class="footer__btn">Сменить профиль</el-button>
         </div>
     </div>
     <select-profile v-if="dialogVisible"
@@ -52,7 +50,7 @@
     <auth-dialog-extra v-if="dialogExtraVisible"
         v-model="dialogExtraVisible"
     />
-</el-container>
+</div>
 <non-auth v-else/>
 </template>
 <script>
@@ -136,34 +134,38 @@ export default{
 h1{
     font-size: 32px;
 }
-.profile__block{
-    display: flex;
-    margin: 2% auto;
-    width: 100%;
-    max-height: 80vh;
-    background: aliceblue;
-}
-.profile, .main__info{
+.profile{
     display: flex;
     flex-direction: column;
-    width: 100%;
-    margin: 10px;
-    background-color: white;
+    width: 80%;
+    margin: 2% auto;
     justify-content: space-between;
+    background-color: aliceblue;
+    border-radius: 15px;
+}
+.main__info{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 50%;
+    margin-left: 20px;
+}
+.profile{
+    padding: 20px;
 }
 .profile__main{
     display: flex;
-    flex-direction: row;;
+    flex-direction: row;
+    
 }
 .profile__second{
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     width: 100%;
 }
 .profile__footer{
     display: flex;
-    justify-content: flex-end;
     margin-top: 20px;
 }
 .main__image{
@@ -176,8 +178,6 @@ h1{
 }
 .second__row{
     display: flex;
-    justify-content: center;
-    width: 100%;
     margin-top: 20px;
 }
 .el-select-v2{
@@ -194,6 +194,14 @@ h1{
     }
     .footer__btn{
         margin-top: 20px;
+    }
+    .profile{
+        width: 100%;
+        padding: 0px;
+    }
+    .main__info{
+        margin: 0;
+        width: 100%;
     }
 }
 </style>

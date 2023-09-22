@@ -3,21 +3,18 @@
     <el-header>
         <h1>Модуль пользователей</h1><br>
         <el-button-group>
-            <el-button type="primary" @click=" item = {}; dialogType = 0; dialogVisible = true">
+            <el-button type="primary" @click=" item = {}; dialogType = 0; dialogVisible = true" icon="Plus">
                 Добавить пользователя
             </el-button>
             <el-button type="primary" @click="this.$emit('refresh')" icon="Refresh">Обновить</el-button>
         </el-button-group>
-        <el-row>
-            <el-col :span="12">
-                <el-input placeholder="поиск по ФИО..."
-                    v-model="searchText" @input="parseSearch" clearable
-                    ><template #append>
-                        <el-icon><Search/></el-icon>
-                    </template>
-                </el-input>
-            </el-col>
-        </el-row>
+        <br>
+        <el-input placeholder="поиск по ФИО..." class="search__input"
+            v-model="searchText" @input="parseSearch" clearable
+            ><template #append>
+                <el-icon><Search/></el-icon>
+            </template>
+        </el-input>
     </el-header>
     <el-main>
         <div v-if="empListFiltered.length > 0">
@@ -73,7 +70,7 @@ export default{
         const item = ref({});
         const dialogVisible = ref(false);
         const dialogType = ref(0);
-        const search =ref({surname: '', name: '', patron: ''})
+        const search = ref({surname: '', name: '', patron: ''})
         const searchText = ref('');
         return{item, dialogVisible, dialogType, search, searchText};
     },
@@ -86,7 +83,7 @@ export default{
         handleRowClick(row){
             this.item = Object.assign({}, row)
             console.log(this.item);
-            this.dialogType = this.empListFiltered
+            this.dialogType = 1;
             this.dialogVisible = true
         },
         refresh(){

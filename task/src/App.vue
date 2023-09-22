@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-header>
+    <el-header class="header">
       <NavBar v-if="auth.status"
         @logOut="logOut"
       />
@@ -73,7 +73,7 @@ export default {
   },
   mounted(){
     this.checkAuth();
-    window.addEventListener('resize', this.getWidth);
+    //window.addEventListener('resize', this.getWidth);
     
     //Интерсепт ошибки 401, если токен просрочится
     axios.interceptors.response.use( response => response,
@@ -89,11 +89,6 @@ export default {
 }
 </script>
 <style lang="scss">
-*{
-  font-weight: bold;
-  font-size: 16px;
-  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-}
 </style>
 <style scoped>
 .el-header{

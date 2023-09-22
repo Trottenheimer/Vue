@@ -2,6 +2,7 @@
 <el-dialog width="80%" draggable style="margin-top: 60px;"
     :modelValue="dialogVisible"
     @closed="closeDialog"
+    class="dialog"
 >
 <template #header>
     <h2>{{dialogName()}} права «{{item.name}}»</h2><br>

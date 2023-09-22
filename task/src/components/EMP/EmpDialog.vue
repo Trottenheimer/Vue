@@ -2,6 +2,7 @@
 <el-dialog width="50%" draggable style="margin-top: 30px;"
     :modelValue="dialogVisible"
     @closed="closeDialog"
+    class="dialog"
 >
     <template #header>
         <h2>{{dialogName()}} пользователя «{{emp ? emp.surname : ''}}»</h2><br>
@@ -88,10 +89,11 @@ export default{
     mounted(){
         this.options.post = this.postList.map(obj =>{
             return {value: obj.id, name: obj.name};
-        })
+        });
         this.options.dept = this.deptList.map(obj =>{
             return {value: obj.id, name: obj.name};
-        })
+        });
+        console.log(this.dialogType);
     }
 }
 </script>

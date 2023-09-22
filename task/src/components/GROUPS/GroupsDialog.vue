@@ -2,6 +2,7 @@
 <el-dialog width="50%" draggable style="margin-top: 30px;"
     :modelValue="dialogVisible"
     @closed="closeDialog"
+    class="dialog"
 >
     <template #header>
         <h2>{{dialogName()}} группы «{{group ? group.name : ''}}»</h2><br>

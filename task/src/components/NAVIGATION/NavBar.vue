@@ -31,15 +31,34 @@
             :before-close="handleClose"
             size="60%"
             >
-            <span>Hi, there!</span>
+            <router-link to="/" class="nav__item" :class="{'nav__item__active' : currentPath === '/'}"
+            >
+                <el-icon><HomeFilled/></el-icon>
+                <span>Главная</span>
+            </router-link>
+            <router-link to="/emp" class="nav__item" :class="{'nav__item__active' : currentPath === '/emp'}"
+            >
+                <el-icon><UserFilled/></el-icon>
+                <span>Пользователи</span>
+            </router-link>
+            <router-link to="/groups" class="nav__item" :class="{'nav__item__active' : currentPath === '/groups'}"
+            >
+                <el-icon><Grid /></el-icon>
+                <span>Группы</span>
+            </router-link>
+            <router-link to="/rights" class="nav__item" :class="{'nav__item__active' : currentPath === '/rights'}"
+            >
+                <el-icon><Select /></el-icon>
+                <span>Права</span>
+            </router-link>
         </el-drawer>
     </div>
     <div class="nav__menu">
         <el-dropdown>
-            <span class="menu-link">
-            <el-icon color="black" size="18" style="border: 2px solid gray; border-radius: 2px;"><More/></el-icon>
-            <span class="menu__button">Меню</span>
-            </span>
+            <div class="menu__link">
+                <el-icon color="black" size="18" class="nav__icon menu__icon"><More/></el-icon>
+                <span class="menu__text">Меню</span>
+            </div>
             <template #dropdown>
             <el-dropdown-menu>
                 <el-dropdown-item @click="$router.push('/profile')">Профиль</el-dropdown-item>
@@ -73,6 +92,7 @@ export default{
     align-items: center;
     background: aliceblue;
     padding: 0 0px 0 20px;
+    height: 100%;
   }
 .nav__items__mini{
 display: none;
@@ -102,14 +122,15 @@ padding: 10px 10px;
 font-size: 18px;
 align-items: center;
 }
-.menu-link{
+.menu__link{
 display: flex;
 flex-direction: row;
 border-left: 1px solid gray;
 transition: 0.1s linear;
-text-align: center;
+align-items: center;
+padding-left: 10px;
 }
-.menu-link:hover{
+.menu__link:hover{
 border-color: #409EFF;
 transition: 0.1s linear;
 }
@@ -128,27 +149,30 @@ background: #409EFF;
 background: #409EFF;
 color: white;
 }
-.nav__icon{
-    display: flex;
-    justify-content: flex-start;
+.menu__icon{
     border: 2px solid gray;
-    border-radius: 2px;
+    border-radius: 4px;
 }
-.icon{
-    font-size: 40px;
-}
-
 @media only screen and (max-width: 760px) {
     .nav__items{
       display: none;
     }
     .nav__items__mini{
       display: block;
+      padding: 20px;
+      border: 2px solid gray;
+      border-radius: 6px;
     }
-    .menu__button{
+    .menu__text{
         display: none;
     }
-    .menu-link{
+    .menu__link{
+        border: none;
+        padding: 20px;
+        border: 2px groove gray;
+        border-radius: 6px;
+    }
+    .menu__icon{
         border: none;
     }
   }
