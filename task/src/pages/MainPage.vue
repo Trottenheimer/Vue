@@ -1,20 +1,20 @@
 <template>
   <div class="board" v-if="auth.status">
-    <a href="/emp">
+    <router-link to="/emp">
       <div class="plate">
-          <el-icon class="plate_icon"><UserFilled/></el-icon>
+          <el-icon class="plate__icon"><UserFilled/></el-icon>
           ПОЛЬЗОВАТЕЛИ
       </div>
-    </a>
+    </router-link>
     <a href="/groups">
       <div class="plate">
-          <el-icon class="plate_icon"><Grid/></el-icon>
+          <el-icon class="plate__icon"><Grid/></el-icon>
           ГРУППЫ
       </div>
     </a>
     <a href="/rights">
       <div class="plate">
-          <el-icon class="plate_icon"><Select/></el-icon>
+          <el-icon class="plate__icon"><Select/></el-icon>
           ПРАВА
       </div>
     </a>
@@ -55,7 +55,7 @@ export default{
   border: 4px solid black;
   border-radius: 15px;
   min-width: 180px;
-  max-width: 360px;
+  max-width: 300px;
   font-size: 20px;
   align-items: center;
   transition: 0.1s ease;
@@ -68,6 +68,7 @@ a{
   text-decoration: none;
   color: black;
   transition: 0.1s ease;
+  max-width: 300px;
 }
 a:hover{
   color: white;
@@ -75,9 +76,8 @@ a:hover{
 .el-link span{
   font-size: 24px;
 }
-.plate_icon{
-  font-size: 50px;
-  transform: scale(5);
+.plate__icon{
+  transform: scale(10);
   margin: 100px;
 }
 </style>

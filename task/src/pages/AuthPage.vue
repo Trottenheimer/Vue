@@ -69,10 +69,9 @@ export default{
         }
         
         const startAuth = async () => {
-            console.log('proceeding auth...');
             const loading = ElLoading.service({
                 lock: true,
-                text: 'Loading',
+                text: 'Загрузка',
                 background: 'rgba(0, 0, 0, 0.7)',
             })
             postData('http://pgrest.oblteh:4000/rpc/authenticate', '', {

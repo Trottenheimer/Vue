@@ -3,6 +3,7 @@
     <el-header class="header">
       <NavBar v-if="auth.status"
         @logOut="logOut"
+        @test="testSomething"
       />
     </el-header>
     <el-main>
@@ -18,7 +19,7 @@
 <script>
 import axios from 'axios';
 import { ElNotification } from 'element-plus';
-import NavBar from '@/components/NAVIGATION/NavBar'
+import NavBar from '@/components/NAVIGATION/NavBar';
 
 export default {
   name: 'App',
@@ -33,7 +34,7 @@ export default {
   watch:{
     logOutStatus(value){
       if(value){
-        ElNotification({title: 'Система', message: 'Время сессии истекло. Пожалуйста, перезайдите', type: 'warning', duration: 0});
+        ElNotification({title: 'Система', message: 'Время сессии истекло. Пожалуйста, перезайдите', type: 'warning'});
         setTimeout(() => {
           this.logOut();
           this.logOutStatus = false;
@@ -62,19 +63,21 @@ export default {
       this.$cookies.remove('emp_id');
       this.$router.push('/auth');
     },
-    getWidth(){
-      let width = window.innerWidth;
-      console.log(width);
-      return width
-    },
     testSomething(){
-      console.log(this.$cookie.getCookie('token'));
+      //console.log(this.$cookie.getCookie('token'));
+      console.log('start');
+      let x = 1234;
+      for (let i = 0; i < x; i++) {
+        for (let k = 0; k < x; k++) {
+          if ((i ** 2) + (k ** 2) === x ** 2)
+            console.log(`${i} + ${k} = ${x}`);
+        }
+      }
+      console.log('end');
     }
   },
   mounted(){
     this.checkAuth();
-    //window.addEventListener('resize', this.getWidth);
-    
     //Интерсепт ошибки 401, если токен просрочится
     axios.interceptors.response.use( response => response,
       error => {

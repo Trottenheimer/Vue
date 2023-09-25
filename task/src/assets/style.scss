@@ -9,6 +9,7 @@
 }
 .dialog{
     width: 50%;
+    min-width: 600px;
 }
 .search__input{
     width: 50%;
@@ -16,6 +17,7 @@
 @media screen and (max-width: 760px){
     .dialog{
         width: 100%;
+        min-width: 100px;
     }
     .search__input{
         width: 100%;

@@ -93,7 +93,6 @@ export default{
         this.options.dept = this.deptList.map(obj =>{
             return {value: obj.id, name: obj.name};
         });
-        console.log(this.dialogType);
     }
 }
 </script>

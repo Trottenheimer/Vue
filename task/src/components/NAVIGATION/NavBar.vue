@@ -62,7 +62,7 @@
             <template #dropdown>
             <el-dropdown-menu>
                 <el-dropdown-item @click="$router.push('/profile')">Профиль</el-dropdown-item>
-                <el-dropdown-item @click="testSomething">тест</el-dropdown-item>
+                <el-dropdown-item @click="this.$emit('test')">тест</el-dropdown-item>
                 <el-dropdown-item divided @click="this.$emit('logOut')">Выйти</el-dropdown-item>
             </el-dropdown-menu>
             </template>
