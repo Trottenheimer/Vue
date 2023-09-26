@@ -17,7 +17,7 @@
                 <el-date-picker placeholder="Укажите дату рождения" style="width:240px"
                 v-model="userData.birth" format="DD/MM/YYYY"
                 type="date" value-format="YYYY-MM-DD"
-                min="1900-01-01" max="2022-01-01"
+                min="1900-01-01" max="2023-01-01"
                 />
                 <el-select-v2 placeholder="Укажите пол" style="width: 240px"
                     v-model="userData.sex"
@@ -38,8 +38,38 @@
             </div>
         </div>
         <div class="profile__footer">
-            <el-button type="primary" @click="showExtraMenu" class="footer__btn">Дополнительные настройки</el-button>
-            <el-button type="primary" @click="selectProfile" class="footer__btn">Сменить профиль</el-button>
+            <el-button type="primary" @click="showExtraMenu" class="profile__footer__btn">Дополнительные настройки</el-button>
+            <el-button type="primary" @click="selectProfile" class="profile__footer__btn">Сменить профиль</el-button>
+        </div>
+    </div>
+    <div class="extra">
+        <div class="extra__row">
+            <div class="extra__plate">
+                <div class="plate__header">Группы:</div>
+
+                <div class="plate__body">
+                    <el-scrollbar class="list" height="400px">
+                        <div class="list__start"></div>
+                        <div class="list__item" v-for="(group) in groupList" :key="group.group_id">
+                            {{group.name}}
+                        </div>
+                        <div class="list__end"></div>
+                    </el-scrollbar>
+                </div>
+            </div>
+            <div class="extra__plate">
+                <div class="plate__header">Права:</div>
+
+                <div class="plate__body">
+                    <el-scrollbar class="list" height="400px">
+                        <div class="list__start"></div>
+                        <div class="list__item" v-for="(right) in rightList" :key="right.right_id">
+                            {{right.name}}
+                        </div>
+                        <div class="list__end"></div>
+                    </el-scrollbar>
+                </div>
+            </div>
         </div>
     </div>
     <select-profile v-if="dialogVisible"
@@ -69,6 +99,8 @@ export default{
             userData: {},
             postList: [],
             deptList: [],
+            groupList: [],
+            rightList: [],
             profileList: [],
             options: {
                 sex:[{value: 1, label: 'Мужской'}, {value: 2, label: 'Женский'}],
@@ -92,6 +124,12 @@ export default{
                     }),
                     this.$getData(this.$URL_DEPT_LIST, '').then(data => {
                         this.deptList = data;
+                    }),
+                    this.$getData(this.$URL_EMP_GROUPS, this.userData.id).then(data => {
+                        this.groupList = data;
+                    }),
+                    this.$getData(this.$URL_EMP_RIGHTS, this.userData.id).then(data => {
+                        this.rightList = data;
                     })
                 ]
                 Promise.all(promises).then(() => {
@@ -103,7 +141,7 @@ export default{
                         return {value: dept.id, label: dept.name}
                     })
                 }).catch((e) => {
-                    console.log('Error occured during promise processing:', e);
+                    console.error('Ошибка при запросе данных профиля:', e);
                 })
             });
         },
@@ -130,48 +168,49 @@ export default{
     }
 }
 </script>
-<style scoped>
+<style scoped lang="scss">
+@import "@/assets/variables.scss";
 h1{
     font-size: 32px;
 }
 .profile{
     display: flex;
     flex-direction: column;
-    width: 80%;
+    width: 90%;
     margin: 2% auto;
     justify-content: space-between;
     background-color: aliceblue;
-    border-radius: 15px;
-}
-.main__info{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 50%;
-    margin-left: 20px;
-}
-.profile{
+    border-radius: 10px;
     padding: 20px;
+
+    &__main{
+        display: flex;
+        flex-direction: row;
+    }
+    &__second{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+    }
+    &__footer{
+        display: flex;
+        margin-top: 20px;
+    }
 }
-.profile__main{
-    display: flex;
-    flex-direction: row;
-    
-}
-.profile__second{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 100%;
-}
-.profile__footer{
-    display: flex;
-    margin-top: 20px;
-}
-.main__image{
-    border: 1px solid gray;
-    border-radius: 4px;
-    width:20%;
+.main{
+    &__info{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 50%;
+        margin-left: 20px;
+    }
+    &__image{
+        border: 1px solid gray;
+        border-radius: 4px;
+        width:20%;
+    }
 }
 .avatar{
     width: 100%;
@@ -180,28 +219,86 @@ h1{
     display: flex;
     margin-top: 20px;
 }
+.extra{
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    margin: 0 auto;
+    &__row{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    };
+    &__plate{
+        width: 49%;
+        min-height: 400px;
+        padding: 20px;
+        border-radius: 20px;
+        background: aliceblue;
+        .plate__header{
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .plate__body{
+            .list{
+                display: flex;
+                flex-direction: column;
+                &__item{
+                    width: 100%;
+                    background: white;
+                    border: 1px solid black;
+                    border-radius: 4px;
+                    margin-top: 10px;
+                    padding: 5px 5px;
+                    font-size: 20px;
+                    min-height: 40px;
+                    text-align: center;
+                    color: $main
+                }
+                &__end, &__start{
+                    margin-top: 10px;
+                    display: block;
+                    height: 2px;
+                    width: 100%;
+                    background: black
+                }
+            }
+        }
+    };
+}
 .el-select-v2{
     width: 100%;
 }
 @media screen and (max-width: 760px) {
-    .profile__main{
-        flex-direction: column;
-        justify-content: center;
-    }
-    .profile__footer{
-        justify-content: center;
-        flex-direction: column;
-    }
-    .footer__btn{
-        margin-top: 20px;
-    }
     .profile{
         width: 100%;
-        padding: 0px;
+        padding: 10px;
+
+        &__main{
+            flex-direction: column;
+            justify-content: center;
+        }
+        &__footer{
+            justify-content: center;
+            flex-direction: column;
+            &__btn{
+                margin-top: 20px;
+            }
+        }
     }
     .main__info{
         margin: 0;
         width: 100%;
+    }
+    .extra{
+        &__row{
+            flex-direction: column;   
+        }
+        &__plate{
+            margin-top: 20px;
+            width: 100%;
+        }
+
     }
 }
 </style>

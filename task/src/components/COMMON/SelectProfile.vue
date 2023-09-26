@@ -1,6 +1,6 @@
 <template>
 <el-dialog v-model="dialogVisible" v-if="dialogVisible" @closed="dialogClose"
-    @keydown="handleKeyPress" draggable
+    @keydown="handleKeyPress" draggable class="dialog"
     >
     <template #header>
         <h1>Выберите профиль</h1>
