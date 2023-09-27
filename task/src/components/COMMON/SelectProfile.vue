@@ -38,7 +38,7 @@ export default {
         const router = useRouter();
         const dialogVisible = ref(true);
         const currentProfile = ref(-1);
-        const expirationTime = 60*60
+        const expirationTime = 60*60;
 
         //функции
         const setProfile = async (id) => {
@@ -74,26 +74,28 @@ export default {
     }
 }
 </script>
-<style scoped>
-.profile__body{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin: 10px;
-    padding: 10px;
-    max-width: 100%;
-    border: 1px solid gray;
-    border-radius: 4px;
-    background: white;
-    transition: 0.1s linear;
-}
-.profile__body:hover{
-    cursor: pointer;
-    background: aliceblue;
-    transition: 0.1s linear;
-}
-.profile__info{
-    display: flex;
-    flex-direction: column;
+<style scoped lang="scss">
+.profile{
+    &__body{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin: 10px;
+        padding: 10px;
+        max-width: 100%;
+        border: 1px solid gray;
+        border-radius: 4px;
+        background: white;
+        transition: 0.1s linear;
+    }
+    &__body:hover{
+        cursor: pointer;
+        background: aliceblue;
+        transition: 0.1s linear;
+    }
+    &__info{
+        display: flex;
+        flex-direction: column;
+    }
 }
 </style>

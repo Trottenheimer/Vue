@@ -6,7 +6,7 @@
         @test="testSomething"
       />
     </el-header>
-    <el-main>
+    <el-main style="padding: 0">
       <router-view v-slot="{ Component }">
         <transition name="fade">
           <component :is="Component" />
@@ -18,7 +18,7 @@
 
 <script>
 import axios from 'axios';
-import { ElNotification } from 'element-plus';
+import { ElLoading, ElNotification } from 'element-plus';
 import NavBar from '@/components/NAVIGATION/NavBar';
 
 export default {
@@ -49,31 +49,29 @@ export default {
     checkAuth(){
       let status = false;
       let token = this.$cookies.get('token');
-      if(!token)
-        console.log('Non-authed.');
+      let empId = this.$cookies.get('emp_id');
       token ? status = true : this.logOut();
       this.$store.dispatch('setAuthStatus', status);
       if (status)
         this.$store.dispatch('setUserData', {id: this.$getCookie('emp_id')});
+      if(!empId)
+          this.logOut()
     },
     async logOut(){
+      const loading = ElLoading.service({
+          lock: true, text: 'Загрузка',
+          background: 'rgba(0, 0, 0, 0.7)'
+      });
       this.$store.dispatch('setAuthStatus', false);
       this.$store.dispatch('setUserData', {});
       this.$cookies.remove('token');
       this.$cookies.remove('emp_id');
       this.$router.push('/auth');
+      loading.close();
     },
     testSomething(){
       //console.log(this.$cookie.getCookie('token'));
-      console.log('start');
-      let x = 1234;
-      for (let i = 0; i < x; i++) {
-        for (let k = 0; k < x; k++) {
-          if ((i ** 2) + (k ** 2) === x ** 2)
-            console.log(`${i} + ${k} = ${x}`);
-        }
-      }
-      console.log('end');
+      console.log('test');
     }
   },
   mounted(){

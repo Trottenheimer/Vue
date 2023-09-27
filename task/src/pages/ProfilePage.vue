@@ -17,7 +17,6 @@
                 <el-date-picker placeholder="Укажите дату рождения" style="width:240px"
                 v-model="userData.birth" format="DD/MM/YYYY"
                 type="date" value-format="YYYY-MM-DD"
-                min="1900-01-01" max="2023-01-01"
                 />
                 <el-select-v2 placeholder="Укажите пол" style="width: 240px"
                     v-model="userData.sex"
@@ -203,7 +202,7 @@ h1{
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        width: 50%;
+        width: 100%;
         margin-left: 20px;
     }
     &__image{
@@ -217,7 +216,9 @@ h1{
 }
 .second__row{
     display: flex;
-    margin-top: 20px;
+    justify-content: space-between;
+    width: 60%;
+    margin: 20px auto 0px auto;
 }
 .extra{
     display: flex;
@@ -299,6 +300,9 @@ h1{
             width: 100%;
         }
 
+    }
+    .second__row{
+        width: 100%;
     }
 }
 </style>

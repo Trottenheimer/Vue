@@ -1,7 +1,7 @@
 <template>
 <el-dialog width="50%" draggable style="margin-top: 80px;" :title="title"
     :modelValue="dialogExtraVisible"
-    @closed="closeDialog"
+    @closed="closeDialog" class="dialog"
     >
     <el-form style="max-width: 100%"
         label-position="top"

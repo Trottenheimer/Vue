@@ -67,11 +67,7 @@ export default{
 a{
   text-decoration: none;
   color: black;
-  transition: 0.1s ease;
   max-width: 300px;
-}
-a:hover{
-  color: white;
 }
 .el-link span{
   font-size: 24px;

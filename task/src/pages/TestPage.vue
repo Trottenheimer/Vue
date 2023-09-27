@@ -1,103 +1,59 @@
 <template>
-    <div class="layout">
-        <div class="window">
-            <div class="player"
-                :style="{position: 'relative',top: currentPos.y + 'px', right: currentPos.x + 'px'}"
-                >
-                <div class="player__body">
-                    <span class="player__name">Pl</span>
+    <div class="screen">
+        <div class="map" style="display: flex; flex-direction:column">
+            <div class="vertical" v-for="y in mapSize.y" :key="'y:' + y">
+                <div class="horizontal" v-for="x in mapSize.x" :key="'x:' + x">
+                    <div class="tile"
+                        :style="{background: `rgb(${generateColor()})`}"
+                        >
+                    </div>
                 </div>
             </div>
-            <div class="test__box"></div>
         </div>
     </div>
 </template>
-<script>
-import { ref, onMounted } from 'vue';
 
-export default{
-    name: "test-page",
-    setup(){
-        const currentPos = ref({x: 0, y: 0});
-        const speed = 20;
-        const playerSize = 40;
-        const wallAmount = 40;
-        const mapSize = {x: 1280-playerSize, y: 720-playerSize}
-        const handleKeyPress = (event) => {
-            event.preventDefault()
-            switch (event.key) {
-                case 'ArrowRight':
-                    if(currentPos.value.x + mapSize.x >= speed)
-                        currentPos.value.x -= speed;
-                    break
-                case 'ArrowLeft':
-                    if(currentPos.value.x * -1 >= speed)
-                        currentPos.value.x += speed;
-                    break
-                case 'ArrowUp':
-                    if(currentPos.value.y >= speed)
-                        currentPos.value.y -= speed;
-                    break
-                case 'ArrowDown':
-                    if(mapSize.y - currentPos.value.y >= speed)
-                        currentPos.value.y += speed;
-                    break
-                case 'Enter':
-                    console.log('enter');
-            }
-            console.log(currentPos.value);
-        };
-        const generateMap = () => {
-            console.log(mapSize.x / playerSize);
-        }
-        onMounted(() => {
-            window.addEventListener('keydown', handleKeyPress);
-            console.log(wallAmount);
+<script setup>
+import { onMounted, ref } from 'vue';
 
-            generateMap();
-        })
-        return{
-            currentPos,
-            handleKeyPress
-        }
-    }
+const mapSize = ref({x: 20, y: 20});
+const generateColor = () => {
+    let r = Math.floor(Math.random() * 255);
+    let g = Math.floor(Math.random() * 255);
+    let b = Math.floor(Math.random() * 255);
+    return `${r}, ${g}, ${b}`;
 }
-
+const generateMap = () => {
+    console.log('ok');
+}
+onMounted(() => {
+    generateMap();
+})
 </script>
-<style scoped>
-.layout{
+
+<style scoped lang="scss">
+.screen{
     display: flex;
     width: 100%;
-    height: 88vh;
-    background: dimgray;
-    justify-content: center;
+    height: calc(100vh - 59px);
 }
-.window{
+.vertical{
     display: flex;
-    margin: auto;
-    width: 1280px;
-    height: 720px;
-    background: white;
+    flex-direction: row;
 }
-.player{
+.horizontal{
     display: flex;
     flex-direction: column;
-    width: 40px;
-    height: 40px;
 }
-.player__body{
-    display: flex;
-    border: 4px solid black;
-    border-radius: 100px;
-    margin: 0 auto;
-    width: 40px;
-    height: 40px;
+.map{
+    max-width: 90%;
+    max-height: 90%;
+    border: 2px solid black;
+    margin: auto;
 }
-.player__name{
-    position: relative;
-    bottom: 20px;
-    width: 100%;
-    color: red;
-    text-align: center;
+.tile{
+    display: block;
+    width: 20px;
+    height: 20px;
 }
 </style>

@@ -38,7 +38,7 @@
     v-model="dialogVisible"
     :profileList="profileList"
     @removeToken="removeToken"
-    style="width: 50%; min-width: 300px"
+    class="dialog"
 />
 </template>
 
