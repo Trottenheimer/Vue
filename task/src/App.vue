@@ -70,7 +70,6 @@ export default {
       loading.close();
     },
     testSomething(){
-      //console.log(this.$cookie.getCookie('token'));
       console.log('test');
     }
   },

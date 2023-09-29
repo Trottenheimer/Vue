@@ -1,5 +1,5 @@
 <template>
-    <div class="screen">
+    <div class="main">
         <div class="map" style="display: flex; flex-direction:column">
             <div class="vertical" v-for="y in mapSize.y" :key="'y:' + y">
                 <div class="horizontal" v-for="x in mapSize.x" :key="'x:' + x">
@@ -32,11 +32,6 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.screen{
-    display: flex;
-    width: 100%;
-    height: calc(100vh - 59px);
-}
 .vertical{
     display: flex;
     flex-direction: row;

@@ -14,14 +14,14 @@
         </div>
         <div class="profile__second">
             <div class="second__row">
-                <el-date-picker placeholder="Укажите дату рождения" style="width:240px"
-                v-model="userData.birth" format="DD/MM/YYYY"
-                type="date" value-format="YYYY-MM-DD"
-                />
                 <el-select-v2 placeholder="Укажите пол" style="width: 240px"
                     v-model="userData.sex"
                     :options="options.sex"
                 />
+                <el-date-picker placeholder="Укажите дату рождения" style="width:240px"
+                v-model="userData.birth" format="DD/MM/YYYY"
+                type="date" value-format="YYYY-MM-DD"
+                />,
             </div>
             <div class="second__row">
                 <el-select-v2 placeholder="Укажите должность" style="width: 240px"

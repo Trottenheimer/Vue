@@ -7,6 +7,7 @@ import EmpPage from "@/pages/EmpPage"
 import AuthPage from "@/pages/AuthPage"
 import TestPage from "@/pages/TestPage"
 import ProfilePage from "@/pages/ProfilePage"
+import ChatPage from "@/pages/ChatPage"
 
 const routes = [
     {
@@ -38,6 +39,11 @@ const routes = [
         path: '/profile',
         component: ProfilePage,
         name: 'profile'
+    },
+    {
+        path: '/chat',
+        component: ChatPage,
+        name: 'chat'
     },
     {
         path: '/test',

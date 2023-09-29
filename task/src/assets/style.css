@@ -7,6 +7,12 @@
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
 }
 
+.main {
+  display: flex;
+  width: 100%;
+  height: calc(100vh - 59px);
+}
+
 .dialog {
   width: 50%;
   min-width: 600px;
