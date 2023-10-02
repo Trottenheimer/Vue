@@ -3,10 +3,11 @@
     <div class="messenger">
         <div class="messenger__dialogs">
             <el-scrollbar class="scrollbar">
-                <div v-for="item in 20" :key="item" class="dialog">
+                <div v-for="(dialog, index) in dialogs" :key="index" class="dialog" @click="selectDialog(dialog.id)">
                     <div class="dialog__data">
-                        <div class="dialog__name">Друг</div>
-                        <div class="dialog__message">{{ item }}</div>
+                        <div class="dialog__name">{{ dialog.name }}</div>
+                        <div class="dialog__user" v-if="dialog.username">{{ dialog.username }}</div>
+                        <div class="dialog__message" v-if="dialog.lastMessage">{{ dialog.lastMessage.text }}</div>
                     </div>
                     <div class="dialog__date">9:12</div>
                 </div>
@@ -18,15 +19,16 @@
                     v-for="(message, index) in messages" :key="index" class="message"
                     :style="{justifyContent: thisUser.id === message.user_id ? 'flex-end' : ''}"
                     >
-                    <div class="message__block" :style="{background: thisUser.id === message.user_id ? 'orange' : ''}">
+                    <div class="message__block" :style="{background: thisUser.id === message.user_id ? '#306BCC' : ''}">
+                        <div class="message__user" :style="{color: thisUser.id === message.user_id ? 'white' : ''}">{{message.username}}</div>
                         <div class="message__text">{{message.text}}</div>
                         <div class="message__date">{{message.createdAt.slice(11,16)}}</div>
                     </div>
                 </div>
             </el-scrollbar>
             <div class="chat__bar">
-                <el-input v-model="inputMessage"></el-input>
-                <el-button type="primary">Отправить</el-button>
+                <el-input v-model="inputMessage" @keyup.enter="sendMessage"></el-input>
+                <el-button type="primary" @click="sendMessage">Отправить</el-button>
             </div>
         </div>
     </div>
@@ -34,15 +36,61 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import {getData} from '@/components/globalFunctions'
+import { onMounted, ref } from 'vue';
+import { getData, postData } from '@/components/globalFunctions'
+import { ElLoading } from 'element-plus';
 
 const messages = ref([]);
-const thisUser = ref({id: 1})
-const inputMessage = ref('')
+const dialogs = ref([]);
+const thisUser = ref({id: 1});
+const inputMessage = ref('');
+const selectedChat = ref();
 
-getData('http://localhost:3000/api/message', '').then(data =>{
-    messages.value = data;
+const prepareComponent = async () => {
+        let loading = ElLoading.service({
+        lock: true, text: 'Загрузка',
+        background: 'rgba(0, 0, 0, 0.7)'
+    });
+    const promises = [
+        getData('http://localhost:3000/api/chat', '').then(data =>{
+            dialogs.value = data;
+            dialogs.value.forEach(dialog => {
+                getData('http://localhost:3000/api/user/', dialog.lastMessage.user_id).then(data => {
+                    if (data && data.login)
+                        dialog.username = data.login;
+                })
+            });
+        })
+    ]
+    Promise.all(promises).then(() => {
+        
+        loading.close();
+    }).catch(e => {
+        console.error(e);
+    })
+};
+const selectDialog = async(chatId) => {
+    getData('http://localhost:3000/api/message/', chatId).then(data => {
+        messages.value = data;
+        messages.value.forEach(msg => {
+            getData('http://localhost:3000/api/user/', msg.user_id).then(data => {
+                if (data && data.login) 
+                    msg.username = data.login;
+            });
+        });
+    });
+    selectedChat.value = chatId;
+};
+const sendMessage = async() => {
+    postData('http://localhost:3000/api/message/create', '',
+        {"user": thisUser.value.id, "chat": selectedChat.value, "text": inputMessage.value})
+        .then(res => {
+            console.log(res);
+        selectDialog(selectedChat.value)
+    });
+}
+onMounted(() => {
+    prepareComponent();
 })
 </script>
 
@@ -66,7 +114,7 @@ getData('http://localhost:3000/api/message', '').then(data =>{
         flex-direction: column;
         flex: 8;
         overflow: auto;
-        background: #223;
+        background: #111;
         border-left: 1px solid black;
         .chat__bar{
             display: flex;
@@ -103,26 +151,31 @@ getData('http://localhost:3000/api/message', '').then(data =>{
             &__block{
                 display: flex;
                 flex-direction: column;
-                border-radius: 4px;
-                min-width: 40px;
+                border-radius: 8px;
+                min-width: 120px;
                 width: max-content;
-                background: $success;
+                background: #445;
                 margin: 10px;
                 max-width: 50%;
+                padding: 0.2em;
             }
             &__date{
                 display: flex;
                 font-size: 12px;
                 justify-content: flex-end;
-                margin-right: 10px;
+                color: lightgray;
             }
             &__text{
-                margin: 2px;
+                color: white;
+            }
+            &__user{
+                font-size: 14px;
+                color: $main;
             }
         }
     }
 }
 .main{
-    background: #445;
+    background: #223;
 }
 </style>

@@ -4,7 +4,7 @@ const ApiError = require("../error/ApiError");
 class UserController {
     async getAll(req, res){
         const allUser = await User.findAll();
-        res.json(allUser)
+        res.json(allUser);
     };
     async getUser(req, res, next){
         const id = req.params.id;
