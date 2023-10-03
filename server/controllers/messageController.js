@@ -17,8 +17,6 @@ class messageController {
     async createMessage(req, res){
         const {user, chat, text} = req.body;
         const newMessage = await Message.create({user_id: user, chat_id: chat, text: text});
-        io.emit('newRecord', result.rows[0]);
-        res.status(200).send('New record added');
         res.json(newMessage);
     }
 }

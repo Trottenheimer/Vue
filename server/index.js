@@ -6,8 +6,10 @@ const cors = require('cors');
 const router = require('./routes/index');
 const errorHandler = require('./middleware/ErrorHandlingMiddleware');
 const path = require('path');
+const WebSocket = require('ws');
 
 const PORT = process.env.PORT || 3000;
+const server = new WebSocket.Server({ port: 4000 });
 
 const app = express();
 app
@@ -32,4 +34,33 @@ const start = async() => {
     }
 }
 
+const startWebSocket = async() => {
+    console.log('websocket started on 4000 port');
+    let username = [];
+    server.on('connection', ws => {
+        console.log('client connected.');
+        ws.on('message', message => {
+          if (message === 'exit') {
+            console.log('client disconnected');
+            ws.close();
+          }
+          else if (~message.indexOf("nicknames:")) {
+            if (username.map(user => { return user === message})){
+                username.push(message);
+                console.log('NICK:', username);
+            }
+            else
+                ws.close();
+          }
+          else{
+            server.clients.forEach(client => {
+              if (client.readyState === WebSocket.OPEN){
+                client.send(message);
+              }
+            });
+          };
+        });
+      });
+}
 start();
+startWebSocket();

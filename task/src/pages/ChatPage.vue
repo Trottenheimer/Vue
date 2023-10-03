@@ -1,9 +1,9 @@
 <template>
 <div class="main">
     <div class="messenger">
-        <div class="messenger__dialogs">
+        <div class="messenger__chats">
             <el-scrollbar class="scrollbar">
-                <div v-for="(dialog, index) in dialogs" :key="index" class="dialog" @click="selectDialog(dialog.id)">
+                <div v-for="(dialog, index) in chats" :key="index" class="dialog" @click="selectDialog(dialog.id)">
                     <div class="dialog__data">
                         <div class="dialog__name">{{ dialog.name }}</div>
                         <div class="dialog__user" v-if="dialog.username">{{ dialog.username }}</div>
@@ -33,6 +33,9 @@
         </div>
     </div>
 </div>
+<el-dialog v-if="setUser" >
+
+</el-dialog>
 </template>
 
 <script setup>
@@ -41,10 +44,12 @@ import { getData, postData } from '@/components/globalFunctions'
 import { ElLoading } from 'element-plus';
 
 const messages = ref([]);
-const dialogs = ref([]);
+const chats = ref([]);
 const thisUser = ref({id: 1});
 const inputMessage = ref('');
 const selectedChat = ref();
+
+let chatUsers = [];
 
 const prepareComponent = async () => {
         let loading = ElLoading.service({
@@ -53,8 +58,8 @@ const prepareComponent = async () => {
     });
     const promises = [
         getData('http://localhost:3000/api/chat', '').then(data =>{
-            dialogs.value = data;
-            dialogs.value.forEach(dialog => {
+            chats.value = data;
+            chats.value.forEach(dialog => {
                 getData('http://localhost:3000/api/user/', dialog.lastMessage.user_id).then(data => {
                     if (data && data.login)
                         dialog.username = data.login;
@@ -63,34 +68,31 @@ const prepareComponent = async () => {
         })
     ]
     Promise.all(promises).then(() => {
-        
         loading.close();
     }).catch(e => {
         console.error(e);
     })
 };
 const selectDialog = async(chatId) => {
-    getData('http://localhost:3000/api/message/', chatId).then(data => {
-        messages.value = data;
-        messages.value.forEach(msg => {
-            getData('http://localhost:3000/api/user/', msg.user_id).then(data => {
-                if (data && data.login) 
-                    msg.username = data.login;
-            });
-        });
-    });
     selectedChat.value = chatId;
+    chatUsers = [];
+    chatUsers = (chats.value.filter(chat => {return chat.id === chatId;}))[0].users;
+    console.log(chatUsers);
+    getData('http://localhost:3000/api/message/', chatId).then(data => {
+        messages.value = data
+    });
 };
 const sendMessage = async() => {
     postData('http://localhost:3000/api/message/create', '',
         {"user": thisUser.value.id, "chat": selectedChat.value, "text": inputMessage.value})
         .then(res => {
             console.log(res);
-        selectDialog(selectedChat.value)
+        selectDialog(selectedChat.value);
     });
 }
 onMounted(() => {
     prepareComponent();
+    console.log(chatUsers);
 })
 </script>
 
@@ -101,7 +103,7 @@ onMounted(() => {
     width: 80%;
     margin: 20px auto;
     flex-direction: row;
-    &__dialogs{
+    &__chats{
         display: flex;
         flex-direction: column;
         flex: 2;
@@ -172,10 +174,22 @@ onMounted(() => {
                 font-size: 14px;
                 color: $main;
             }
+            opacity: 0;
+            animation: slide-up 0.5s ease-in-out forwards;
         }
     }
 }
 .main{
     background: #223;
+}
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 </style>
