@@ -1,17 +1,23 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const sequelize = require('./db');
 const models = require('./models/models');
-const cors = require('cors');
 const router = require('./routes/index');
 const errorHandler = require('./middleware/ErrorHandlingMiddleware');
 const path = require('path');
-const WebSocket = require('ws');
+const Server = require('socket.io');
+const { emit } = require('process');
 
 const PORT = process.env.PORT || 3000;
-const server = new WebSocket.Server({ port: 4000 });
-
 const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http, {
+  cors:{origin: 'http://192.168.1.91:5173'}
+})
+
+let messages = [];
+
 app
     .use(cors())
     .use(express.json())
@@ -20,47 +26,45 @@ app
 
     .use(errorHandler);
 
+
 app.get('/', (req, res) => {
     res.status(200).json({message: 'Server on'})
 });
 
+io.on('connection', (socket) => {
+  console.log(`${socket.id} user connected.`);
+  socket.emit('history', messages);
+
+  socket.on('login', data => {
+    socket.username = data;
+    console.log(`user '${data}' has authorized.`);
+    let announce = {data: `Пользователь ${socket.username} присоединился к чату`, type: 'announce'};
+    messages.push(announce);
+    io.emit('message', announce);
+  })
+  socket.on('message', (data) => {
+    date = String(new Date()).slice(16,21);
+    console.log(date);
+    let message = {user: socket.username, data: data, date: date, type: 'message'};
+    messages.push(message);
+    io.emit('message', message);
+  })
+
+  socket.on('disconnect', () => {
+    console.log(`${socket.id} disconnected.`);
+    let announce = {data: `Пользователь ${socket.username} вышел из чата`, type: 'announce'};
+    messages.push(announce);
+    io.emit('message', announce);
+  })
+})
 const start = async() => {
     try {
         await sequelize.authenticate();
         await sequelize.sync();
-        app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+        http.listen(PORT, () => console.log(`Server started on port ${PORT}`));
     } catch (error) {
         console.log(error);
     }
 }
 
-const startWebSocket = async() => {
-    console.log('websocket started on 4000 port');
-    let username = [];
-    server.on('connection', ws => {
-        console.log('client connected.');
-        ws.on('message', message => {
-          if (message === 'exit') {
-            console.log('client disconnected');
-            ws.close();
-          }
-          else if (~message.indexOf("nicknames:")) {
-            if (username.map(user => { return user === message})){
-                username.push(message);
-                console.log('NICK:', username);
-            }
-            else
-                ws.close();
-          }
-          else{
-            server.clients.forEach(client => {
-              if (client.readyState === WebSocket.OPEN){
-                client.send(message);
-              }
-            });
-          };
-        });
-      });
-}
 start();
-startWebSocket();
