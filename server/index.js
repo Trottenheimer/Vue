@@ -7,13 +7,13 @@ const router = require('./routes/index');
 const errorHandler = require('./middleware/ErrorHandlingMiddleware');
 const path = require('path');
 const Server = require('socket.io');
-const { emit } = require('process');
 
 const PORT = process.env.PORT || 3000;
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http, {
-  cors:{origin: 'http://192.168.1.91:5173'}
+  cors:{origin: 'http://192.168.1.91:5173'},
+  maxHttpBufferSize: 10000000
 })
 
 let messages = [];
@@ -37,17 +37,23 @@ io.on('connection', (socket) => {
 
   socket.on('login', data => {
     socket.username = data;
-    console.log(`user '${data}' has authorized.`);
+    var address = socket.handshake.address;
+    console.log(`user '${data}' has authorized. IP: ${address}`);
     let announce = {data: `Пользователь ${socket.username} присоединился к чату`, type: 'announce'};
     messages.push(announce);
     io.emit('message', announce);
   })
-  socket.on('message', (data) => {
-    date = String(new Date()).slice(16,21);
-    console.log(date);
+  socket.on('message', data => {
+    let date = String(new Date()).slice(16,21);
     let message = {user: socket.username, data: data, date: date, type: 'message'};
     messages.push(message);
     io.emit('message', message);
+  })
+  socket.on('image', (image, text) => {
+    let date = String(new Date()).slice(16,21);
+    let message = {user: socket.username, data: text, image: image, date: date, type: 'image'}
+    messages.push(message);
+    io.emit('message', message)
   })
 
   socket.on('disconnect', () => {
