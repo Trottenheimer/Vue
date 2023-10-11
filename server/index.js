@@ -17,6 +17,7 @@ const io = require('socket.io')(http, {
 })
 
 let messages = [];
+let users = [];
 const sessions = new Map()
 
 app
@@ -33,16 +34,30 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log(`${socket.id} user connected.`);
+  console.log(`${socket.id} connected.`);
   socket.emit('history', messages);
-
-  socket.on('login', (data, token) => {
+  socket.on('login', data => {
     socket.username = data;
     socket.address = socket.handshake.address;
+    users.push(socket);
     console.log(`user '${data}' has authorized. IP: ${socket.address}`);
+
     let announce = {data: `Пользователь ${socket.username} присоединился к чату`, type: 'announce'};
     messages.push(announce);
+
+    socket.emit('auth', socket.id)
     io.emit('message', announce);
+  })
+  socket.on('auth', token => {
+    console.log(token);
+    users.forEach(user => {
+      if (user.id === token){
+        socket.id = token;
+        socket.username = user.username;
+        socket.address = user.address;
+        console.log('session revised for user ', user.username);
+      }
+    })
   })
   socket.on('message', data => {
     let date = String(new Date()).slice(16,21);

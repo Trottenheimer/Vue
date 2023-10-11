@@ -24,10 +24,13 @@ $secondary: #242424;
 .header{
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     display: flex;
+    justify-content: space-between;
     font-size: 40px;
     background: #464646;
+    width: 100%;
+    padding: 0 20px;
     &__title{
-        color: $primary;
+        color: white;
         text-align: center;
         align-items: center;
         will-change:auto;
@@ -35,6 +38,7 @@ $secondary: #242424;
         width: 150px;
         height: 100%;
         border-radius: 10px;
+        -webkit-text-stroke: 1px black;
       &:hover{
         color: #242424;
         background: $primary;
@@ -113,3 +117,9 @@ $secondary: #242424;
     filter: drop-shadow(0.1rem 0.1rem 2rem green);
   }
 }
+
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }

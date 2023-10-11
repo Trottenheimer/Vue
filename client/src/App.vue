@@ -1,8 +1,9 @@
 <script setup>
 import { io } from 'socket.io-client';
-import { onMounted, ref, watch} from 'vue';
-import cookie from 'vue-cookie'
-import {ElNotification} from 'element-plus'
+import { nextTick, ref, watch} from 'vue';
+import cookie from 'vue-cookie';
+import { ElNotification } from 'element-plus';
+import test from '@/components/test.vue'
 const SERVER_URL = 'http://192.168.1.91:3000'
 const socket = io(SERVER_URL, {
   transports: ['websocket'],
@@ -11,7 +12,7 @@ const socket = io(SERVER_URL, {
 
 const messageLimit = ref(512);
 const loginLimit = ref(32);
-const chatEnd = ref(null);
+const messageList = ref(null);
 
 let conStatus = ref(false);
 let messageInput = ref('');
@@ -23,6 +24,7 @@ let vImage = ref();
 let imageText = ref('');
 let imageInput;
 let editMode = ref(false);
+let bgNumber = 0;
 
 watch([messageInput, loginInput], async([msgVal, loginVal]) => {
   if (msgVal.length >= messageLimit.value){
@@ -58,7 +60,6 @@ const sendMessage = () => {
   else if (messageInput.value !== ' ' && messageInput.value !== '')
     socket.emit('message', messageInput.value);
   messageInput.value = '';
-  scrollDown();
 }
 const handlePaste = async (event) => {
   const items = (event.clipboardData || event.originalEvent.clipboardData).items;
@@ -102,7 +103,6 @@ const sendImage = (file, text) => {
     imageInput = '';
     let input = document.querySelector('input[type="file"]')
     input.value = '';
-    scrollDown();
   };
   reader.readAsDataURL(file);
   dialogVisible.value = false;
@@ -112,98 +112,146 @@ const viewImage = (image) => {
   dialogVisible.value = true;
 }
 const scrollDown = () => {
-  chatEnd.value?.scrollIntoView({behavior: 'smooth'});
+  const msgList = messageList.value;
+  if (msgList?.scrollHeight)
+    msgList.scrollTop = msgList.scrollHeight;
 }
-const setMessageStyle = (user, type) => {
-  if (user === loginInput.value)
+const setMessageStyle = (id, type) => {
+  if (id === cookie.get('id'))
     return {justifyContent: 'flex-end'}
   else if (type === 'announce')
     return {justifyContent: 'center'}
   else
     return '';
 }
-
+const changeBackground = () => {
+  bgNumber++;
+  if (bgNumber === 2)
+    bgNumber = 0;
+}
+const backgroundImage = () => {
+  let bgStyle = `background-image: url('src/assets/backgrounds/bg${bgNumber}.png')`;
+  console.log(bgStyle);
+  return bgStyle;
+}
 socket.on('connect', () => {
   console.log(`connection to ${SERVER_URL} established.`);
   conStatus.value = true;
-  cookie.set('token', 'token');
-  console.log(cookie.get('token'));
+  if (cookie.get('id')){
+      socket.emit('auth', cookie.get('id'))
+    logInStatus.value = true;
+    console.log('token acquired');
+  }
+  socket.on('auth', id => {
+    cookie.set('id', id);
+  })
+  socket.on('message', message => {
+    messages.value.push(message);
+    console.log(message);
+    nextTick(() => {
+      scrollDown();
+    })
+  })
+  socket.on('history', messageHistory => {
+    messages.value = [...messageHistory];
+    nextTick(() => {
+      scrollDown();
+    })
+  })
   socket.on('disconnect', () => {
-    console.log('con close');
     conStatus.value = false;
-    cookie.delete('token')
+    cookie.delete('id')
+    console.log('connection lost');
     window.location.reload();
   })
-})
-socket.on('message', message => {
-  messages.value.push(message);
-  console.log(message);
-  scrollDown();
-})
-socket.on('history', messageHistory => {
-  messages.value = [...messageHistory]
-  chatEnd.value?.scrollIntoView({behavior: 'smooth'});
 })
 </script>
 
 <template>
 <div class="main dark-theme">
-  <div class="header">
-    <span class="header__title">
-      VOBLA
+  <div class="header" style="background: rgb(129, 215, 240)">
+    <div>
+      <img src="src/assets/favicon.jfif" alt="img" style="height: 40px;">
+      <span class="header__title">
+      Vobla.
       </span>
     <span class="header__status" :style="{color: conStatus ? 'green' : 'red'}">{{ conStatus ? 'онлайн' : 'отключен'}}</span>
+    </div>
+    <div>
+      <el-dropdown>
+        <el-button type="primary" style="height: 40px; margin-top: 10px; width: 40px; background: none; border: 2px solid white; font-size: 24px; box-shadow: 0px 0px 10px 1px aliceblue;">
+          <el-icon><More/></el-icon>
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item @click="changeBackground">Сменить картинку</el-dropdown-item>
+            <el-dropdown-item divided>Выйти</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </div>
   </div>
-  <div class="chat" v-if="logInStatus">
-    <div class="chat__window">
-      <div class="message" v-for="(message, index) in messages" :key="index" :style="setMessageStyle(message.user, message.type)">
-        <div class="message__block" :style="{backgroundColor: message.user === loginInput ? '#227abb' : ''}">
-          <template v-if="message.type === 'message' || message.type === 'image'">
-            <div class="block__column">
-              <span class="message__block__user">{{ message.user }}</span>
-              <span class="message__block__data">{{ message.data }}</span>
-              <template v-if="message.image">
-                <img @click="viewImage(message.image)" class="message__block__image" :src="message.image" alt="image">
+  <div style="display: flex; flex-direction: row; justify-content: space-between; height: 100%">
+    <div style="height: 100%; width: 10%">
+      <div style="display: flex; flex-direction: column">
+        <div>a</div>
+        <div>a</div>
+        <div>a</div>
+        <div>a</div>
+      </div>
+    </div>
+    <div style="height: 100%; width: 90%">
+      <div class="chat" v-if="logInStatus">
+        <div class="chat__window" ref="messageList" :style=backgroundImage()>
+          <div class="message" v-for="(message, index) in messages" :key="index" :style="setMessageStyle(message.id, message.type)">
+            <div class="message__block" :style="{backgroundColor: message.id === cookie.get('id') ? '#227abb' : ''}">
+              <template v-if="message.type === 'message' || message.type === 'image'">
+                <div class="block__column">
+                  <span class="message__block__user">{{ message.user }}</span>
+                  <span class="message__block__data">{{ message.data }}</span>
+                  <template v-if="message.image">
+                    <img @click="viewImage(message.image)" class="message__block__image" :src="message.image" alt="image">
+                  </template>
+                </div>
+                <template v-if="message.type === 'image'">
+                  <span class="message__block__date__hidden">{{message.date}}</span>
+                </template>
+                <template v-else>
+                  <span class="message__block__date">{{message.date}}</span>
+                </template>
               </template>
-              <template v-if="message.type !== 'image'">
-                
+              <template v-else-if="message.type === 'announce'">
+                <div class="message__block__announce" style="margin: 0 auto">{{message.data}}</div>
               </template>
             </div>
-            <template v-if="message.type !== 'image'">
-              <span class="message__block__date">{{message.date}}</span>
-            </template>
-          </template>
-          <template v-else-if="message.type === 'announce'">
-            <div class="message__block__announce" style="margin: 0 auto">{{message.data}}</div>
-          </template>
+          </div>
         </div>
-      </div>
-      <div class="chat__window__end" ref="chatEnd"/>
-    </div>
 
-    <div class="chat__bar">
-      {{ messageInput.length }}/{{messageLimit}}
-      <div class="chat__bar__input">
-        <input type="text" @keydown.enter="sendMessage" @paste="handlePaste" v-model="messageInput">
-        <el-icon class="icon__addImage" :size="24" @click="this.$refs.fileInput.click()"><Paperclip/></el-icon>
-        <button class="my__button" @click="sendMessage">
-          <el-icon :size="24">
-            <Promotion/>
-          </el-icon>
-        </button>
-      </div>
-      <input class="input__image" type="file" @change="selectImage" ref="fileInput" placeholder="картинка">
-      <div v-if="imageInput">
-        <img src="" alt="">
+        <div class="chat__bar">
+          {{ messageInput.length }}/{{messageLimit}}
+          <div class="chat__bar__input">
+            <input type="text" @keydown.enter="sendMessage" @paste="handlePaste" v-model="messageInput">
+            <el-icon class="icon__addImage" :size="24" @click="this.$refs.fileInput.click()"><Paperclip/></el-icon>
+            <button class="my__button" @click="sendMessage">
+              <el-icon :size="24">
+                <Promotion/>
+              </el-icon>
+            </button>
+          </div>
+          <input class="input__image" type="file" @change="selectImage" ref="fileInput" placeholder="картинка">
+          <div v-if="imageInput">
+            <img src="" alt="">
+            </div>
         </div>
+
+      </div>
+
+      <div class="login" v-else>
+        <span>от 4 до 32 символов</span>
+        <input type="text" @keydown.enter="logIn" v-model="loginInput">
+        <button @click="logIn">Войти</button>
+      </div>
     </div>
-
-  </div>
-
-  <div class="login" v-else>
-    <span>от 4 до 32 символов</span>
-    <input type="text" @keydown.enter="logIn" v-model="loginInput">
-    <button @click="logIn">Войти</button>
   </div>
 </div>
 
@@ -229,16 +277,10 @@ socket.on('history', messageHistory => {
 </template>
 
 <style scoped lang="scss">
-*{
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-}
 .main{
   display: flex;
   flex-direction: column;
-  height: 90vh;
-  max-height: 98vh;
+  height: calc(100vh - 60px);
   width: 100%;
 }
 .chat{
@@ -247,27 +289,23 @@ socket.on('history', messageHistory => {
   background: #353535;
   height: 100%;
   width: 100%;
-
+  padding: 0 10px;
   &__window{
     display: flex;
     flex-direction: column;
     //background: #242424;
-    background-image: url('@/assets/bg.png');
+    background-image: url('@/assets/backgrounds/bg0.png');
     overflow-y: scroll;
     overflow-x: hidden;
     height: 100%;
     max-height: 100%;
-    width: 98%;
-    margin: auto;
-    padding: 10px;
-    &__end{
-      margin-top: 48px;
-    }
+    width: 100%;
+    padding: 1px;
+    transition: scroll-behavior 0.5s ease-in-out;
   }
   &__bar{
     display: flex;
     flex-direction: column;
-    margin-top: 100px;
     &__input{  
       display: flex;
       flex-direction: row;
