@@ -1,6 +1,8 @@
 <script setup>
 import { io } from 'socket.io-client';
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch} from 'vue';
+import cookie from 'vue-cookie'
+import {ElNotification} from 'element-plus'
 const SERVER_URL = 'http://192.168.1.91:3000'
 const socket = io(SERVER_URL, {
   transports: ['websocket'],
@@ -18,7 +20,9 @@ let logInStatus = ref(false);
 let loginInput = ref('');
 let dialogVisible = ref(false);
 let vImage = ref();
+let imageText = ref('');
 let imageInput;
+let editMode = ref(false);
 
 watch([messageInput, loginInput], async([msgVal, loginVal]) => {
   if (msgVal.length >= messageLimit.value){
@@ -27,14 +31,24 @@ watch([messageInput, loginInput], async([msgVal, loginVal]) => {
   if (loginVal.length >= loginLimit.value)
     loginInput.value = loginVal.substring(0, loginLimit.value)
 })
+function convertImageToBase64(image) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      resolve(reader.result);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(image);
+  });
+}
 const logIn = () => {
   loginInput.value = loginInput.value.trim();
-  if (loginInput.value.length >= 4 && loginInput.value.length <= 32 && loginInput.value !== ''){
+  if (loginInput.value.length >= 4 && loginInput.value.length <= 32 && loginInput.value !== '' && loginInput.value !== 'Администратор'){
     socket.emit('login', loginInput.value);
     logInStatus.value = true;
   }
   else{
-    alert('Некорректно веден ник  ')
+    ElNotification({title: 'Ошибка', message: 'Введи ник нормально', type: 'error'});
   }
 }
 const sendMessage = () => {
@@ -43,18 +57,10 @@ const sendMessage = () => {
     sendImage(imageInput, messageInput.value);
   else if (messageInput.value !== ' ' && messageInput.value !== '')
     socket.emit('message', messageInput.value);
-  
-  messageInput.value = ''
+  messageInput.value = '';
+  scrollDown();
 }
-const selectImage = (event) => {
-  const fileSize = (event.target.files[0].size / (1024 * 1024)).toFixed(2);
-  if (fileSize > 10) {
-    alert('Запрещено загружать файлы весом более 10 МБ');
-  }
-  else
-    imageInput = event.target.files[0];
-} 
-const handlePaste = (event) => {
+const handlePaste = async (event) => {
   const items = (event.clipboardData || event.originalEvent.clipboardData).items;
   for (const item of items) {
     if (item.type.indexOf("image") === 0) {
@@ -65,9 +71,23 @@ const handlePaste = (event) => {
       }
       else
         imageInput = file;
+        let imageInput64 = await convertImageToBase64(imageInput);
+        viewImage(imageInput64);
+        editMode.value = true;
       break;
     }
   }
+}
+const selectImage = async (event) => {
+  const fileSize = (event.target.files[0].size / (1024 * 1024)).toFixed(2);
+  if (fileSize > 10) {
+    alert('Запрещено загружать файлы весом более 10 МБ');
+  }
+  else
+    imageInput = event.target.files[0];
+    let imageInput64 = await convertImageToBase64(imageInput);
+    viewImage(imageInput64);
+    editMode.value = true;
 }
 const sendImage = (file, text) => {
   const reader = new FileReader();
@@ -77,17 +97,19 @@ const sendImage = (file, text) => {
           alert('Можно загружать только изображения');
           return 0;
         }
-    const dataUrl = reader.result;
+    let dataUrl = reader.result;
     socket.emit('image', dataUrl, text);
     imageInput = '';
-    const input = document.querySelector('input[type="file"]')
+    let input = document.querySelector('input[type="file"]')
     input.value = '';
+    scrollDown();
   };
   reader.readAsDataURL(file);
+  dialogVisible.value = false;
 }
 const viewImage = (image) => {
-  dialogVisible.value = true;
   vImage.value = image
+  dialogVisible.value = true;
 }
 const scrollDown = () => {
   chatEnd.value?.scrollIntoView({behavior: 'smooth'});
@@ -104,9 +126,12 @@ const setMessageStyle = (user, type) => {
 socket.on('connect', () => {
   console.log(`connection to ${SERVER_URL} established.`);
   conStatus.value = true;
+  cookie.set('token', 'token');
+  console.log(cookie.get('token'));
   socket.on('disconnect', () => {
     console.log('con close');
     conStatus.value = false;
+    cookie.delete('token')
     window.location.reload();
   })
 })
@@ -122,15 +147,17 @@ socket.on('history', messageHistory => {
 </script>
 
 <template>
-<div class="main">
+<div class="main dark-theme">
   <div class="header">
-    <span class="header__title">VOBLA</span>
+    <span class="header__title">
+      VOBLA
+      </span>
     <span class="header__status" :style="{color: conStatus ? 'green' : 'red'}">{{ conStatus ? 'онлайн' : 'отключен'}}</span>
   </div>
   <div class="chat" v-if="logInStatus">
     <div class="chat__window">
       <div class="message" v-for="(message, index) in messages" :key="index" :style="setMessageStyle(message.user, message.type)">
-        <div class="message__block" :style="{backgroundColor: message.type == 'message' && message.user === loginInput ? '#3377ff' : ''}">
+        <div class="message__block" :style="{backgroundColor: message.user === loginInput ? '#227abb' : ''}">
           <template v-if="message.type === 'message' || message.type === 'image'">
             <div class="block__column">
               <span class="message__block__user">{{ message.user }}</span>
@@ -138,8 +165,13 @@ socket.on('history', messageHistory => {
               <template v-if="message.image">
                 <img @click="viewImage(message.image)" class="message__block__image" :src="message.image" alt="image">
               </template>
+              <template v-if="message.type !== 'image'">
+                
+              </template>
             </div>
-            <span class="message__block__date">{{message.date}}</span>
+            <template v-if="message.type !== 'image'">
+              <span class="message__block__date">{{message.date}}</span>
+            </template>
           </template>
           <template v-else-if="message.type === 'announce'">
             <div class="message__block__announce" style="margin: 0 auto">{{message.data}}</div>
@@ -153,10 +185,19 @@ socket.on('history', messageHistory => {
       {{ messageInput.length }}/{{messageLimit}}
       <div class="chat__bar__input">
         <input type="text" @keydown.enter="sendMessage" @paste="handlePaste" v-model="messageInput">
-        <button @click="sendMessage">Отправить</button>
+        <el-icon class="icon__addImage" :size="24" @click="this.$refs.fileInput.click()"><Paperclip/></el-icon>
+        <button class="my__button" @click="sendMessage">
+          <el-icon :size="24">
+            <Promotion/>
+          </el-icon>
+        </button>
       </div>
-      <input class="input__image" type="file" @change="selectImage" placeholder="картинка">
+      <input class="input__image" type="file" @change="selectImage" ref="fileInput" placeholder="картинка">
+      <div v-if="imageInput">
+        <img src="" alt="">
+        </div>
     </div>
+
   </div>
 
   <div class="login" v-else>
@@ -165,10 +206,25 @@ socket.on('history', messageHistory => {
     <button @click="logIn">Войти</button>
   </div>
 </div>
-<el-dialog class="dialog__image" v-model="dialogVisible">
+
+
+
+<el-dialog class="dialog__image" v-model="dialogVisible"
+  @keyup.enter="sendImage(imageInput, imageText)" @closed="imageText = ''; imageInput = ''; editMode = false;"
+  >
   <div class="dialog__content">
     <img class="dialog__content__image" :src="vImage" alt="">
   </div>
+  <template v-if="editMode">
+    <div class="dialog__desc">
+      <span>Подпись</span>
+      <input class="dialog__desc__input" type="text" v-model="imageText"/>
+    </div>
+    <div class="control__panel">
+      <button class="my__button" @click="dialogVisible = false;">Отмена</button>
+      <button class="my__button" @click="sendImage(imageInput, imageText)">Отправить</button>
+    </div>
+  </template>
 </el-dialog>
 </template>
 
@@ -195,7 +251,8 @@ socket.on('history', messageHistory => {
   &__window{
     display: flex;
     flex-direction: column;
-    background: #242424;
+    //background: #242424;
+    background-image: url('@/assets/bg.png');
     overflow-y: scroll;
     overflow-x: hidden;
     height: 100%;
@@ -203,7 +260,6 @@ socket.on('history', messageHistory => {
     width: 98%;
     margin: auto;
     padding: 10px;
-
     &__end{
       margin-top: 48px;
     }
@@ -230,9 +286,7 @@ socket.on('history', messageHistory => {
     width: max-content;
   }
   input{
-    animation-name: pulse;
-    animation-duration: 2s;
-    animation-iteration-count: infinite;
+    animation: pulse 5s infinite;
   }
 }
 input{
@@ -254,24 +308,9 @@ input{
 .input__image{
   width: 30%;
   border: 2px solid gray;
+  display: none;
 }
-.header{
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  display: flex;
-  font-size: 40px;
-  background: #464646;
-  &__title{
-    will-change:auto;
-    transition: 0.1s linear;
-    width: 150px;
-    height: 50px;
-    &:hover{
-      font-size: 44px;
-      cursor: pointer;
-      transition: 0.1s linear;
-    }
-  }
-}.message{
+.message{
   display: flex;
   justify-content: flex-start;
   width: 100%;
@@ -284,7 +323,7 @@ input{
     min-width: 60px;
     width: max-content;
     height: max-content;
-    max-width: 800px;
+    max-width: 80%;
     max-height: 800px;
     image-rendering: optimizeSpeed;
     border-radius: 12px;
@@ -295,6 +334,7 @@ input{
       flex-direction: column;
       width: max-content;
       height: max-content;
+      max-width: 100%;
       margin: 0 10px 0 4px;
     }
     &__user{
@@ -306,6 +346,7 @@ input{
       font-size: 16px;
       width: max-content;
       max-width: 100%;
+      word-break: break-all;
     }
     &__date{
       display: flex;
@@ -333,26 +374,6 @@ input{
       width: max-content;
       color: #696969;
     }
-  }
-}
-.dialog__content{
-  display: flex;
-}
-.dialog__image{
-  display: flex;
-  justify-content: center;;
-  background: #242424;
-}
-
-@keyframes pulse {
-  0%{
-    filter: drop-shadow(0.1rem 0.1rem 0.1rem green);
-  }
-  50%{
-    filter: drop-shadow(0.1rem 0.1rem 0.5rem green);
-  }
-  100%{
-    filter: drop-shadow(0.1rem 0.1rem 0.1rem green);
   }
 }
 </style>

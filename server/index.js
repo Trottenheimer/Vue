@@ -17,6 +17,7 @@ const io = require('socket.io')(http, {
 })
 
 let messages = [];
+const sessions = new Map()
 
 app
     .use(cors())
@@ -35,30 +36,30 @@ io.on('connection', (socket) => {
   console.log(`${socket.id} user connected.`);
   socket.emit('history', messages);
 
-  socket.on('login', data => {
+  socket.on('login', (data, token) => {
     socket.username = data;
-    var address = socket.handshake.address;
-    console.log(`user '${data}' has authorized. IP: ${address}`);
+    socket.address = socket.handshake.address;
+    console.log(`user '${data}' has authorized. IP: ${socket.address}`);
     let announce = {data: `Пользователь ${socket.username} присоединился к чату`, type: 'announce'};
     messages.push(announce);
     io.emit('message', announce);
   })
   socket.on('message', data => {
     let date = String(new Date()).slice(16,21);
-    let message = {user: socket.username, data: data, date: date, type: 'message'};
+    let message = {user: socket.username, data: data, date: date, id: socket.id, type: 'message'};
     messages.push(message);
     io.emit('message', message);
   })
   socket.on('image', (image, text) => {
     let date = String(new Date()).slice(16,21);
-    let message = {user: socket.username, data: text, image: image, date: date, type: 'image'}
+    let message = {user: socket.username, data: text, image: image, date: date, id: socket.id, type: 'image'}
     messages.push(message);
     io.emit('message', message)
   })
 
   socket.on('disconnect', () => {
     console.log(`${socket.id} disconnected.`);
-    let announce = {data: `Пользователь ${socket.username} вышел из чата`, type: 'announce'};
+    let announce = {data: `Пользователь ${socket.username ? socket.username : socket.id} вышел из чата`, type: 'announce'};
     messages.push(announce);
     io.emit('message', announce);
   })
