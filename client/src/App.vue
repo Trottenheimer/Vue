@@ -53,6 +53,10 @@ const logIn = () => {
     ElNotification({title: 'Ошибка', message: 'Введи ник нормально', type: 'error'});
   }
 }
+const logOut = () => {
+  cookie.delete('id');
+  logInStatus.value = false;
+}
 const sendMessage = () => {
   messageInput.value = messageInput.value.trim(); 
   if (imageInput)
@@ -143,7 +147,7 @@ socket.on('connect', () => {
     console.log('token acquired');
   }
   socket.on('auth', id => {
-    cookie.set('id', id);
+    cookie.set('id', id, '1d');
   })
   socket.on('message', message => {
     messages.value.push(message);
@@ -185,13 +189,13 @@ socket.on('connect', () => {
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item @click="changeBackground">Сменить картинку</el-dropdown-item>
-            <el-dropdown-item divided>Выйти</el-dropdown-item>
+            <el-dropdown-item @click="logOut" divided>Выйти</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
     </div>
   </div>
-  <div style="display: flex; flex-direction: row; justify-content: space-between; height: 100%">
+  <div style="display: flex; flex-direction: row; justify-content: space-between; height: 100%" v-if="logInStatus">
     <div style="height: 100%; width: 10%">
       <div style="display: flex; flex-direction: column">
         <div>a</div>
@@ -201,7 +205,7 @@ socket.on('connect', () => {
       </div>
     </div>
     <div style="height: 100%; width: 90%">
-      <div class="chat" v-if="logInStatus">
+      <div class="chat">
         <div class="chat__window" ref="messageList" :style=backgroundImage()>
           <div class="message" v-for="(message, index) in messages" :key="index" :style="setMessageStyle(message.id, message.type)">
             <div class="message__block" :style="{backgroundColor: message.id === cookie.get('id') ? '#227abb' : ''}">
@@ -246,12 +250,13 @@ socket.on('connect', () => {
 
       </div>
 
-      <div class="login" v-else>
-        <span>от 4 до 32 символов</span>
-        <input type="text" @keydown.enter="logIn" v-model="loginInput">
-        <button @click="logIn">Войти</button>
-      </div>
+      
     </div>
+  </div>
+  <div class="login" v-else>
+    <span>от 4 до 32 символов</span>
+    <input type="text" @keydown.enter="logIn" v-model="loginInput">
+    <button @click="logIn">Войти</button>
   </div>
 </div>
 
