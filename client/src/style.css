@@ -16,42 +16,14 @@
   --background-color: #242424;
 }
 
-.header {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  display: flex;
-  justify-content: space-between;
-  font-size: 40px;
-  background: #464646;
-  width: 100%;
-  padding: 0 20px;
-}
-.header__title {
-  color: white;
-  text-align: center;
-  align-items: center;
-  will-change: auto;
-  transition: 0.1s linear;
-  width: 150px;
-  height: 100%;
-  border-radius: 10px;
-  -webkit-text-stroke: 1px black;
-}
-.header__title:hover {
-  color: #242424;
-  background: #44aeff;
-  cursor: pointer;
-  transition: 0.1s linear;
-}
-.header__status {
-  animation: pulse 1s infinite;
-}
-
 .dialog__image {
   display: flex;
   flex-direction: column;
   justify-content: center;
   width: max-content;
+  max-width: 100%;
   height: max-content;
+  max-height: 100%;
   border-radius: 20px;
   background: #242424;
   margin: 80px auto;
@@ -86,7 +58,7 @@
 }
 .icon__addImage:hover {
   cursor: pointer;
-  background: rgba(68, 174, 255, 0.5333333333);
+  background: #39f;
 }
 
 .control__panel {
@@ -100,18 +72,37 @@
   display: flex;
   background: none;
   border: none;
-  font-size: 18px;
+  font-size: 20px;
   padding: 4px;
   border-radius: 4px;
-  color: #44aeff;
+  color: #39f;
+  transition: 0.5s ease-out;
 }
 .my__button:hover {
-  background: rgba(68, 174, 255, 0.5333333333);
+  background: #39f;
+  font-size: 24px;
+  transition: 0.05s linear;
+}
+
+input {
+  width: 100%;
+  min-height: 32px;
+  overflow-wrap: break-word;
+  border: green;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  border: 1px solid #242424;
+  border-radius: 4px;
+}
+input:focus {
+  outline: none;
+  border: 1px solid black;
 }
 
 @keyframes pulse {
   50% {
-    filter: drop-shadow(0.1rem 0.1rem 2rem green);
+    filter: drop-shadow(0.1rem 0.1rem 2rem #39f);
   }
 }
 * {

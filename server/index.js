@@ -7,6 +7,7 @@ const router = require('./routes/index');
 const errorHandler = require('./middleware/ErrorHandlingMiddleware');
 const path = require('path');
 const Server = require('socket.io');
+const { setTimeout } = require('timers/promises');
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -35,29 +36,35 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
   console.log(`${socket.id} connected.`);
-  socket.emit('history', messages);
   socket.on('login', data => {
     socket.username = data;
     socket.address = socket.handshake.address;
-    users.push(socket);
     console.log(`user '${data}' has authorized. IP: ${socket.address}`);
-
-    let announce = {data: `Пользователь ${socket.username} присоединился к чату`, type: 'announce'};
-    messages.push(announce);
-
     socket.emit('auth', socket.id)
-    io.emit('message', announce);
   })
   socket.on('auth', token => {
-    console.log(token);
-    users.forEach(user => {
+    let userFound = false;
+    users?.forEach(user => {
       if (user.id === token){
+        userFound = true;
+        console.log('-------------');
+        console.log(`token = ${token}, socket.id = ${socket.id}`);
         socket.id = token;
-        socket.username = user.username;
+        user.username ? socket.username = user.username : socket.username = 'Лох ебаный';
         socket.address = user.address;
-        console.log('session revised for user ', user.username);
+        console.log('session restored for user ', user.username);
       }
-    })
+    });
+    console.log('userFound ', userFound);
+    if (userFound){
+      users.push(socket);
+      let announce = {data: `Пользователь ${socket.username} присоединился к чату`, type: 'announce'};
+      messages.push(announce);
+      io.emit('message', announce);
+    }
+  })
+  socket.on('history', () => {
+    socket.emit('history',messages);
   })
   socket.on('message', data => {
     let date = String(new Date()).slice(16,21);
@@ -71,10 +78,10 @@ io.on('connection', (socket) => {
     messages.push(message);
     io.emit('message', message)
   })
-
-  socket.on('disconnect', () => {
+  socket.on('disconnect', ()=> {
     console.log(`${socket.id} disconnected.`);
-    let announce = {data: `Пользователь ${socket.username ? socket.username : socket.id} вышел из чата`, type: 'announce'};
+
+    let announce = {data: `Пользователь ${socket.username ? socket.username : socket.id} покинул чат`, type: 'announce'};
     messages.push(announce);
     io.emit('message', announce);
   })
