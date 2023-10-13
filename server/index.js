@@ -36,35 +36,28 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
   console.log(`${socket.id} connected.`);
+
   socket.on('login', data => {
     socket.username = data;
     socket.address = socket.handshake.address;
     console.log(`user '${data}' has authorized. IP: ${socket.address}`);
-    socket.emit('auth', socket.id)
-  })
-  socket.on('auth', token => {
-    let userFound = false;
-    users?.forEach(user => {
-      if (user.id === token){
-        userFound = true;
-        console.log('-------------');
-        console.log(`token = ${token}, socket.id = ${socket.id}`);
-        socket.id = token;
-        user.username ? socket.username = user.username : socket.username = 'Лох ебаный';
-        socket.address = user.address;
-        console.log('session restored for user ', user.username);
-      }
+    socket.emit('auth', socket.id);
+    users.push(socket);
+    users.forEach(u => {
+      console.log(u.username);
     });
-    console.log('userFound ', userFound);
-    if (userFound){
-      users.push(socket);
-      let announce = {data: `Пользователь ${socket.username} присоединился к чату`, type: 'announce'};
-      messages.push(announce);
-      io.emit('message', announce);
+  })
+  socket.on('auth', (id, cb) => {
+    let prevSocketId = 0;
+    if (id) {
+      prevSocketId = findSocketById(id);
     }
+    socket.id = users[prevSocketId]?.id
+    users.splice(prevSocketId, 1);
+    cb(socket.id);
   })
   socket.on('history', () => {
-    socket.emit('history',messages);
+    socket.emit('history', messages);
   })
   socket.on('message', data => {
     let date = String(new Date()).slice(16,21);
@@ -80,12 +73,17 @@ io.on('connection', (socket) => {
   })
   socket.on('disconnect', ()=> {
     console.log(`${socket.id} disconnected.`);
-
     let announce = {data: `Пользователь ${socket.username ? socket.username : socket.id} покинул чат`, type: 'announce'};
     messages.push(announce);
     io.emit('message', announce);
   })
 })
+const findSocketById = (sid) => {
+  const temp = users.findIndex(user => user.id == sid);
+  console.log(users.length);
+  console.log(temp, ' порядковый номер сокета в массиве');
+  return temp;
+}
 const start = async() => {
     try {
         await sequelize.authenticate();

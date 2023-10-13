@@ -116,10 +116,16 @@ const backgroundImage = () => {
   console.log(bgStyle);
   return bgStyle;
 }
+const requestHistory = async () => {
+  socket.emit('history', cb => {
+    console.log(cb);
+  });
+}
 socket.on('message', message => {
   if (!cookie.get('id'))
-    emit('logOut');
+    socket.emit('logOut');
   messages.value.push(message);
+  console.log(message);
   nextTick(() => {
     scrollDown();
   })
@@ -131,7 +137,7 @@ socket.on('history', messageHistory => {
   })
 })
 onMounted(() => {
-  socket.emit('history');
+  requestHistory();
 })
 </script>
 
@@ -209,7 +215,8 @@ onMounted(() => {
   flex-direction: column;
   background: #353535;
   height: 100%;
-  width: 90%;
+  width: 10
+  0%;
   padding: 0 10px;
   &__window{
     display: flex;

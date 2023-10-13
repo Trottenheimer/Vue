@@ -9,6 +9,10 @@
       </div>
 </template>
 <style scoped lang="scss">
+.side{
+  height: 100%;
+  width: 10%;
+}
 .menu{
     display: flex;
     flex-direction: column;

@@ -2,25 +2,18 @@ import {createStore} from "vuex";
 
 export default createStore({
     state: () => ({//global storage $store.state.VAR
-        auth: {status: false},
-        user: {id: Number, token: ''}
+        user: {name: ''}
     }),
     getters:{//computed property
     },
     mutations:{//allowed mutations
-        SET_AUTH_STATUS: (state, status) => {
-            state.auth.status = status;
-        },
-        SET_USER_DATA: (state, data) => {
-            state.user = data;
+        SET_USERNAME: (state, name) => {
+            state.user.name = name;
         }
     },
     actions:{//functions. on input ALWAYS require object-context:{state, rootState, commit, dispatch, getters, rootGetters}
-        setAuthStatus: async(ctx, statusChange) => {
-            ctx.commit('SET_AUTH_STATUS', statusChange);
-        },
-        setUserData: async(ctx, data) => {
-            ctx.commit ('SET_USER_DATA', data);
+        setUsername: async(ctx, name) => {
+            ctx.commit ('SET_USERNAME', name);
         }
     },
     modules:{//register modules

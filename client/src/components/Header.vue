@@ -9,7 +9,7 @@ const props = defineProps({
     <img class="header__icon" src="src/assets/favicon.jfif" alt="img">
     <div>
         
-        <span class="header__status" :style="{color: props.conStatus ? 'green' : 'red'}">{{ conStatus ? 'В сети' : 'Не в сети'}}</span>
+        <span class="header__status" :style="{color: props.conStatus ? 'green' : 'red'}">{{ conStatus ? '' : 'Не в сети'}}</span>
     </div>
     <div>
         <el-dropdown>
