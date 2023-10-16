@@ -117,9 +117,7 @@ const backgroundImage = () => {
   return bgStyle;
 }
 const requestHistory = async () => {
-  socket.emit('history', cb => {
-    console.log(cb);
-  });
+  socket.emit('history');
 }
 socket.on('message', message => {
   if (!cookie.get('id'))
@@ -184,8 +182,6 @@ onMounted(() => {
               </button>
               </div>
               <input class="input__image" type="file" @change="selectImage" ref="fileInput" placeholder="картинка">
-              <div v-if="imageInput">
-              </div>
           </div>
       </div>
   </div>

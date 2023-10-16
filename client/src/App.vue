@@ -20,6 +20,8 @@ const users = ref([]);
 let conStatus = ref(false);
 let authStatus = ref(false);
 
+
+
 const logOut = () => {
   cookie.delete('id');
   authStatus.value = false;
@@ -28,8 +30,6 @@ const logOut = () => {
 const auth = () => {
   const currentId = cookie.get('id');
   socket.emit('auth', currentId, id => {
-    console.log(currentId);
-    console.log(id);
     cookie.set('id', id);
   })
 }
@@ -46,9 +46,7 @@ socket.on('connect', () => {
 })
 const test = () => {
   console.log('test');
-  socket.emit('history', messageHistory => {
-    console.log(messageHistory);
-})
+  socket.emit('history');
 }
 </script>
 
