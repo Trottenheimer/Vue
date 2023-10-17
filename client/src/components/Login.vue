@@ -1,6 +1,18 @@
+<template>
+  <div class="login">
+      <span>до 32 символов</span>
+      <div class="login__input">
+        <input type="text" @keydown.enter="logIn" v-model="loginInput" autofocus>
+        <button class="my__button" @click="logIn"><el-icon><Check/></el-icon></button>
+      </div>
+  </div>
+</template>
+
 <script setup>
 import { ElNotification } from 'element-plus';
 import { ref, watch } from 'vue';
+import store from '@/store'
+import cookie from 'vue-cookie';
 
 const emit = defineEmits(['update:status'])
 const props = defineProps({
@@ -18,25 +30,18 @@ watch([loginInput], async([loginVal]) => {
 
 const logIn = () => {
   loginInput.value = loginInput.value.trim();
-  if (loginInput.value.length >= 4 && loginInput.value.length <= 32 && loginInput.value !== '' && loginInput.value !== 'Администратор'){
-    socket.emit('login', loginInput.value);
-    emit('update:status',true);
+  if (loginInput.value.length <= 32){
+    socket.emit('login', loginInput.value, cb => {
+      store.commit('SET_USERDATA', cb);
+      console.log(store.state.user);
+      emit('update:status', true);
+    });
   }
   else{
-    ElNotification({title: 'Ошибка', message: 'Введи ник нормально', type: 'error'});
+    ElNotification({title: 'Ошибка', message: 'Слишком длинный ник', type: 'warning'});
   }
 }
 </script>
-
-<template>
-    <div class="login">
-        <span>от 4 до 32 символов</span>
-        <div class="login__input">
-          <input type="text" @keydown.enter="logIn" v-model="loginInput">
-          <button class="my__button" @click="logIn"><el-icon><Check/></el-icon></button>
-        </div>
-    </div>
-</template>
 
 <style scoped lang="scss">
 .login{

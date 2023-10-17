@@ -13,51 +13,34 @@ import UserList from '@/components/UserList.vue'
 const SERVER_URL = 'http://192.168.1.91:3000'
 const socket = io(SERVER_URL, {
   transports: ['websocket'],
-  upgrade: { maxHttpBufferSize: 10000000 }
+  upgrade: { maxHttpBufferSize: 10000000 },
+  auth: {token: 'токенчик)'}
 });
-const users = ref([]);
 
 let conStatus = ref(false);
-let authStatus = ref(false);
+let authStatus = ref(cookie.get('id') ? true: false);
 
 
-
-const logOut = () => {
-  cookie.delete('id');
-  authStatus.value = false;
-  socket.disconnect();
-}
-const auth = () => {
-  const currentId = cookie.get('id');
-  socket.emit('auth', currentId, id => {
-    cookie.set('id', id);
-  })
-}
 socket.on('connect', () => {
   conStatus.value = true;
-  console.log(`connection to ${SERVER_URL} established.`);
-  if (!authStatus.value)
-    auth();
-  
+  console.log(`Соединение с сервером произошло успешно.`);
   socket.on('disconnect', () => {
     conStatus.value = false;
-    window.location.reload();
   })
 })
 const test = () => {
   console.log('test');
-  socket.emit('history');
 }
 </script>
 
 <template>
 <div class="layout">
-  <Header :conStatus="conStatus" @logOut="logOut"/>
+  <Header :conStatus="conStatus"/>
   <div class="main">
     <div class="content" v-if="authStatus">
       <SideBar/>
-      <Chat v-model:socket="socket" @logOut="logOut" />
-      <UserList :users="users" @test="test"/>
+      <Chat v-model:socket="socket"/>
+      <UserList :socket="socket" @test="test"/>
     </div>
     <Login v-else :socket="socket" v-model:status="authStatus"/>
   </div>

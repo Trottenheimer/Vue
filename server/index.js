@@ -19,6 +19,7 @@ const io = require('socket.io')(http, {
 
 let messages = [];
 let users = [];
+let connections = [];
 const sessions = new Map()
 
 app
@@ -34,36 +35,20 @@ app.get('/', (req, res) => {
     res.status(200).json({message: 'Server on'})
 });
 
-const findSocketById = (sid) => {
-  const index = users.findIndex(user => user.id == sid);
-  console.log(users.length, ' количество сокетов');
-  console.log(index === -1
-    ? `сокет не найден... Создание...`
-    : `${index} порядковый номер сокета в массиве`);
-  return index;
-}
+io.on('connection', socket => {
+  connections.push(socket);
+  console.log(`${socket.id} подключился. IP: ${socket.handshake.address}`);
+  console.log(socket.handshake.auth.token);
 
-io.on('connection', (socket) => {
-  console.log(`${socket.id} connected. IP: ${socket.handshake.address}`);
-
-  socket.on('login', data => {
-    socket.username = data;
-    console.log(`user '${data}' has authorized. IP: ${socket.handshake.address}`);
-  })
-  socket.on('auth', (id, cb) => {
-    let sid = findSocketById(id);
-    console.log(sid);
-    if (sid !== -1){
-      socket.id = users[sid].id
-      console.log('Обнаружен предыдущий сокет');
-    } else{
-      users.push(socket);
-      console.log('Создан новый сокет');
-    }
-    return cb(socket.id)
-  })
   socket.on('history', () => {
     socket.emit('history', messages);
+  })
+  socket.on('login', (login, cb) => {
+    const user = {id: socket.id, name: login, ip: socket.handshake.address}
+    users.push(user);
+    socket.username = user.name;
+    socket.id = user.id;
+    return cb(user);
   })
   socket.on('message', data => {
     let date = String(new Date()).slice(16,21);
@@ -77,23 +62,19 @@ io.on('connection', (socket) => {
     messages.push(message);
     io.emit('message', message)
   })
-  socket.on('disconnect', ()=> {
-    console.log(`${socket.id} disconnected.`);
-    if (socket.username){
-      let announce = {data: `Пользователь ${socket.username} покинул чат`, type: 'announce'};
-      messages.push(announce);
-      io.emit('message', announce);
-    }
+  socket.on('disconnect', () => {
+    connections.splice(connections.indexOf(socket), 1);
+    console.log(`${socket.id} отключился.`);
   })
 })
+
 const start = async() => {
     try {
-        await sequelize.authenticate();
-        await sequelize.sync();
+        //await sequelize.authenticate();
+        //await sequelize.sync();
         http.listen(PORT, () => console.log(`Server started on port ${PORT}`));
     } catch (error) {
         console.log(error);
     }
 }
-
 start();

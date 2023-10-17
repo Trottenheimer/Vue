@@ -1,6 +1,72 @@
+<template>
+  <div style="height: 100%; width: 90%">
+      <div class="chat">
+          <div class="chat__window" ref="messageList">
+              <div class="message" v-for="(message, index) in messages" :key="index" :style="setMessageStyle(message.id, message.type)">
+              <div class="message__block" :style="{backgroundColor: message.id === store.state.user.id ? '#227abb' : ''}">
+                  <template v-if="message.type === 'message' || message.type === 'image'">
+                  <div class="block__column">
+                      <span class="message__block__user">{{ message.user }}</span>
+                      <span class="message__block__data">{{ message.data }}</span>
+                      <template v-if="message.image">
+                      <img @click="viewImage(message.image)" class="message__block__image" :src="message.image" alt="image">
+                      </template>
+                  </div>
+                  <template v-if="message.type === 'image'">
+                      <span class="message__block__date__hidden">{{message.date}}</span>
+                  </template>
+                  <template v-else>
+                      <span class="message__block__date">{{message.date}}</span>
+                  </template>
+                  </template>
+                  <template v-else-if="message.type === 'announce'">
+                  <div class="message__block__announce" style="margin: 0 auto">{{message.data}}</div>
+                  </template>
+              </div>
+              </div>
+          </div>
+          <div class="chat__bar">
+              {{ messageInput.length }}/{{messageLimit}}
+              <div class="chat__bar__input">
+              <input type="text" @keydown.enter="sendMessage" @paste="handlePaste" v-model="messageInput" autofocus>
+              <button class="my__button" @click="this.$refs.fileInput.click()">
+                <el-icon :size="24" style="color: lightgray">
+                  <Paperclip/>
+                </el-icon>
+              </button>
+              <button class="my__button" @click="sendMessage">
+                  <el-icon :size="24">
+                    <Promotion/>
+                  </el-icon>
+              </button>
+              </div>
+              <input class="input__image" type="file" @change="selectImage" ref="fileInput" placeholder="картинка">
+          </div>
+      </div>
+  </div>
+
+  <el-dialog class="dialog__image" v-model="dialogVisible"
+    @keyup.enter="sendImage(imageInput, imageText)" @closed="imageText = ''; imageInput = ''; editMode = false;"
+    >
+    <div class="dialog__content">
+      <img class="dialog__content__image" :src="vImage" alt="">
+    </div>
+    <template v-if="editMode">
+      <div class="dialog__desc">
+        <span>Подпись</span>
+        <input class="dialog__desc__input" type="text" v-model="imageText"/>
+      </div>
+      <div class="control__panel">
+        <button class="my__button" @click="dialogVisible = false;">Отмена</button>
+        <button class="my__button" @click="sendImage(imageInput, imageText)">Отправить</button>
+      </div>
+    </template>
+  </el-dialog>
+</template>
 <script setup>
 import { ref, watch, nextTick, onMounted } from 'vue';
 import cookie from 'vue-cookie';
+import store from '@/store'
 
 const emit = defineEmits(['logOut']);
 const props = defineProps({
@@ -138,73 +204,6 @@ onMounted(() => {
   requestHistory();
 })
 </script>
-
-<template>
-  <div style="height: 100%; width: 90%">
-      <div class="chat">
-          <div class="chat__window" ref="messageList">
-              <div class="message" v-for="(message, index) in messages" :key="index" :style="setMessageStyle(message.id, message.type)">
-              <div class="message__block" :style="{backgroundColor: message.id === cookie.get('id') ? '#227abb' : ''}">
-                  <template v-if="message.type === 'message' || message.type === 'image'">
-                  <div class="block__column">
-                      <span class="message__block__user">{{ message.user }}</span>
-                      <span class="message__block__data">{{ message.data }}</span>
-                      <template v-if="message.image">
-                      <img @click="viewImage(message.image)" class="message__block__image" :src="message.image" alt="image">
-                      </template>
-                  </div>
-                  <template v-if="message.type === 'image'">
-                      <span class="message__block__date__hidden">{{message.date}}</span>
-                  </template>
-                  <template v-else>
-                      <span class="message__block__date">{{message.date}}</span>
-                  </template>
-                  </template>
-                  <template v-else-if="message.type === 'announce'">
-                  <div class="message__block__announce" style="margin: 0 auto">{{message.data}}</div>
-                  </template>
-              </div>
-              </div>
-          </div>
-          <div class="chat__bar">
-              {{ messageInput.length }}/{{messageLimit}}
-              <div class="chat__bar__input">
-              <input type="text" @keydown.enter="sendMessage" @paste="handlePaste" v-model="messageInput">
-              <button class="my__button" @click="this.$refs.fileInput.click()">
-                <el-icon :size="24" style="color: lightgray">
-                  <Paperclip/>
-                </el-icon>
-              </button>
-              <button class="my__button" @click="sendMessage">
-                  <el-icon :size="24">
-                    <Promotion/>
-                  </el-icon>
-              </button>
-              </div>
-              <input class="input__image" type="file" @change="selectImage" ref="fileInput" placeholder="картинка">
-          </div>
-      </div>
-  </div>
-
-
-  <el-dialog class="dialog__image" v-model="dialogVisible"
-    @keyup.enter="sendImage(imageInput, imageText)" @closed="imageText = ''; imageInput = ''; editMode = false;"
-    >
-    <div class="dialog__content">
-      <img class="dialog__content__image" :src="vImage" alt="">
-    </div>
-    <template v-if="editMode">
-      <div class="dialog__desc">
-        <span>Подпись</span>
-        <input class="dialog__desc__input" type="text" v-model="imageText"/>
-      </div>
-      <div class="control__panel">
-        <button class="my__button" @click="dialogVisible = false;">Отмена</button>
-        <button class="my__button" @click="sendImage(imageInput, imageText)">Отправить</button>
-      </div>
-    </template>
-  </el-dialog>
-</template>
 <style scoped lang="scss">
 .chat{
   display: flex;
