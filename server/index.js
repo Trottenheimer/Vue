@@ -36,9 +36,16 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', socket => {
-  connections.push(socket);
   console.log(`${socket.id} подключился. IP: ${socket.handshake.address}`);
-  console.log(socket.handshake.auth.token);
+  let currentUser = users.findIndex(user => user.id == socket.handshake.auth.token)
+  if (currentUser > -1){
+    socket.id = users[currentUser].id;
+    socket.username = users[currentUser].name;
+    connections.push(socket);
+  }
+  else{
+    socket.emit('non auth');
+  }
 
   socket.on('history', () => {
     socket.emit('history', messages);
@@ -52,13 +59,13 @@ io.on('connection', socket => {
   })
   socket.on('message', data => {
     let date = String(new Date()).slice(16,21);
-    let message = {user: socket.username, data: data, date: date, id: socket.id, type: 'message'};
+    let message = {user: socket.username, data: data, date: date, user_id: socket.id, type: 'message'};
     messages.push(message);
     io.emit('message', message);
   })
   socket.on('image', (image, text) => {
     let date = String(new Date()).slice(16,21);
-    let message = {user: socket.username, data: text, image: image, date: date, id: socket.id, type: 'image'}
+    let message = {user: socket.username, data: text, image: image, date: date, user_id: socket.id, type: 'image'}
     messages.push(message);
     io.emit('message', message)
   })

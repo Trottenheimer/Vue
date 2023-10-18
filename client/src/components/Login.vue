@@ -33,6 +33,7 @@ const logIn = () => {
   if (loginInput.value.length <= 32){
     socket.emit('login', loginInput.value, cb => {
       store.commit('SET_USERDATA', cb);
+      cookie.set('id', cb.id);
       console.log(store.state.user);
       emit('update:status', true);
     });

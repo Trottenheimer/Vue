@@ -2,8 +2,8 @@
   <div style="height: 100%; width: 90%">
       <div class="chat">
           <div class="chat__window" ref="messageList">
-              <div class="message" v-for="(message, index) in messages" :key="index" :style="setMessageStyle(message.id, message.type)">
-              <div class="message__block" :style="{backgroundColor: message.id === store.state.user.id ? '#227abb' : ''}">
+              <div class="message" v-for="(message, index) in messages" :key="index" :style="setMessageStyle(message.user_id, message.type)">
+              <div class="message__block" :style="{backgroundColor: message.user_id === cookie.get('id') ? '#227abb' : ''}">
                   <template v-if="message.type === 'message' || message.type === 'image'">
                   <div class="block__column">
                       <span class="message__block__user">{{ message.user }}</span>
@@ -63,6 +63,7 @@
     </template>
   </el-dialog>
 </template>
+
 <script setup>
 import { ref, watch, nextTick, onMounted } from 'vue';
 import cookie from 'vue-cookie';
@@ -204,6 +205,7 @@ onMounted(() => {
   requestHistory();
 })
 </script>
+
 <style scoped lang="scss">
 .chat{
   display: flex;

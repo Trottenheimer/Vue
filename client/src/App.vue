@@ -14,18 +14,24 @@ const SERVER_URL = 'http://192.168.1.91:3000'
 const socket = io(SERVER_URL, {
   transports: ['websocket'],
   upgrade: { maxHttpBufferSize: 10000000 },
-  auth: {token: 'токенчик)'}
+  auth: {token: cookie.get('id')}
 });
 
 let conStatus = ref(false);
 let authStatus = ref(cookie.get('id') ? true: false);
 
+const logOut = () => {
+  cookie.delete('id');
+  socket.disconnect();
+}
 
 socket.on('connect', () => {
   conStatus.value = true;
   console.log(`Соединение с сервером произошло успешно.`);
+  socket.on('non auth', () => conStatus.value = false);
   socket.on('disconnect', () => {
     conStatus.value = false;
+    window.location.reload();
   })
 })
 const test = () => {
@@ -35,7 +41,7 @@ const test = () => {
 
 <template>
 <div class="layout">
-  <Header :conStatus="conStatus"/>
+  <Header :conStatus="conStatus" @logOut="logOut"/>
   <div class="main">
     <div class="content" v-if="authStatus">
       <SideBar/>
